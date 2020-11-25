@@ -1,0 +1,12 @@
+rowname,learned_te,learned_propte,learned_dom,learned_nondom,learned_words,learned_concepts,learned_unique_dom,learned_unique_nondom,learned_unique_all,prop_dom,experience
+learned_te,NA,0.97,0.85,0.99,0.96,0.89,0.09,0.79,0.42,-0.17,0.93
+learned_propte,0.97,NA,0.83,0.96,0.96,0.94,-0.8,0.66,-0.74,-0.3,0.8
+learned_dom,0.85,0.83,NA,0.83,0.96,0.99,0.6,0.64,0.81,0.08,0.89
+learned_nondom,0.99,0.96,0.83,NA,0.96,0.89,0.08,0.87,0.44,-0.27,0.93
+learned_words,0.96,0.96,0.96,0.96,NA,0.98,0.35,0.79,0.65,-0.1,0.95
+learned_concepts,0.89,0.94,0.99,0.89,0.98,NA,0.52,0.76,0.79,-0.05,0.91
+learned_unique_dom,0.09,-0.8,0.6,0.08,0.35,0.52,NA,0.02,0.9,0.41,0.26
+learned_unique_nondom,0.79,0.66,0.64,0.87,0.79,0.76,0.02,NA,0.45,-0.55,0.74
+learned_unique_all,0.42,-0.74,0.81,0.44,0.65,0.79,0.9,0.45,NA,0.13,0.55
+prop_dom,-0.17,-0.3,0.08,-0.27,-0.1,-0.05,0.41,-0.55,0.13,NA,0
+experience,0.93,0.8,0.89,0.93,0.95,0.91,0.26,0.74,0.55,0,NA

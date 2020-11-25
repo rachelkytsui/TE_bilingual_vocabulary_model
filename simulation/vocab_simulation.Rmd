@@ -1,0 +1,300 @@
+---
+title: "Simulation of TE learning"
+output: html_notebook
+---
+
+This is a first attempt to simulate TE learning in bilinguals.
+
+Hypothetical baby learing 70% English and 30% French
+
+```{r}
+library(tidyverse)
+library(purrr)
+library(corrr)
+
+
+set.seed(6)
+
+
+```
+
+Function for simple vocabulary simulation. All words of equal difficulty. 
+
+```{r vocab-sim}
+## Function that simulates vocab for one baby
+
+# prop_dom is proportion exposure to dominant language
+# learn_cutoff is the number of experiences (encounters) needed to learn a word
+# experience is the number of times a word could be encountered
+# te_cutoff is multiplier for threshold when a TE is lexicalized. te_cutoff = 1 means same experienc needed to learn TE as unique word. Higher values --> harder to learn TEs, i.e. te_cutoff = .5 implies half the experience is needed to learn the TE
+
+VOCAB_SIZE = 100 # Vocab size set here for all simulations.
+
+vocab_sim <- function(prop_dom, learn_cutoff = 30, experience = 50, te= 1) {
+ 
+  learn_cutoff_first = learn_cutoff # cutoff if first word learned
+  learn_cutoff_second = learn_cutoff*te # cutoff if second word learned
+
+  
+  prop_dom = prop_dom # proportion exposure to dominant language
+  prop_nondom = 1- prop_dom # proportion exposure to non-dominant language
+
+# Samples how often individual words will be encountered, proportional to exposure
+# sample() takes a sample of the specified size from the elements of x using either with or without replacement.
+
+#experience_dom <- prop_dom * sample(1:experience, experience, replace = TRUE)
+#experience_nondom <- prop_nondom * sample(1:experience, experience, replace = TRUE)
+  
+experience_dom <- prop_dom * sample(1:experience, VOCAB_SIZE, replace = TRUE)
+experience_nondom <- prop_nondom * sample(1:experience, VOCAB_SIZE, replace = TRUE)
+ 
+  
+# Based on above vectors, determine whether each concept is labeled uniquely, or has a TE
+vocab <- data.frame(prop_dom, experience_dom, experience_nondom) %>%
+  mutate(prop_dom = prop_dom) %>%
+  mutate(learn_cutoff = learn_cutoff) %>%
+  mutate(experience = experience) %>%
+  mutate(te = te) %>%
+  mutate(learned_dom = case_when(
+    experience_dom >= experience_nondom & experience_dom >= learn_cutoff_first ~ T,
+    experience_dom >= experience_nondom & experience_dom < learn_cutoff_first ~ F,
+    experience_dom < experience_nondom & experience_dom >= learn_cutoff_second ~ T,
+    experience_dom < experience_nondom & experience_dom < learn_cutoff_second ~ F
+    
+  )) %>%
+  mutate(learned_nondom = case_when(
+    experience_nondom >= experience_dom & experience_nondom >= learn_cutoff_first ~ T,
+    experience_nondom >= experience_dom & experience_nondom < learn_cutoff_first ~ F,
+    experience_nondom < experience_dom & experience_nondom >= learn_cutoff_second ~ T,
+    experience_nondom < experience_dom & experience_nondom < learn_cutoff_second ~ F
+  )) %>%
+#  mutate(learned_dom = if_else(experience_dom >= learn_cutoff, T, F)) %>%
+#  mutate(learned_nondom = if_else(experience_nondom >= learn_cutoff, T, F)) %>%
+  mutate(learned_unique_dom = if_else(learned_dom & !learned_nondom, T, F)) %>%
+  mutate(learned_unique_nondom = if_else(learned_nondom & !learned_dom, T, F)) %>%
+  mutate(learned_unique_all = as.logical(learned_unique_dom + learned_unique_nondom)) %>%
+  mutate(learned_te = if_else(learned_dom & learned_nondom, T, F)) %>%
+  mutate(learned_concepts = if_else(learned_dom | learned_nondom, T, F)) %>%
+  select(-experience_dom, -experience_nondom)
+           
+return(vocab)
+}
+
+# Check that the above function works
+
+vocab_sim(.5, 20, 100, 1.0) 
+
+
+
+```
+
+
+
+Creates summary of simulation
+
+```{r vocab-sim-summary}
+## Function that summarizes vocab
+
+vocab_sim_summary <- function(prop_dom, learn_cutoff=15, experience=100, te = 1) {
+  
+  vocab <- vocab_sim(prop_dom, learn_cutoff, experience, te) %>%
+    group_by(prop_dom, learn_cutoff, experience, te) %>%
+  summarize_all(sum)
+  
+  return(vocab)
+  
+}
+
+## Check that the above function words
+
+vocab_sim_summary(.5, 20, 100)
+
+
+```
+
+
+
+```{r parameter-setup}
+
+# This chunk creates the dataframes/vectors of the space of parameters for the simulation to model
+
+# Create vector with proportions from .1 to .5
+seq_prop <-seq(from = .5, to = 1, by = .1)
+props <- rep(seq_prop, 25) # 20 repetitions of the different proportion exposures
+
+# For now keep cutoff constant.  Can use this code in the future if necessary
+
+# seq_cutoff <-seq(from = 30, to = 50, by = 10)
+# cutoffs <- rep(seq_cutoff, length(props)/length(seq_cutoff))
+
+cutoffs <- rep(50, length(props))
+
+# Create vector with different levels of experience
+
+seq_experience <- seq(from = 50, to = 450, by = 100)
+experience <- rep(seq_experience, length(props)/length(seq_experience))
+
+# Create vector for different TE weights.  For now, just use .5, 1, 1.5
+
+seq_te <- c(.5, 1, 1.5)
+te <- rep(seq_te, length(props)/length(seq_te))
+
+# Check that the lengths for each vector are equal. These should all return "TRUE"
+
+length(cutoffs) == length(props)
+length(experience) == length(props)
+length(te) == length(props)
+
+# Get all combinations, then extract columns as lists.  Couldn't find more elegant solution
+combo1 <- crossing(props, cutoffs, experience, te) # Full factorial combination of each vector
+
+# Repeat each combo 20 times
+
+combo <- map_dfr(seq_len(20), ~combo1) 
+
+# Now need to extract each of the columns separately.  Could be coded more elegantly, but this works for now.
+
+props1 <- combo$props
+cutoffs1 <- combo$cutoffs
+experience1 <- combo$experience
+te1 <- combo$te
+
+# Check how many infants will be simulated
+
+length(props1)
+
+```
+Run simulation across all the parameter combinations created in the previous step
+
+```{r}
+# Run simulation. This step might take a while
+
+vocab_simulations_full <- 
+  pmap(list(props1, cutoffs1, experience1, te1), vocab_sim_summary) %>%
+  bind_rows() 
+
+# Cleanup and recode some of the columns for easier visualization/interpretation
+
+vocab_simulations <- vocab_simulations_full%>%
+  mutate(te = as.factor(as.character(te))) %>%
+  mutate(te = recode(te, "0.5" = "te_easier" , "1" = "te_equal", "1.5" = "te_harder")) %>%
+  mutate(learn_cutoff = as.factor(as.character(learn_cutoff))) %>%
+  mutate(learn_cutoff = recode(learn_cutoff, "30" = "words_easy", "40" = "words_medium", "50" = "words_hard")) %>%
+  mutate(learned_words = learned_dom + learned_nondom) %>%
+  mutate(prop_dom = as.factor(as.character(prop_dom)))
+           
+# Pivot the data into long format
+
+vocab_simulations_long <- vocab_simulations %>%
+  pivot_longer(cols = starts_with("learned"), names_to = "word_type", values_to = "n_words") 
+
+
+
+```
+
+
+```{r correlations}
+
+# Calculating correlations between different vocabulary measures
+
+all_correl <- vocab_simulations %>%
+  ungroup() %>%
+    mutate(prop_dom = as.numeric(as.character(prop_dom))) %>%
+  filter(prop_dom <= .75) %>%
+  mutate(experience = as.numeric(as.character(experience))) %>%
+  mutate(learned_propte = learned_te/learned_words) %>%
+  relocate(learned_te, learned_propte, learned_dom, learned_nondom, learned_words, learned_concepts) %>%
+  group_by(te) %>%
+  select(starts_with("learned")| starts_with("prop")|starts_with("experience")) %>%
+  group_map(~correlate(.x))
+
+te_neutral <- all_correl[[2]] %>%
+  mutate(across(is.numeric, round, 2))
+
+# write_tsv(te_neutral, "correlations.tsv")
+
+```
+
+
+
+
+```{r}
+
+# Plot to compare different vocabulary measures under different TE learning strategies, across experience
+
+plot_words <- vocab_simulations_long %>%
+  mutate(prop_dom = as.factor(prop_dom)) %>%
+  filter(word_type %in% c("learned_words", "learned_concepts", "learned_dom", "learned_nondom", "learned_te")) %>%
+  ggplot(aes(x = experience, y = n_words, color = prop_dom)) +
+  geom_point() +
+  stat_smooth(method = lm, se = F) +
+  theme_minimal() + 
+  facet_grid(te ~ word_type) +
+  ggtitle("Word vocabulary size by dominance under different measures") +
+  theme(axis.text.x = element_text(angle = 90))
+  
+ggsave("plot_plot_words.png", plot_words)
+plot_words
+
+
+```
+
+
+
+Vocabulary composition across different TE scenarios
+```{r}
+# Plot of simulations
+
+plot_composition <- vocab_simulations_long %>%
+ # filter(te == "te_equal") %>%
+ # filter(experience == 350) %>% # Fix a level of experience
+  filter(word_type %in% c("learned_te", "learned_unique_dom", "learned_unique_nondom")) %>%
+  mutate(word_type = fct_relevel(word_type, "learned_unique_nondom", "learned_unique_dom", "learned_te")) %>%
+ # group_by(learn_cutoff) %>%
+  group_by(prop_dom, word_type, learn_cutoff, experience, te) %>%
+  summarize(n_words = mean(n_words)) %>%
+ # mutate(word_type = fct_rev(word_type)) %>%
+  ggplot(aes(x = prop_dom, y = n_words, fill = word_type)) +
+   geom_bar(position = "stack", stat = "identity", reverse = TRUE) +
+  facet_grid(te ~ experience) +
+  theme_minimal() +
+    ggtitle("Vocabulary composition across different TE scenarios, with different proportions of dominant language exposure") +
+     theme(axis.text.x = element_text(angle = 90), legend.position = "bottom")
+
+ggsave("plot_composition.png", plot_composition)
+plot_composition
+
+
+
+```
+
+```{r}
+
+# non-dominant vocab predicts TEs, but stronger prediction for less balanced infants
+
+vocab_simulations %>%
+  filter(te == "te_equal") %>%
+  mutate(experience = as.factor(as.character(experience))) %>%
+  ggplot(aes(x = learned_nondom, y = learned_te, color = prop_dom)) +
+ # facet_grid(. ~ experience) +
+  geom_point() +
+  theme_minimal() +
+ # stat_smooth(method = "lm") +
+    ggtitle("Predicting TEs from non-dominant vocabulary") 
+
+```
+
+```{r}
+# Basically shows that simulations converge on the same thing as computations that are now in the paper
+
+vocab_simulations %>%
+filter(te == "te_equal") %>%
+  mutate(predict_te = learned_dom * learned_nondom / VOCAB_SIZE) %>%
+  ggplot(aes(x = learned_te, y = predict_te, color = prop_dom)) +
+    geom_point() +
+  geom_abline(intercept = 0, slope = 1) +
+  theme_minimal() 
+
+```
+
+
