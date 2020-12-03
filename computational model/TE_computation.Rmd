@@ -1,0 +1,262 @@
+---
+title: "TE_computation"
+date: "Last update: Dec 2nd 2020"
+output: html_document
+---
+
+# Preparations
+## load libraries
+```{r setup, include=FALSE}
+
+library(here)
+library(tidyverse)
+library(tidylog)
+library(regclass)
+
+`%notin%` <- Negate(`%in%`)
+```
+
+# Generating dataframe for computational model
+```{r}
+#### Set 1: Calculate other variables based on V, W, and B ####
+
+## Creating variables: V, W, and B
+# Items on vocabulary measure (e.g. words on the CDI)
+V <- 600 # This is constant
+
+# Total word vocabulary of a child
+W <- seq(0, 2*V, by = 50) %>% # a sequence of 0 to 2V
+  rep(., 6) # generate 6 repetitinos of the sequence
+
+# Balance, i.e. proportion use of non-dominant language (B ≤ .50)
+B <- seq(0.5, 1, by = 0.1) %>% # a sequence of 0.5 to 1
+  rep(., 25) # generate 25 repetitions of the sequence
+
+## Creating the dataframe
+TE_fromVWB <- data.frame(V, W) %>%
+  arrange(W) %>%
+  mutate(B = B) %>%
+  # Create other variables
+  mutate(D = B*W, # Words produced in the dominant language
+         N = (1-B)*W, # Words produced in non-dominant language
+         TE = (D*N)/V, # If D and N are independent, TE = DN/V
+         C = W-TE, # Concept vocabulary (or total conceptual vocabulary size)
+         Du = D-TE, # Unique words in dominant language
+         Nu = N-TE) %>% # Unique words in non-dominant language
+  # In reality, it would be impossible to get negative numbers for any vocabulary variables, so filter out all cases with negative numbers
+  filter(Nu >= 0) %>%
+  # It is also not possible for D or N to exceed V, so filter out cases where D or N > V
+  filter_at(vars(D, N), all_vars(. <= 600))
+
+
+#### Set 2: Calculate other variables based on V, D, and N ####
+
+## Creating variables: D and N
+D <- seq(0, V, by = 50) %>% # Words produced in the dominant language
+  rep(., 13) # generate 13 repetitions of the sequence
+
+N <- seq(0, V, by =50) %>% # Words produced in non-dominant language
+  rep(., 13) # generate 13 repetitions of the sequence
+
+## Creating the dataframe
+TE_fromVDN <- data.frame(V, D) %>%
+  arrange(D) %>%
+  mutate(N = N) %>%
+  # It is not possible for N > D, so keep only cases where D >= N
+  filter(D >= N) %>%
+  # Create other variables
+  mutate(W = D+N, # Total word vocabulary of a child
+         B = D/(D+N), # Balance, i.e. proportion use of non-dominant language (B ≤ .50)
+         TE = (D*N)/V, # If D and N are independent, TE = DN/V
+         C = W-TE, # Concept vocabulary (or total conceptual vocabulary size)
+         Du = D-TE, # Unique words in dominant language
+         Nu = N-TE) %>%
+  # Remove cases where B = NA
+  filter(!is.na(B))
+
+
+#### Combine the 2 sets ####
+TE_computation <- TE_fromVWB %>%
+  bind_rows(TE_fromVDN)
+
+```
+
+# Correlation
+```{r}
+Correlation <- TE_computation %>%
+  select(-V) %>%
+  cor_matrix()
+
+#write.table(Correlation, "TEcomputation_correlations.tsv", col.names=NA)
+```
+
+# Plotting relations between variables
+## Stacked barchart showing the vocabulary composition across different balance proportions
+```{r}
+
+#plot_composition <- TE_computation %>%
+#  # Convert to long data
+#  pivot_longer(c(D, N, TE, C, Du, Nu), names_to = "vocab_type", values_to = "number") %>%
+#  filter(vocab_type %notin% c("D", "N", "C")) %>%
+#  mutate(vocab_type = factor(vocab_type, levels=c("TE", "Du", "Nu"))) %>%
+#  mutate(bin_W = cut(W, breaks = 3, 
+#                     labels = c("0-400", "401-800", "801-1200"))) %>%
+#  group_by(bin_W, vocab_type, B) %>%
+#  summarise(n_words = mean(number)) %>%
+#  ggplot(aes(x=B, y = n_words, fill = vocab_type)) + 
+#  geom_bar(position="stack", stat="identity") +
+#  facet_grid(. ~ bin_W) +
+#  #scale_y_continuous(limits = c(0, 1200)) +
+#  theme_minimal() +
+#  theme(axis.text.x = element_text(angle = 90), legend.position = "bottom") + 
+#  labs(x = "Balance", 
+#       y = "Number of words") 
+
+plot_composition <- TE_computation %>%
+  # Convert to long data
+  pivot_longer(c(D, N, TE, C, Du, Nu), names_to = "vocab_type", values_to = "number") %>%
+  filter(vocab_type %notin% c("D", "N", "C")) %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("Nu", "Du", "TE"))) %>%
+  mutate(bin_B = cut(B, breaks = 6, 
+                     labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
+  group_by(bin_B, vocab_type, W) %>%
+  summarise(n_words = mean(number)) %>%
+  ggplot(aes(x=W, y = n_words, fill = vocab_type)) + 
+  geom_bar(position="stack", stat="identity") +
+  facet_grid(. ~ bin_B) +
+  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) + 
+  #scale_y_continuous(limits = c(0, 1200)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90), legend.position = "bottom") + 
+  labs(x = "Total vocabulary size", 
+       y = "Number of words", 
+       title = "Vocabulary composition across different balance proportions") 
+
+ggsave("plot_composition.png", plot_composition)
+```
+
+## Plotting relations between TEs and different variables
+##### Relation between TE & W, D, & N #####
+```{r}
+### Plot: Y = TE, X = D / N
+plot_TEandWDN <- TE_computation %>%
+  pivot_longer(c(W, D, N, C, Du, Nu), names_to = "vocab_type", values_to = "number") %>%
+  filter(vocab_type %in% c("W", "D", "N")) %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("W", "D", "N"))) %>%
+  #mutate(bin_B = cut(B, breaks = 6, 
+  #                   labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
+  ggplot(aes(x = number, y = TE)) +
+  facet_grid(. ~vocab_type) +
+  labs(x = "Words produced", y = "Total number of TEs") +
+  geom_point(shape = 23) +
+  geom_smooth(method="lm", se=F) +
+  scale_y_continuous(limits = c(0, 600)) +
+  theme_minimal()
+
+ggsave("plot_TEandWDN.png", plot_TEandWDN)
+
+
+### Plot: Y = TE, X = D / N, color by B
+plot_TEandWDN_byB <- TE_computation %>%
+  pivot_longer(c(W, D, N, C, Du, Nu), names_to = "vocab_type", values_to = "number") %>%
+  filter(vocab_type %in% c("W", "D", "N")) %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("W", "D", "N"))) %>%
+  mutate(bin_B = cut(B, breaks = 6, 
+                     labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
+  ggplot(aes(x = number, y = TE, colour = bin_B)) +
+  facet_grid(. ~vocab_type) +
+  labs(x = "Words produced", y = "Total number of TEs",
+       colour = "Bins of balance") +
+  geom_point(shape = 23) +
+  geom_smooth(method="lm", se=F) +
+  scale_x_continuous(limits = c(0, 1200)) +
+  scale_y_continuous(limits = c(0, 600)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90), legend.position = "bottom") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave("plot_TEandWDN_byB.png", plot_TEandWDN_byB)
+```
+
+##### Relation between W & TE, Du, & Nu #####
+```{r}
+### Plot: Y = W, X = TE/ Du / Nu
+plot_WandTEDuNu <- TE_computation %>%
+  pivot_longer(c(TE, D, N, C, Du, Nu), names_to = "vocab_type", values_to = "number") %>%
+  filter(vocab_type %in% c("TE", "Du", "Nu")) %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("TE", "Du", "Nu"))) %>%
+  #mutate(bin_B = cut(B, breaks = 6, 
+  #                   labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
+  ggplot(aes(x = number, y = W)) +
+  facet_grid(. ~vocab_type) +
+  labs(x = "Words produced", y = "Total vocabulary size") +
+  geom_point(shape = 23) +
+  geom_smooth(method="lm", se=F) +
+  scale_y_continuous(limits = c(0, 1200)) +
+  theme_minimal()
+
+ggsave("plot_WandTEDuNu.png", plot_WandTEDuNu)
+
+
+### Plot: Y = W, X = TE/ Du / Nu, color by B
+plot_WandTEDuNu_byB <- TE_computation %>%
+  pivot_longer(c(TE, D, N, C, Du, Nu), names_to = "vocab_type", values_to = "number") %>%
+  filter(vocab_type %in% c("TE", "Du", "Nu")) %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("TE", "Du", "Nu"))) %>%
+  mutate(bin_B = cut(B, breaks = 6, 
+                     labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
+  ggplot(aes(x = number, y = W, colour = bin_B)) +
+  facet_grid(. ~vocab_type) +
+  labs(x = "Words produced", y = "Total vocabulary size",
+       colour = "Bins of balance") +
+  geom_point(shape = 23) +
+  geom_smooth(method="lm", se=F) +
+  scale_y_continuous(limits = c(0, 1200)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90), legend.position = "bottom") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave("plot_WandTEDuNu_byB.png", plot_WandTEDuNu_byB)
+```
+
+##### Relation between C & W, D, & N #####
+```{r}
+### Plot: Y = C, X = W / D / N
+plot_CandWDN <- TE_computation %>%
+  pivot_longer(c(TE, W, D, N, Du, Nu), names_to = "vocab_type", values_to = "number") %>%
+  filter(vocab_type %in% c("W", "D", "N")) %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("W", "D", "N"))) %>%
+  #mutate(bin_B = cut(B, breaks = 6, 
+  #                   labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
+  ggplot(aes(x = number, y = C)) +
+  facet_grid(. ~vocab_type) +
+  labs(x = "Words produced", y = "Number of concepts") +
+  geom_point(shape = 23) +
+  geom_smooth(method="lm", se=F) +
+  scale_y_continuous(limits = c(0, 600)) +
+  theme_minimal()
+
+ggsave("plot_CandWDN.png", plot_CandWDN)
+
+
+### Plot: Y = C, X = W / D / N, color by B
+plot_CandWDN_byB <- TE_computation %>%
+  pivot_longer(c(TE, W, D, N, Du, Nu), names_to = "vocab_type", values_to = "number") %>%
+  filter(vocab_type %in% c("W", "D", "N")) %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("W", "D", "N"))) %>%
+  mutate(bin_B = cut(B, breaks = 6, 
+                     labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
+  ggplot(aes(x = number, y = C, colour = bin_B)) +
+  facet_grid(. ~vocab_type) +
+  labs(x = "Words produced", y = "Number of concepts",
+       colour = "Bins of balance") +
+  geom_point(shape = 23) +
+  geom_smooth(method="lm", se=F) +
+  scale_x_continuous(limits = c(0, 1200)) +
+  scale_y_continuous(limits = c(0, 600)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90), legend.position = "bottom") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave("plot_CandWDN_byB.png", plot_CandWDN_byB)
+```
