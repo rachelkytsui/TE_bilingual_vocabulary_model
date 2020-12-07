@@ -1,0 +1,12 @@
+"0","```r
+
+
+vocab_simulations %>%
+filter(te == \"te_equal\") %>%
+  mutate(predict_te = learned_dom * learned_nondom / VOCAB_SIZE) %>%
+  ggplot(aes(x = learned_te, y = predict_te, color = prop_dom)) +
+    geom_point() +
+  geom_abline(intercept = 0, slope = 1) +
+  theme_minimal() 
+
+```"

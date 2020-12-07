@@ -1,0 +1,22 @@
+"0","```r
+
+# Plot to compare different vocabulary measures under different TE learning strategies, across experience
+
+plot_words <- vocab_simulations_long %>%
+  mutate(prop_dom = as.factor(prop_dom)) %>%
+  filter(word_type %in% c(\"learned_words\", \"learned_concepts\", \"learned_dom\", \"learned_nondom\", \"learned_te\")) %>%
+  ggplot(aes(x = experience, y = n_words, color = prop_dom)) +
+  geom_point() +
+  stat_smooth(method = lm, se = F) +
+  theme_minimal() + 
+  facet_grid(te ~ word_type) +
+  ggtitle(\"Word vocabulary size by dominance under different measures\") +
+  theme(axis.text.x = element_text(angle = 90))
+  
+ggsave(\"plot_plot_words.png\", plot_words)
+```"
+"1","Saving 7 x 7 in image
+"
+"0","```r
+plot_words
+```"

@@ -1,0 +1,64 @@
+"0","```r
+## Function that simulates vocab for one baby
+
+# prop_dom is proportion exposure to dominant language
+# learn_cutoff is the number of experiences (encounters) needed to learn a word
+# experience is the number of times a word could be encountered
+# te_cutoff is multiplier for threshold when a TE is lexicalized. te_cutoff = 1 means same experienc needed to learn TE as unique word. Higher values --> harder to learn TEs, i.e. te_cutoff = .5 implies half the experience is needed to learn the TE
+
+VOCAB_SIZE = 100 # Vocab size set here for all simulations.
+
+vocab_sim <- function(prop_dom, learn_cutoff = 30, experience = 50, te= 1) {
+ 
+  learn_cutoff_first = learn_cutoff # cutoff if first word learned
+  learn_cutoff_second = learn_cutoff*te # cutoff if second word learned
+
+  
+  prop_dom = prop_dom # proportion exposure to dominant language
+  prop_nondom = 1- prop_dom # proportion exposure to non-dominant language
+
+# Samples how often individual words will be encountered, proportional to exposure
+# sample() takes a sample of the specified size from the elements of x using either with or without replacement.
+
+#experience_dom <- prop_dom * sample(1:experience, experience, replace = TRUE)
+#experience_nondom <- prop_nondom * sample(1:experience, experience, replace = TRUE)
+  
+experience_dom <- prop_dom * sample(1:experience, VOCAB_SIZE, replace = TRUE)
+experience_nondom <- prop_nondom * sample(1:experience, VOCAB_SIZE, replace = TRUE)
+ 
+  
+# Based on above vectors, determine whether each concept is labeled uniquely, or has a TE
+vocab <- data.frame(prop_dom, experience_dom, experience_nondom) %>%
+  mutate(prop_dom = prop_dom) %>%
+  mutate(learn_cutoff = learn_cutoff) %>%
+  mutate(experience = experience) %>%
+  mutate(te = te) %>%
+  mutate(learned_dom = case_when(
+    experience_dom >= experience_nondom & experience_dom >= learn_cutoff_first ~ T,
+    experience_dom >= experience_nondom & experience_dom < learn_cutoff_first ~ F,
+    experience_dom < experience_nondom & experience_dom >= learn_cutoff_second ~ T,
+    experience_dom < experience_nondom & experience_dom < learn_cutoff_second ~ F
+    
+  )) %>%
+  mutate(learned_nondom = case_when(
+    experience_nondom >= experience_dom & experience_nondom >= learn_cutoff_first ~ T,
+    experience_nondom >= experience_dom & experience_nondom < learn_cutoff_first ~ F,
+    experience_nondom < experience_dom & experience_nondom >= learn_cutoff_second ~ T,
+    experience_nondom < experience_dom & experience_nondom < learn_cutoff_second ~ F
+  )) %>%
+#  mutate(learned_dom = if_else(experience_dom >= learn_cutoff, T, F)) %>%
+#  mutate(learned_nondom = if_else(experience_nondom >= learn_cutoff, T, F)) %>%
+  mutate(learned_unique_dom = if_else(learned_dom & !learned_nondom, T, F)) %>%
+  mutate(learned_unique_nondom = if_else(learned_nondom & !learned_dom, T, F)) %>%
+  mutate(learned_unique_all = as.logical(learned_unique_dom + learned_unique_nondom)) %>%
+  mutate(learned_te = if_else(learned_dom & learned_nondom, T, F)) %>%
+  mutate(learned_concepts = if_else(learned_dom | learned_nondom, T, F)) %>%
+  select(-experience_dom, -experience_nondom)
+           
+return(vocab)
+}
+
+# Check that the above function works
+
+vocab_sim(.5, 20, 100, 1.0) 
+```"

@@ -1,0 +1,6 @@
+"0","Correlation <- TE_computation %>%"
+"0","  select(-V) %>%"
+"0","  cor_matrix()"
+"2","select: dropped one variable (V)
+"
+"0","#write.table(Correlation, ""TEcomputation_correlations.tsv"", col.names=NA)"

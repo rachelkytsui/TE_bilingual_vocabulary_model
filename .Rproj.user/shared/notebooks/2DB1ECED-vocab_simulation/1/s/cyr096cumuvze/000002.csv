@@ -1,0 +1,62 @@
+"0","```r
+
+# This chunk creates the dataframes/vectors of the space of parameters for the simulation to model
+
+# Create vector with proportions from .1 to .5
+seq_prop <-seq(from = .5, to = 1, by = .1)
+props <- rep(seq_prop, 25) # 20 repetitions of the different proportion exposures
+
+# For now keep cutoff constant.  Can use this code in the future if necessary
+
+# seq_cutoff <-seq(from = 30, to = 50, by = 10)
+# cutoffs <- rep(seq_cutoff, length(props)/length(seq_cutoff))
+
+cutoffs <- rep(50, length(props))
+
+# Create vector with different levels of experience
+
+seq_experience <- seq(from = 50, to = 450, by = 100)
+experience <- rep(seq_experience, length(props)/length(seq_experience))
+
+# Create vector for different TE weights.  For now, just use .5, 1, 1.5
+
+seq_te <- c(.5, 1, 1.5)
+te <- rep(seq_te, length(props)/length(seq_te))
+
+# Check that the lengths for each vector are equal. These should all return \"TRUE\"
+
+length(cutoffs) == length(props)
+```"
+"1","[1] TRUE
+"
+"0","```r
+length(experience) == length(props)
+```"
+"1","[1] TRUE
+"
+"0","```r
+length(te) == length(props)
+```"
+"1","[1] TRUE
+"
+"0","```r
+# Get all combinations, then extract columns as lists.  Couldn't find more elegant solution
+combo1 <- crossing(props, cutoffs, experience, te) # Full factorial combination of each vector
+
+# Repeat each combo 20 times
+
+combo <- map_dfr(seq_len(20), ~combo1) 
+
+# Now need to extract each of the columns separately.  Could be coded more elegantly, but this works for now.
+
+props1 <- combo$props
+cutoffs1 <- combo$cutoffs
+experience1 <- combo$experience
+te1 <- combo$te
+
+# Check how many infants will be simulated
+
+length(props1)
+```"
+"1","[1] 1800
+"

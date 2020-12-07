@@ -1,0 +1,93 @@
+"0","#### Set 1: Calculate other variables based on V, W, and B ####"
+"0",""
+"0","## Creating variables: V, W, and B"
+"0","# Items on vocabulary measure (e.g. words on the CDI)"
+"0","V <- 600 # This is constant"
+"0",""
+"0","# Total word vocabulary of a child"
+"0","W <- seq(0, 2*V, by = 50) %>% # a sequence of 0 to 2V"
+"0","  rep(., 6) # generate 6 repetitinos of the sequence"
+"0",""
+"0","# Balance, i.e. proportion use of non-dominant language (B ≤ .50)"
+"0","B <- seq(0.5, 1, by = 0.1) %>% # a sequence of 0.5 to 1"
+"0","  rep(., 25) # generate 25 repetitions of the sequence"
+"0",""
+"0","## Creating the dataframe"
+"0","TE_fromVWB <- data.frame(V, W) %>%"
+"0","  arrange(W) %>%"
+"0","  mutate(B = B) %>%"
+"0","  # Create other variables"
+"0","  mutate(D = B*W, # Words produced in the dominant language"
+"0","         N = (1-B)*W, # Words produced in non-dominant language"
+"0","         TE = (D*N)/V, # If D and N are independent, Te = DN/V"
+"0","         C = W-TE, # Concept vocabulary (or total conceptual vocabulary size)"
+"0","         Du = D-TE, # Unique words in dominant language"
+"0","         Nu = N-TE) %>% # Unique words in non-dominant language"
+"0","  # In reality, it would be impossible to get negative numbers for any vocabulary variables, so filter out all cases with negative numbers"
+"0","  filter(Nu >= 0) %>%"
+"0","  # It is also not possible for D or N to exceed V, so filter out cases where D or N > V"
+"0","  filter_at(vars(D, N), all_vars(. <= 600))"
+"2","mutate: new variable 'B' (double) with 6 unique values and 0% NA
+"
+"2","mutate: new variable 'D' (double) with 99 unique values and 0% NA
+"
+"2","        new variable 'N' (double) with 105 unique values and 0% NA
+"
+"2","        new variable 'TE' (double) with 121 unique values and 0% NA
+"
+"2","        new variable 'C' (double) with 136 unique values and 0% NA
+"
+"2","        new variable 'Du' (double) with 124 unique values and 0% NA
+"
+"2","        new variable 'Nu' (double) with 99 unique values and 0% NA
+"
+"2","filter: removed 31 rows (21%), 119 rows remaining
+"
+"2","filter_at: removed 12 rows (10%), 107 rows remaining
+"
+"0","#### Set 2: Calculate other variables based on V, D, and N ####"
+"0",""
+"0","## Creating variables: D and N"
+"0","D <- seq(0, V, by = 50) %>% # Words produced in the dominant language"
+"0","  rep(., 13) # generate 13 repetitions of the sequence"
+"0",""
+"0","N <- seq(0, V, by =50) %>% # Words produced in non-dominant language"
+"0","  rep(., 13) # generate 13 repetitions of the sequence"
+"0",""
+"0","## Creating the dataframe"
+"0","TE_fromVDN <- data.frame(V, D) %>%"
+"0","  arrange(D) %>%"
+"0","  mutate(N = N) %>%"
+"0","  # It is not possible for N > D, so keep only cases where D >= N"
+"0","  filter(D >= N) %>%"
+"0","  # Create other variables"
+"0","  mutate(W = D+N, # Total word vocabulary of a child"
+"0","         B = D/(D+N), # Balance, i.e. proportion use of non-dominant language (B ≤ .50)"
+"0","         TE = (D*N)/V, # If D and N are independent, Te = DN/V"
+"0","         C = W-TE, # Concept vocabulary (or total conceptual vocabulary size)"
+"0","         Du = D-TE, # Unique words in dominant language"
+"0","         Nu = N-TE) %>%"
+"0","  # Remove cases where B = NA"
+"0","  filter(!is.na(B))"
+"2","mutate: new variable 'N' (double) with 13 unique values and 0% NA
+"
+"2","filter: removed 78 rows (46%), 91 rows remaining
+"
+"2","mutate: new variable 'W' (double) with 25 unique values and 0% NA
+"
+"2","        new variable 'B' (double) with 48 unique values and 1% NA
+"
+"2","        new variable 'TE' (double) with 60 unique values and 0% NA
+"
+"2","        new variable 'C' (double) with 63 unique values and 0% NA
+"
+"2","        new variable 'Du' (double) with 56 unique values and 0% NA
+"
+"2","        new variable 'Nu' (double) with 43 unique values and 0% NA
+"
+"2","filter: removed one row (1%), 90 rows remaining
+"
+"0","#### Combine the 2 sets ####"
+"0","TE_computation <- TE_fromVWB %>%"
+"0","  bind_rows(TE_fromVDN)"
+"0",""

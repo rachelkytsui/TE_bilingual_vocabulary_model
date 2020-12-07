@@ -1,0 +1,25 @@
+"0","```r
+# Run simulation. This step might take a while
+
+vocab_simulations_full <- 
+  pmap(list(props1, cutoffs1, experience1, te1), vocab_sim_summary) %>%
+  bind_rows() 
+
+# Cleanup and recode some of the columns for easier visualization/interpretation
+
+vocab_simulations <- vocab_simulations_full%>%
+  mutate(te = as.factor(as.character(te))) %>%
+  mutate(te = recode(te, \"0.5\" = \"te_easier\" , \"1\" = \"te_equal\", \"1.5\" = \"te_harder\")) %>%
+  mutate(learn_cutoff = as.factor(as.character(learn_cutoff))) %>%
+  mutate(learn_cutoff = recode(learn_cutoff, \"30\" = \"words_easy\", \"40\" = \"words_medium\", \"50\" = \"words_hard\")) %>%
+  mutate(learned_words = learned_dom + learned_nondom) %>%
+  mutate(prop_dom = as.factor(as.character(prop_dom)))
+           
+# Pivot the data into long format
+
+vocab_simulations_long <- vocab_simulations %>%
+  pivot_longer(cols = starts_with(\"learned\"), names_to = \"word_type\", values_to = \"n_words\") 
+
+
+
+```"

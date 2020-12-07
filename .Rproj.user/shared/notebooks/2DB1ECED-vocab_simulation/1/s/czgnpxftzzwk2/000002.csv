@@ -1,0 +1,58 @@
+"0","```r
+
+# Calculating correlations between different vocabulary measures
+
+all_correl <- vocab_simulations %>%
+  ungroup() %>%
+    mutate(prop_dom = as.numeric(as.character(prop_dom))) %>%
+  filter(prop_dom <= .75) %>%
+  mutate(experience = as.numeric(as.character(experience))) %>%
+  mutate(learned_propte = learned_te/learned_words) %>%
+  relocate(learned_te, learned_propte, learned_dom, learned_nondom, learned_words, learned_concepts) %>%
+  group_by(te) %>%
+  select(starts_with(\"learned\")| starts_with(\"prop\")|starts_with(\"experience\")) %>%
+  group_map(~correlate(.x))
+```"
+"1","Adding missing grouping variables: `te`
+
+Correlation method: 'pearson'
+Missing treated using: 'pairwise.complete.obs'
+
+
+Correlation method: 'pearson'
+Missing treated using: 'pairwise.complete.obs'
+
+
+Correlation method: 'pearson'
+Missing treated using: 'pairwise.complete.obs'
+"
+"0","```r
+te_neutral <- all_correl[[2]] %>%
+  mutate(across(is.numeric, round, 2))
+```"
+"1","Problem with `mutate()` input `..1`.
+ℹ Predicate functions must be wrapped in `where()`.
+
+  # Bad
+  data %>% select(is.numeric)
+
+  # Good
+  data %>% select(where(is.numeric))
+
+ℹ Please update your code.
+This message is displayed once per session.
+ℹ Input `..1` is `across(is.numeric, round, 2)`.Predicate functions must be wrapped in `where()`.
+
+  # Bad
+  data %>% select(is.numeric)
+
+  # Good
+  data %>% select(where(is.numeric))
+
+ℹ Please update your code.
+This message is displayed once per session.
+"
+"0","```r
+# write_tsv(te_neutral, \"correlations.tsv\")
+
+```"

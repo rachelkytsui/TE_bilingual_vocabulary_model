@@ -1,0 +1,30 @@
+"0","```r
+# Plot of simulations
+
+plot_composition <- vocab_simulations_long %>%
+ # filter(te == \"te_equal\") %>%
+ # filter(experience == 350) %>% # Fix a level of experience
+  filter(word_type %in% c(\"learned_te\", \"learned_unique_dom\", \"learned_unique_nondom\")) %>%
+  mutate(word_type = fct_relevel(word_type, \"learned_unique_nondom\", \"learned_unique_dom\", \"learned_te\")) %>%
+ # group_by(learn_cutoff) %>%
+  group_by(prop_dom, word_type, learn_cutoff, experience, te) %>%
+  summarize(n_words = mean(n_words)) %>%
+ # mutate(word_type = fct_rev(word_type)) %>%
+  ggplot(aes(x = prop_dom, y = n_words, fill = word_type)) +
+   geom_bar(position = \"stack\", stat = \"identity\", reverse = TRUE) +
+  facet_grid(te ~ experience) +
+  theme_minimal() +
+    ggtitle(\"Vocabulary composition across different TE scenarios, with different proportions of dominant language exposure\") +
+     theme(axis.text.x = element_text(angle = 90), legend.position = \"bottom\")
+```"
+"1","`summarise()` regrouping output by 'prop_dom', 'word_type', 'learn_cutoff', 'experience' (override with `.groups` argument)
+Ignoring unknown parameters: reverse
+"
+"0","```r
+ggsave(\"plot_composition.png\", plot_composition)
+```"
+"1","Saving 7 x 7 in image
+"
+"0","```r
+plot_composition
+```"

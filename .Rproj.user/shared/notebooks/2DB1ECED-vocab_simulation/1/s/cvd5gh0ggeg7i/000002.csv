@@ -1,0 +1,15 @@
+"0","```r
+
+# non-dominant vocab predicts TEs, but stronger prediction for less balanced infants
+
+vocab_simulations %>%
+  filter(te == \"te_equal\") %>%
+  mutate(experience = as.factor(as.character(experience))) %>%
+  ggplot(aes(x = learned_nondom, y = learned_te, color = prop_dom)) +
+ # facet_grid(. ~ experience) +
+  geom_point() +
+  theme_minimal() +
+ # stat_smooth(method = \"lm\") +
+    ggtitle(\"Predicting TEs from non-dominant vocabulary\") 
+
+```"

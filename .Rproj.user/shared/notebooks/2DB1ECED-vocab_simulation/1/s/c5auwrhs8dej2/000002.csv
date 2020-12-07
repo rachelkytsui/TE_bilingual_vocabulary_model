@@ -1,0 +1,17 @@
+"0","```r
+## Function that summarizes vocab
+
+vocab_sim_summary <- function(prop_dom, learn_cutoff=15, experience=100, te = 1) {
+  
+  vocab <- vocab_sim(prop_dom, learn_cutoff, experience, te) %>%
+    group_by(prop_dom, learn_cutoff, experience, te) %>%
+  summarize_all(sum)
+  
+  return(vocab)
+  
+}
+
+## Check that the above function words
+
+vocab_sim_summary(.5, 20, 100)
+```"
