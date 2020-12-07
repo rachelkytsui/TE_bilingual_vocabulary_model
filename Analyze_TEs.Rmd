@@ -120,15 +120,6 @@ keepers_ws_TE = keepers_ws_TE %>%
   # keep only necessary variables
   select(-c(vocab_type_dom, vocab_cross_lang, n_administrations)) %>% #n_administrations
   spread(vocab_type, vocab_score) %>%
-  
-  ######
-  rename(baby_id = Baby_ID, age_months_binned = age.months,
-         word_vocab = Totalvocabulary,
-         total_words_eng = TotalNW_Eng, total_words_fre = TotalNW_Fr,
-         eng_unique_words = Eng_unique_words, fre_unique_words = Fr_unique_words,
-         number_of_te = TotalnumberTEs,
-         lang_exp_eng = LangExpEng, lang_exp_fre = LangExpFr, lang_exp_other = LangExpOther) %>%
-  
   # calculate age in months (with decimal)
   mutate(age_month_decimal = age_days/30) %>%
   # create balance groups (by exposure)
@@ -198,7 +189,6 @@ N_duplicatedBabyID <- keepers_ws_TE %>%
 
 # Create dataframe of demographics
 d_participants <- keepers_ws_TE %>%
-  filter(vocab_type == "word_vocab") %>%
   select(baby_id, age_days, gender, 
          lang_exp_eng, lang_exp_fre, lang_exp_other, years_education) %>%
   mutate(Female = ifelse(gender == "F", 1, 0)) %>%
@@ -214,7 +204,7 @@ d_participants <- keepers_ws_TE %>%
 ## Gender 
 ```{r}
 keepers_ws_TE %>%
-  group_by(Gender) %>% 
+  group_by(gender) %>% 
   distinct(baby_id, .keep.all=T) %>%
   count()
 ```
@@ -244,7 +234,7 @@ keepers_ws_TE %>%
   summarize(sd = sd(age_days, na.rm=T))
 
 do.call(cbind, lapply(keepers_ws_TE %>%
-                        distinct(baby_ID, .keep_all = T) %>% 
+                        distinct(baby_id, .keep_all = T) %>% 
                         select(age_days,age_continuous),
                       summary))
 
@@ -253,7 +243,7 @@ do.call(cbind, lapply(keepers_ws_TE %>%
 ## average # of TEs
 ```{r}
 keepers_ws_TE %>%
-  filter(bothCDI_filled=="Y") %>%
+  filter(both_cdi_filled=="Y") %>%
   summarise(mean = mean(propTE, na.rm=T), 
             min= min(propTE, na.rm=T),
             max= max(propTE, na.rm=T))
@@ -347,7 +337,7 @@ keepers_ws_TE_simulation <- keepers_ws_TE %>%
 ```{r}
 
 ### Model 1: Predicted_TotalnumberTEs_percentile
-Prediction_model <- keepers_ws_TE_simulation %>%
+Percentile_model <- keepers_ws_TE_simulation %>%
   lm(number_of_te*(Total_90percentile/2) ~ 0 + TotalNW_Dom:TotalNW_NonDom, 
      data = .)
 
@@ -395,7 +385,7 @@ TEprediction_percentile <- keepers_ws_TE_simulation %>%
   xlim(-10,430) +
   ylim(-10,430)
 
-ggsave(here("TEprediction_percentile.png"), TEprediction_percentile)
+ggsave(here("Output/TEprediction_percentile.png"), TEprediction_percentile)
 
 # Kolmogorov-Smirnov test to compare the observed and predicted TE
 stats::ks.test(keepers_ws_TE_simulation$number_of_te,
@@ -438,7 +428,7 @@ TEprediction_percentile_CDI <- keepers_ws_TE_simulation %>%
   theme(axis.text.x = element_text(angle = 90), legend.position = "bottom") +
   guides(colour = guide_legend(nrow = 1))
 
-ggsave(here("TEprediction_percentile&CDI.png"), TEprediction_percentile_CDI)
+ggsave(here("Output/TEprediction_percentile&CDI.png"), TEprediction_percentile_CDI)
 
 #Less Than 100 observed TEs
 TEprediction_percentile_CDI_LessThan100 <- keepers_ws_TE_simulation %>%
@@ -464,7 +454,7 @@ TEprediction_percentile_CDI_LessThan100 <- keepers_ws_TE_simulation %>%
         legend.position = "bottom", legend.text=element_text(size = 10)) +
   guides(colour = guide_legend(nrow = 2))
 
-ggsave(here("TEprediction_percentile&CDI_LessThan100.png"), TEprediction_percentile_CDI_LessThan100)
+ggsave(here("Output/TEprediction_percentile&CDI_LessThan100.png"), TEprediction_percentile_CDI_LessThan100)
 
 #Less Than 50 observed TEs
 TEprediction_percentile_CDI_LessThan50 <- keepers_ws_TE_simulation %>%
@@ -490,7 +480,7 @@ TEprediction_percentile_CDI_LessThan50 <- keepers_ws_TE_simulation %>%
         legend.position = "bottom", legend.box="vertical", legend.text=element_text(size = 10)) +
   guides(colour = guide_legend(nrow = 2))
 
-ggsave(here("TEprediction_percentile&CDI_LessThan50.png"), TEprediction_percentile_CDI_LessThan50)
+ggsave(here("Output/TEprediction_percentile&CDI_LessThan50.png"), TEprediction_percentile_CDI_LessThan50)
 
 
 # More than 100 Observed TEs
@@ -516,7 +506,7 @@ TEprediction_percentile_CDI_MoreThan100 <- keepers_ws_TE_simulation %>%
         legend.position = "bottom", legend.text=element_text(size=10)) +
   guides(colour = guide_legend(nrow = 2))
 
-ggsave(here("TEprediction_percentile&CDI_MoreThan100.png"), TEprediction_percentile_CDI_MoreThan100)
+ggsave(here("Output/TEprediction_percentile&CDI_MoreThan100.png"), TEprediction_percentile_CDI_MoreThan100)
 
 
 ###Prediction 2: Predicted raw TE = TotalNW_NonDom
