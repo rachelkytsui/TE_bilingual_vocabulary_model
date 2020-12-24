@@ -24,23 +24,28 @@ library(FRACTION) # this allows us to use the is.wholenumber function
 # Generating dataframe for computational model
 ```{r}
 #### Set 1: Calculate other variables based on V, W, and B ####
-
 ## Creating variables: V, W, and B
 # Items on vocabulary measure (e.g. words on the CDI)
-V <- 600 # This is constant
-
+V <- 600
+  
 # Total word vocabulary of a child
-W <- seq(0, 2*V, by = 25) %>% # a sequence of 0 to 2V
-  rep(., 21) # generate 21 repetitinos of the sequence
+W <- seq(0, 2*V, by = 25) 
 
 # Balance, i.e. proportion use of non-dominant language (B ≤ .50)
-B <- seq(0.5, 1, by = 0.025) %>% # a sequence of 0.5 to 1
-  rep(., 49) # generate 25 repetitions of the sequence
+B <- seq(0.5, 1, by = 0.025) 
+
+# Generating sequence of W and B
+W_seq <- W %>% # a sequence of 0 to 2V
+  rep(., length(B)) # generate N repetitions of the sequence based on length of B
+
+B_seq <- B %>%  # a sequence of 0.5 to 1
+  rep(., length(W)) # generate N repetitions of the sequence based on length of W
 
 ## Creating the dataframe
-TE_fromVWB <- data.frame(V, W) %>%
-  arrange(W) %>%
-  mutate(B = B) %>%
+TE_fromVWB <- data.frame(V, W_seq) %>%
+  arrange(W_seq) %>%
+  rename(W = W_seq) %>%
+  mutate(B = B_seq) %>%
   # Create other variables
   mutate(D = B*W, # Words produced in the dominant language
          N = (1-B)*W, # Words produced in non-dominant language
@@ -57,18 +62,23 @@ TE_fromVWB <- data.frame(V, W) %>%
 
 
 #### Set 2: Calculate other variables based on V, D, and N ####
-
 ## Creating variables: D and N
-D <- seq(0, V, by = 25) %>% # Words produced in the dominant language
-  rep(., 25) # generate 13 repetitions of the sequence
+D <- seq(0, V, by = 25) 
 
-N <- seq(0, V, by = 25) %>% # Words produced in non-dominant language
-  rep(., 25) # generate 25 repetitions of the sequence
+N <- seq(0, V, by = 25)
+
+# Generating sequence of D and N
+D_seq <- D %>% # Words produced in the dominant language
+  rep(., length(N)) # generate N repetitions of the sequence based on length of N
+
+N_seq <- N %>% # Words produced in non-dominant language
+  rep(., length(D)) # generate N repetitions of the sequence based on length of D
 
 ## Creating the dataframe
-TE_fromVDN <- data.frame(V, D) %>%
-  arrange(D) %>%
-  mutate(N = N) %>%
+TE_fromVDN <- data.frame(V, D_seq) %>%
+  arrange(D_seq) %>%
+  rename(D = D_seq) %>%
+  mutate(N = N_seq) %>%
   # It is not possible for N > D, so keep only cases where D >= N
   filter(D >= N) %>%
   # Create other variables
@@ -83,18 +93,18 @@ TE_fromVDN <- data.frame(V, D) %>%
 
 
 #### Set 3: Calculate other variables based on V, D, and B ####
-
 ## Creating variables: D and N
-D <- seq(0, V, by = 25) %>% # Words produced in the dominant language
-  rep(., 21) # generate 13 repetitions of the sequence
+D_seq <- D %>% # Words produced in the dominant language
+  rep(., length(B)) # generate N repetitions of the sequence based on length of B
 
-B <- seq(0.5, 1, by = 0.025) %>% # a sequence of 0.5 to 1
-  rep(., 25) # generate 25 repetitions of the sequence
+B_seq <- B %>% # balance
+  rep(., length(D))  # generate N repetitions of the sequence based on length of D
 
 ## Creating the dataframe
-TE_fromVDB <- data.frame(V, D) %>%
-  arrange(D) %>%
-  mutate(B = B) %>%
+TE_fromVDB <- data.frame(V, D_seq) %>%
+  arrange(D_seq) %>%
+  rename(D = D_seq) %>%
+  mutate(B = B_seq) %>%
   # Create other variables
   mutate(W = D/B, # Total word vocabulary of a child
          N = W-D, # Words produced in non-dominant language
@@ -109,19 +119,20 @@ TE_fromVDB <- data.frame(V, D) %>%
   # filter out cases where N isn't whole number
   filter(is.wholenumber(N))
 
+
 #### Set 4: Calculate other variables based on V, N, and B ####
-
 ## Creating variables: D and N
-N <- seq(0, V, by = 25) %>% # Words produced in the dominant language
-  rep(., 21) # generate 13 repetitions of the sequence
+N_seq <- N %>% # Words produced in the dominant language
+  rep(., length(B)) # generate N repetitions of the sequence based on length of B
 
-B <- seq(0.5, 1, by = 0.025) %>% # a sequence of 0.5 to 1
-  rep(., 25) # generate 25 repetitions of the sequence
+B_seq <- B %>% # a sequence of 0.5 to 1
+  rep(., length(N)) # generate N repetitions of the sequence based on length of N
 
 ## Creating the dataframe
-TE_fromVNB <- data.frame(V, N) %>%
-  arrange(N) %>%
-  mutate(B = B) %>%
+TE_fromVNB <- data.frame(V, N_seq) %>%
+  arrange(N_seq) %>%
+  rename(N = N_seq) %>%
+  mutate(B = B_seq) %>%
   # Create other variables
   mutate(W = D/(1-B), # Total word vocabulary of a child
          D = W-N, # Words produced in dominant language
@@ -137,7 +148,8 @@ TE_fromVNB <- data.frame(V, N) %>%
   filter_at(vars(D, N), all_vars(. <= 600)) %>%
   # filter out cases where D isn't whole number
   filter(is.wholenumber(D)) %>%
-  filter_at(vars(TE, C, Du, Nu), any_vars(is.wholenumber(.))) 
+  filter_at(vars(TE, C, Du, Nu), any_vars(is.wholenumber(.))) %>%
+  filter(is.wholenumber(Nu)) 
 
 
 #### Combine the 4 sets ####
