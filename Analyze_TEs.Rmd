@@ -26,7 +26,7 @@ library(here)
 library(tidyverse)
 library(tidylog)
 library(wordbankr)
-
+library("ggpubr")
 
 library(lme4)
 library(lmerTest)
@@ -149,7 +149,8 @@ keepers_ws_TE = keepers_ws_TE %>%
   mutate(TotalUnique = Dom_unique_words + NonDom_unique_words) %>%
   
   #Defining vocabulary-based balance score
-  mutate(balance_vocab = TotalNW_NonDom/TotalNW_Dom) %>%
+  #mutate(balance_vocab = TotalNW_NonDom/TotalNW_Dom) %>%
+  mutate(balance_vocab = TotalNW_Dom/(TotalNW_Dom+TotalNW_NonDom)) %>%
   #Defining proportion of TE (with reference to child's own total vocab size)
   mutate(propTE = number_of_te*2/word_vocab) %>% 
   #Defining proportion of TE (with reference to CDI)
@@ -189,16 +190,18 @@ N_duplicatedBabyID <- keepers_ws_TE %>%
 
 # Create dataframe of demographics
 d_participants <- keepers_ws_TE %>%
-  select(baby_id, age_days, gender, 
+  select(baby_id, age_continuous, gender, 
          lang_exp_eng, lang_exp_fre, lang_exp_other, years_education) %>%
   mutate(Female = ifelse(gender == "F", 1, 0)) %>%
   summarise(n = n(),
-            age.days = mean(age_days, na.rm = TRUE),
+            age_Month = mean(age_continuous, na.rm = TRUE),
             lang_exp_eng = mean(lang_exp_eng, na.rm = TRUE),
             lang_exp_fre = mean(lang_exp_fre, na.rm = TRUE), 
             lang_exp_other = mean(lang_exp_other, na.rm = TRUE),
             years_education = mean(years_education, na.rm = TRUE),
-            number_female = sum(Female))
+            number_female = sum(Female)) %>%
+  mutate(PercentageFemale = number_female/n)
+  
 ```
 
 ## Gender 
@@ -309,6 +312,184 @@ MoreThanPercentile <- keepers_ws_TE %>%
            word_vocab > Total_90percentile)
 ```
 
+# Correlation
+```{r}
+Correlation <- keepers_ws_TE %>%
+  select(age_continuous, balance_vocab, word_vocab, TotalNW_Dom, TotalNW_NonDom,
+         number_of_te, Dom_unique_words, NonDom_unique_words, concept_vocab) %>%
+  rename(Age_month = age_continuous,
+         B = balance_vocab, 
+         W = word_vocab,
+         D = TotalNW_Dom, 
+         N = TotalNW_NonDom, 
+         TE = number_of_te, 
+         Du = Dom_unique_words, 
+         Nu = NonDom_unique_words, 
+         C = concept_vocab)
+
+mycor <- rcorr(as.matrix(Correlation), type="pearson")
+mycor$r
+mycor$P
+
+library(corrplot)
+mycor <- cor(Correlation) 
+corrplot(mycor)
+write.csv(mycor, "ObservedTE_correlations.csv", col.names=NA)
+```
+
+###### Stacked barchat: Y=Total vocab, X= individual baby (stacked: TE, unique dom, unique nondom) ######
+```{r}
+
+##Creating dataset for stacked barchart
+
+stacked <- keepers_ws_TE %>%
+  select(baby_id, balance_vocab, word_vocab, number_of_te, Dom_unique_words, NonDom_unique_words) %>%
+  arrange(desc(number_of_te)) %>%
+  mutate(TE = number_of_te) %>%
+  pivot_longer(-c(baby_id, balance_vocab, word_vocab, TE), 
+               names_to = "Type", values_to = "NumberOfWords") %>%
+  mutate(Type = factor(Type, levels=c("NonDom_unique_words", "Dom_unique_words", "number_of_te")))
+
+
+##Stacked barchart (sort by total number of words)
+
+stacked %>%
+  ggplot(aes(x = reorder(baby_id, -NumberOfWords, sum), y = NumberOfWords)) +
+  geom_col(aes(fill = Type)) +
+    labs(x = "Individual infant", 
+       y = "Number of words produced") + 
+  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c"))
+  
+##Stacked barchart (sort by total number of TEs)
+
+stacked %>%
+  ggplot(aes(x = reorder(baby_id, -TE, sum), y = NumberOfWords)) +
+  geom_col(aes(fill = Type)) +
+    labs(x = "Individual infant", 
+       y = "Number of words produced") + 
+  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c"))
+
+#stacked %>%
+#  mutate(bin_balance = cut_width(balance_vocab, 0.333333333333333, boundary = 0)) %>%
+#  ggplot(aes(x = reorder(Baby_ID, -NumberOfWords, sum), y = NumberOfWords)) +
+#  geom_col(aes(fill = Type)) +
+#  facet_grid(. ~ bin_balance, labeller=labeller(bin_balance = balance_facet)) + 
+#  labs(x = "Individual infant", 
+#       y = "Number of words produced") + 
+#  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c"))
+
+Bal_StackedPlot <- stacked %>%
+  mutate(bin_B = cut(balance_vocab, breaks = 2, 
+                     labels = c("More balanced", "Less balanced"))) %>%
+  ggplot(aes(x = reorder(baby_id, -NumberOfWords, sum), y = NumberOfWords)) +
+  geom_col(aes(fill = Type)) +
+  facet_grid(. ~ bin_B) +
+  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) +
+  scale_y_continuous(limits = c(0, 1050)) +
+  labs(x = "Individual infant", 
+       y = "Number of concepts produced",
+       title = "Least balanced: 0 - .333") + 
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+ggsave("Output/StackedPlot_byBalance.png", Bal_StackedPlot,
+       width = 10, height = 5)
+
+```
+
+```{r}
+stacked <- keepers_ws_TE %>%
+  select(baby_id, balance_vocab, word_vocab, number_of_te, Dom_unique_words, NonDom_unique_words) %>%
+  arrange(desc(number_of_te)) %>%
+  mutate(TE = number_of_te) %>%
+  pivot_longer(-c(baby_id, balance_vocab, word_vocab, TE), 
+               names_to = "Type", values_to = "NumberOfWords") %>%
+  mutate(Type = factor(Type, levels=c("NonDom_unique_words", "Dom_unique_words", "number_of_te"))) %>%
+  #Subset balance_vocab by 3 levels 
+  mutate(BalSubset = cut(balance_vocab, breaks = 3, 
+                         labels=c("HighBalance", "MidRangeBalance", "LeastBalance")))
+
+
+LeastBal_plot <- stacked %>%
+  filter(BalSubset == "LeastBalance") %>%
+  ggplot(aes(x = reorder(baby_id, -NumberOfWords, sum), y = NumberOfWords)) +
+  geom_col(aes(fill = Type)) +
+  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) +
+  scale_y_continuous(limits = c(0, 1050)) +
+  labs(x = "Individual infant", 
+       y = "Number of concepts produced",
+       title = "Least balanced") + 
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+MidRangeBal_plot <- stacked %>%
+  filter(BalSubset == "MidRangeBalance") %>%
+  ggplot(aes(x = reorder(baby_id, -NumberOfWords, sum), y = NumberOfWords)) +
+  geom_col(aes(fill = Type)) +
+  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) +
+  scale_y_continuous(limits = c(0, 1050)) +
+  labs(x = "Individual infant", 
+       y = "Number of concepts produced",
+       title = " ") + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+HighBal_plot <- stacked %>%
+  filter(BalSubset == "HighBalance") %>%
+  ggplot(aes(x = reorder(baby_id, -NumberOfWords, sum), y = NumberOfWords)) +
+  geom_col(aes(fill = Type)) +
+  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) +
+  scale_y_continuous(limits = c(0, 1050)) +
+  labs(x = "Individual infant", 
+       y = "Number of concepts produced",
+       title = "High balance") + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+Bal_StackedPlot <- ggarrange(LeastBal_plot, 
+          MidRangeBal_plot + rremove("ylab"), 
+          HighBal_plot + rremove("ylab"),
+          ncol = 3, nrow = 1,
+          common.legend = TRUE, legend="bottom")
+
+ggsave("Output/StackedPlot_byBalance.png", Bal_StackedPlot,
+       width = 10, height = 5)
+
+```
+
+
+
+
+## Linear regression: TE ~ B + D + N
+```{r}
+TE_input_lm <- lmer(number_of_te ~ 0 + balance_vocab + TotalNW_Dom + TotalNW_NonDom,
+                  data = keepers_ws_TE)
+
+summary(TE_input_lm)
+```
+
+## Linear regression: TE ~ Du * Nu
+```{r}
+TE_output_lm <- lm(number_of_te ~ 0 + Dom_unique_words * NonDom_unique_words,
+                  data = keepers_ws_TE)
+
+summary(TE_output_lm)
+
+### plot the Du*Nu interaction
+#effect_plot(TE_InputConstant, pred = B, plot.points = TRUE)
+interaction_DuNu <- effect(term = "Dom_unique_words:NonDom_unique_words", mod = TE_output_lm) %>%
+  data.frame()
+
+plot_interactionDuNu <- ggplot(interaction_DuNu, 
+                               aes(x = Dom_unique_words, y = fit, group = NonDom_unique_words)) +
+  geom_line(aes(color = NonDom_unique_words)) +
+  labs(x = 'Unique dominant words',
+       y = 'Number of TEs',
+       color = 'Unique non-dominant words')
+  
+  ylim(-25, 600) +
+  labs(x = 'Balance', y = 'Number of TEs') +
+  theme_minimal()
+
+```
+
+
 ## Create predicted TEs for simulation
 ```{r}
 keepers_ws_TE_simulation <- keepers_ws_TE %>%
@@ -375,15 +556,15 @@ stats::ks.test(keepers_ws_TE_simulation$number_of_te,
 
 TEprediction_percentile <- keepers_ws_TE_simulation %>%
   ggplot(aes(x = Predicted_TotalnumberTEs_percentile, y = number_of_te)) +
-  facet_grid(. ~TEgroup) +
-  labs(x = "Predicted total number of TEs (based on percentile)", y = "Observed total number of TEs",
-       title = "Observed vs. Predicted total number of TEs") +
+#  facet_grid(. ~TEgroup) +
+  labs(x = "Simulated total number of TEs (based on percentile)", y = "Observed total number of TEs") +
   theme(plot.title = element_text(hjust = 0.5)) +
   geom_smooth(method = "lm", se = F) +
   geom_point(shape = 23) +
   geom_abline(linetype = 2, alpha = 0.5) +
   xlim(-10,430) +
-  ylim(-10,430)
+  ylim(-10,430) +
+  theme_minimal()
 
 ggsave(here("Output/TEprediction_percentile.png"), TEprediction_percentile)
 
@@ -414,7 +595,7 @@ TEprediction_percentile_CDI <- keepers_ws_TE_simulation %>%
   pivot_longer(-c(baby_id, number_of_te, TEgroup), 
                names_to = "Predicted_TotalnumberTEs", values_to = "PredictedNumber") %>%
   ggplot(aes(x = PredictedNumber, y = number_of_te, color = Predicted_TotalnumberTEs)) +
-  facet_grid(. ~TEgroup) +
+#  facet_grid(. ~TEgroup) +
   labs(x = "Predicted total number of TEs", 
        y = "Observed total number of TEs",
        title = 
