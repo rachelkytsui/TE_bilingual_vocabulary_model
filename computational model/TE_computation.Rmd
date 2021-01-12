@@ -508,6 +508,44 @@ plot_composition_byW <- TE_computation %>%
   labs(x = "Balance", 
        y = "Number of concepts", 
        title = "Vocabulary composition across different vocabulary size") 
+
+plot_composition_byV <- TE_computation %>%
+  pivot_longer(c(D, N, TE, C, Du, Nu), names_to = "vocab_type", values_to = "number") %>%
+  filter(vocab_type %notin% c("D", "N", "C")) %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("Nu", "Du", "TE"))) %>%
+  mutate(bin_B = cut(B, breaks = 6, 
+                     labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
+  group_by(V, bin_B, vocab_type) %>%
+  summarise(n_words = mean(number)) %>%
+  ggplot(aes(x = bin_B, y = n_words, fill = vocab_type)) + 
+  geom_bar(position="stack", stat="identity") +
+  facet_grid(. ~ V) +
+  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) + 
+  #scale_y_continuous(limits = c(0, 1200)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90), legend.position = "bottom") + 
+  labs(x = "Balance", 
+       y = "Number of concepts", 
+       title = "Vocabulary composition across different developmental timepoints (V)") 
+
+ggsave("plot_composition_byV.png", plot_composition_byV,
+        width = 10, height = 5)
+
+plot_composition_byV <- TE_computation %>%
+  pivot_longer(c(D, N, TE, C, Du, Nu), names_to = "vocab_type", values_to = "number") %>%
+  filter(vocab_type %notin% c("D", "N", "C")) %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("Nu", "Du", "TE"))) %>%
+  mutate(bin_B = cut(B, breaks = 6, 
+                     labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
+  group_by(bin_B, vocab_type, V) %>%
+  summarize(n_words = mean(number)) %>%
+  ggplot(aes(x = bin_B, y = n_words, fill = vocab_type)) +
+  geom_bar(position = "stack", stat = "identity", reverse = TRUE) +
+  facet_grid(. ~ V) +
+  theme_minimal() +
+  ggtitle("Vocabulary composition across different developmental timepoints") +
+  theme(axis.text.x = element_text(angle = 90), legend.position = "bottom")
+
 ```
 
 ## Compare different vocabulary measures across balance
