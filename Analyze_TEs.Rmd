@@ -327,14 +327,22 @@ Correlation <- keepers_ws_TE %>%
          Nu = NonDom_unique_words, 
          C = concept_vocab)
 
+
+library(Hmisc)
 mycor <- rcorr(as.matrix(Correlation), type="pearson")
 mycor$r
 mycor$P
 
 library(corrplot)
-mycor <- cor(Correlation) 
+mycor <- round(cor(Correlation), 2)
 corrplot(mycor)
 write.csv(mycor, "ObservedTE_correlations.csv", col.names=NA)
+
+cor.test(Correlation$TE, Correlation$B, method = "pearson")
+cor.test(Correlation$TE, Correlation$W, method = "pearson")
+cor.test(Correlation$TE, Correlation$D, method = "pearson")
+cor.test(Correlation$TE, Correlation$N, method = "pearson")
+
 ```
 
 ###### Stacked barchat: Y=Total vocab, X= individual baby (stacked: TE, unique dom, unique nondom) ######
@@ -688,6 +696,12 @@ TEprediction_percentile_CDI_MoreThan100 <- keepers_ws_TE_simulation %>%
   guides(colour = guide_legend(nrow = 2))
 
 ggsave(here("Output/TEprediction_percentile&CDI_MoreThan100.png"), TEprediction_percentile_CDI_MoreThan100)
+
+
+##### Facet by W (< 100 vs. > 100)
+
+
+
 
 
 ###Prediction 2: Predicted raw TE = TotalNW_NonDom
