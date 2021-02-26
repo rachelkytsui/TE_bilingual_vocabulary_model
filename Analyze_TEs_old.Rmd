@@ -169,39 +169,6 @@ keepers_ws_TE %>%
 
 ```
 
-```{r}
-real_plot_inputs_TE <- keepers_ws_TE %>% 
-  select(baby_id, ID_testdate, age_days, number_of_te, word_vocab, TotalNW_Dom, TotalNW_NonDom, balance_vocab) %>%
-  pivot_longer(c(word_vocab, TotalNW_Dom, TotalNW_NonDom), names_to = "vocab_type", values_to = "number") %>%
-  mutate(vocab_type = factor(vocab_type, levels=c("word_vocab", "TotalNW_Dom", "TotalNW_NonDom"))) %>%
-  mutate(vocab_type = recode(vocab_type, 
-                             word_vocab = "Panel A: Total vocabulary", 
-                             TotalNW_Dom = "Panel B: Dominant vocabulary", 
-                             TotalNW_NonDom = "Panel C: Non-dominant vocabulary")) %>%
-  mutate(bin_B = cut(balance_vocab, breaks = 5, 
-                     labels = c("0.5", "0.6", "0.7", "0.8", "0.9"))) %>%
-  ggplot(aes(x = number, y = number_of_te, color = bin_B)) +
-  #geom_point() +
-  stat_smooth(method = lm, se = F, size = 1.5) +
-  theme_minimal() + 
-  facet_grid(. ~ vocab_type) +
-  ylim(0, 400) +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  labs(x = "Number of words", 
-       y = "Total number of translation equivalents", 
-       color = "Balance"
-       #, title = "Number of translation equivalent by balance in relation to different input measures "
-       ) +
-  guides(colour = guide_legend(nrow = 1)) +   
-  theme(text = element_text(size=16))
-
-ggsave("real_plot_inputs_TE.png", real_plot_inputs_TE,
-       width = 10, height = 5)
-
-```
-
 # Descriptives: Vocabulary measures
 ```{r}
 ## Mean word vocab size
@@ -239,23 +206,15 @@ t.test(keepers_ws_TE$Dom_unique_words, keepers_ws_TE$NonDom_unique_words,
 stacked <- keepers_ws_TE %>%
   select(baby_id, balance_vocab, word_vocab, number_of_te, Dom_unique_words, NonDom_unique_words) %>%
   # Subset balance_vocab by 3 levels 
-  #mutate(BalSubset = cut(balance_vocab, breaks = 3, 
-  #                       labels=c("MostBalanced", "MediumBalanced", "LeastBalanced"))) %>%
-  mutate(BalSubset = case_when(balance_vocab <= 0.65 ~ "MostBalanced",
-                               balance_vocab >= 0.80 ~ "LeastBalanced",
-                               TRUE ~ "MediumBalanced")) %>%
+  mutate(BalSubset = cut(balance_vocab, breaks = 3, 
+                         labels=c("MostBalanced", "MediumBalanced", "LeastBalanced"))) %>%
   arrange(desc(number_of_te)) %>%
   mutate(TE = number_of_te) %>%
   pivot_longer(-c(baby_id, balance_vocab, BalSubset, word_vocab, TE), 
                names_to = "Type", values_to = "NumberOfWords") %>%
-  mutate(Type = factor(Type, levels=c("NonDom_unique_words", "Dom_unique_words", "number_of_te"))) %>%
-  mutate(Type = recode(Type, 
-                       NonDom_unique_words = "Unique non-dominant word", 
-                       Dom_unique_words = "Unique dominant word", 
-                       number_of_te = "Translation equivalent")) 
+  mutate(Type = factor(Type, levels=c("NonDom_unique_words", "Dom_unique_words", "number_of_te")))
 
-
-LeastBal_plot <- stacked %>%
+LeastBal_plot <- stacked %>%.
   filter(BalSubset == "LeastBalanced") %>%
   ggplot(aes(x = reorder(baby_id, -NumberOfWords, sum), y = NumberOfWords)) +
   geom_col(aes(fill = Type)) +
@@ -264,7 +223,6 @@ LeastBal_plot <- stacked %>%
   labs(x = "Individual infant", 
        y = "Number of concepts produced",
        title = "Least balanced") + 
-  theme_minimal() + 
   theme(plot.title = element_text(hjust = 0.5)) 
 
 MediumBal_plot <- stacked %>%
@@ -276,7 +234,6 @@ MediumBal_plot <- stacked %>%
   labs(x = "Individual infant", 
        y = "Number of concepts produced",
        title = "Medium balanced") + 
-  theme_minimal() + 
   theme(plot.title = element_text(hjust = 0.5))
 
 MostBal_plot <- stacked %>%
@@ -288,7 +245,6 @@ MostBal_plot <- stacked %>%
   labs(x = "Individual infant", 
        y = "Number of concepts produced",
        title = "Most balanced") + 
-  theme_minimal() + 
   theme(plot.title = element_text(hjust = 0.5))
 
 Bal_StackedPlot <- ggarrange(LeastBal_plot, 
@@ -305,19 +261,30 @@ ggsave("Output/StackedPlot_byBalance.png", Bal_StackedPlot,
 stacked_wide <- keepers_ws_TE %>%
   select(baby_id, balance_vocab, word_vocab, concept_vocab, propTE, number_of_te, Dom_unique_words, NonDom_unique_words) %>%
   # Subset balance_vocab by 3 levels 
-  mutate(BalSubset = case_when(balance_vocab <= 0.65 ~ "MostBalanced",
-                               balance_vocab >= 0.80 ~ "LeastBalanced",
-                               TRUE ~ "MediumBalanced"))
-
+  mutate(BalSubset = cut(balance_vocab, breaks = 3, 
+                         labels=c("MostBalanced", "MediumBalanced", "LeastBalanced")))
 
 W_byB_anova <- aov(word_vocab ~ BalSubset, data = stacked_wide)
 summary(W_byB_anova)
 
-pairwise.t.test(stacked_wide$word_vocab, stacked_wide$BalSubset, p.adj = "BH")
 
 ## Mean proportion of TE
-stacked_wide %>%
-  group_by(BalSubset) %>%
+stacked_wide %>% 
+  filter(BalSubset == "LeastBalanced") %>%
+  summarize(mean_propTE = mean(propTE, na.rm=T), 
+            sd_propTE = sd(propTE, na.rm=T),
+            min_propTE = min(propTE, na.rm=T),
+            max_propTE = max(propTE, na.rm=T))
+
+stacked_wide %>% 
+  filter(BalSubset == "MediumBalanced") %>%
+  summarize(mean_propTE = mean(propTE, na.rm=T), 
+            sd_propTE = sd(propTE, na.rm=T),
+            min_propTE = min(propTE, na.rm=T),
+            max_propTE = max(propTE, na.rm=T))
+
+stacked_wide %>% 
+  filter(BalSubset == "MostBalanced") %>%
   summarize(mean_propTE = mean(propTE, na.rm=T), 
             sd_propTE = sd(propTE, na.rm=T),
             min_propTE = min(propTE, na.rm=T),
@@ -336,10 +303,6 @@ cor.test(stacked_wide_med$number_of_te, stacked_wide_med$concept_vocab, method =
 
 stacked_wide_least <- stacked_wide %>%
   filter(BalSubset == "LeastBalanced")
-
-cor.test(stacked_wide_most$number_of_te, stacked_wide_most$concept_vocab, method = "pearson")
-
-cor.test(stacked_wide_med$number_of_te, stacked_wide_med$concept_vocab, method = "pearson")
 
 cor.test(stacked_wide_least$number_of_te, stacked_wide_least$concept_vocab, method = "pearson")
 
@@ -483,13 +446,11 @@ french_ws_percentile <-
 ws_percentile <- merge(english_ws_percentile, french_ws_percentile, 
                        by = "age") %>%
   # compute estimate total vocab by adding the two languages
-  mutate(Average_90percentile = (EngWS_90percentile + FrWS_90percentile)/2) %>%
+  mutate(Total_90percentile = EngWS_90percentile + FrWS_90percentile) %>%
   # keep only necessary columns
-  select(age, EngWS_90percentile, FrWS_90percentile, Average_90percentile) %>%
+  select(age, EngWS_90percentile, FrWS_90percentile, Total_90percentile) %>%
   # rename age to prepare for the next step (i.e., merging with keepers_ws_TE
   rename(age_months_percentile = age)
-
-write.csv(ws_percentile, "Output/ws_percentile.csv", row.names = F)
 ```
 
 # Adding percentile info to keepers_ws_TE dataframe & 
@@ -501,9 +462,7 @@ keepers_ws_TE <- keepers_ws_TE %>%
   # this means the percentile should be the same for all >30m
   mutate(age_months_percentile = ifelse(age_months_binned > 30, 30, age_months_binned)) %>%
   # merge with the percentile data frame
-  left_join(ws_percentile, by = "age_months_percentile") 
-
-%>%
+  left_join(ws_percentile, by = "age_months_percentile") %>%
   # calculate TE in relation to CDI percentile data
   mutate(propTE_percentile = number_of_te*2/Total_90percentile)
   # %>% select(baby_id, age_months_binned, age_months_percentile, word_vocab, Total_90percentile,
@@ -523,10 +482,9 @@ MoreThanPercentile <- keepers_ws_TE %>%
 # Correlation
 ```{r}
 Correlation <- keepers_ws_TE %>%
-  select(age_continuous, Average_90percentile, balance_vocab, word_vocab, TotalNW_Dom, TotalNW_NonDom,
+  select(age_continuous, balance_vocab, word_vocab, TotalNW_Dom, TotalNW_NonDom,
          number_of_te, Dom_unique_words, NonDom_unique_words, concept_vocab) %>%
   rename(Age_month = age_continuous,
-         V = Average_90percentile,
          B = balance_vocab, 
          W = word_vocab,
          D = TotalNW_Dom, 
@@ -554,27 +512,171 @@ cor.test(Correlation$TE, Correlation$N, method = "pearson")
 
 ```
 
-
-###### Theoretical distribution of TEs (Simulation): D * N / V (TotalNW_Dom * TotalNW_NonDom / Average_90percentile) ###### 
+###### Stacked barchat: Y=Total vocab, X= individual baby (stacked: TE, unique dom, unique nondom) ######
 ```{r}
+
+##Creating dataset for stacked barchart
+
+stacked <- keepers_ws_TE %>%
+  select(baby_id, balance_vocab, word_vocab, number_of_te, Dom_unique_words, NonDom_unique_words) %>%
+  arrange(desc(number_of_te)) %>%
+  mutate(TE = number_of_te) %>%
+  pivot_longer(-c(baby_id, balance_vocab, word_vocab, TE), 
+               names_to = "Type", values_to = "NumberOfWords") %>%
+  mutate(Type = factor(Type, levels=c("NonDom_unique_words", "Dom_unique_words", "number_of_te")))
+
+
+##Stacked barchart (sort by total number of words)
+
+stacked %>%
+  ggplot(aes(x = reorder(baby_id, -NumberOfWords, sum), y = NumberOfWords)) +
+  geom_col(aes(fill = Type)) +
+    labs(x = "Individual infant", 
+       y = "Number of words produced") + 
+  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c"))
+  
+##Stacked barchart (sort by total number of TEs)
+
+stacked %>%
+  ggplot(aes(x = reorder(baby_id, -TE, sum), y = NumberOfWords)) +
+  geom_col(aes(fill = Type)) +
+    labs(x = "Individual infant", 
+       y = "Number of words produced") + 
+  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c"))
+
+#stacked %>%
+#  mutate(bin_balance = cut_width(balance_vocab, 0.333333333333333, boundary = 0)) %>%
+#  ggplot(aes(x = reorder(Baby_ID, -NumberOfWords, sum), y = NumberOfWords)) +
+#  geom_col(aes(fill = Type)) +
+#  facet_grid(. ~ bin_balance, labeller=labeller(bin_balance = balance_facet)) + 
+#  labs(x = "Individual infant", 
+#       y = "Number of words produced") + 
+#  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c"))
+
+Bal_StackedPlot <- stacked %>%
+  mutate(bin_B = cut(balance_vocab, breaks = 2, 
+                     labels = c("More balanced", "Less balanced"))) %>%
+  ggplot(aes(x = reorder(baby_id, -NumberOfWords, sum), y = NumberOfWords)) +
+  geom_col(aes(fill = Type)) +
+  facet_grid(. ~ bin_B) +
+  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) +
+  scale_y_continuous(limits = c(0, 1050)) +
+  labs(x = "Individual infant", 
+       y = "Number of concepts produced",
+       title = "Least balanced: 0 - .333") + 
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+ggsave("Output/StackedPlot_byBalance.png", Bal_StackedPlot,
+       width = 10, height = 5)
+
+```
+
+
+
+
+
+## Linear regression: TE ~ B + D + N
+```{r}
+TE_input_lm <- lmer(number_of_te ~ 0 + balance_vocab + TotalNW_Dom + TotalNW_NonDom,
+                  data = keepers_ws_TE)
+
+summary(TE_input_lm)
+```
+
+## Linear regression: TE ~ Du * Nu
+```{r}
+TE_output_lm <- lm(number_of_te ~ 0 + Dom_unique_words * NonDom_unique_words,
+                  data = keepers_ws_TE)
+
+summary(TE_output_lm)
+
+### plot the Du*Nu interaction
+#effect_plot(TE_InputConstant, pred = B, plot.points = TRUE)
+interaction_DuNu <- effect(term = "Dom_unique_words:NonDom_unique_words", mod = TE_output_lm) %>%
+  data.frame()
+
+plot_interactionDuNu <- ggplot(interaction_DuNu, 
+                               aes(x = Dom_unique_words, y = fit, group = NonDom_unique_words)) +
+  geom_line(aes(color = NonDom_unique_words)) +
+  labs(x = 'Unique dominant words',
+       y = 'Number of TEs',
+       color = 'Unique non-dominant words')
+  
+  ylim(-25, 600) +
+  labs(x = 'Balance', y = 'Number of TEs') +
+  theme_minimal()
+
+```
+
+
 ## Create predicted TEs for simulation
+```{r}
 keepers_ws_TE_simulation <- keepers_ws_TE %>%
-  mutate(Predicted_TE_percentile = TotalNW_Dom * TotalNW_NonDom/Average_90percentile) 
+  # Predicted propTE (Simulation)
+  mutate(propDomVocab = TotalNW_Dom / 672, # Proportion of Dom/NonDom vocab
+         propNonDomVocab = TotalNW_NonDom / 672, 
+         Predicted_propTE = propDomVocab * propNonDomVocab, # Predicted proportion of TE
+         Diff = propTE - Predicted_propTE) %>% # Difference between Predicted and Observed propTE
+  # Predicted raw TE (with reference to CDI)
+  mutate(Predicted_TotalnumberTEs_CDI = (TotalNW_Dom * TotalNW_NonDom)/672) %>%
+  # Predicted raw TE (with reference to CDI percentile)
+  mutate(Predicted_TotalnumberTEs_percentile = TotalNW_Dom * TotalNW_NonDom/(Total_90percentile/2)) %>%
+  # Create two groups based on observed TE
+  mutate(TEgroup = ifelse(number_of_te < 100, "Observed TE less than 100", "Observed TE more than 100"))
+  
+  
+  #select(baby_id, age_months_binned, age_months_percentile, word_vocab, Total_90percentile,
+  #       propTE, propTE_CDI, propTE_percentile, Predicted_propTE, Diff, 
+  #       Predicted_TotalnumberTEs_CDI, Predicted_TotalnumberTEs_percentile) 
 
+  
 
-## Linear regressions of predicted TE models
+```
+
+###### Linear regressions of predicted TE models ###### 
+```{r}
+
+### Model 1: Predicted_TotalnumberTEs_percentile
 Percentile_model <- keepers_ws_TE_simulation %>%
-  lm(number_of_te*(Average_90percentile) ~ 0 + TotalNW_Dom:TotalNW_NonDom, 
+  lm(number_of_te*(Total_90percentile/2) ~ 0 + TotalNW_Dom:TotalNW_NonDom, 
      data = .)
 
-summary(Percentile_model)
+### Model 2: Predicted_TotalnumberTEs_CDI
+CDI_model <- keepers_ws_TE_simulation %>%
+  lm(number_of_te * 672 ~ 0 + TotalNW_Dom:TotalNW_NonDom, 
+     data = .) 
 
+anova(Percentile_model, CDI_model)
+```
 
-## Ploting Y = observed rawTE  & X = Predicted rawTE 
+###### Theoretical distribution of TEs (Simulation) ###### 
+```{r}
+###Prediction 1: Predicted raw TE = (TotalNW_Dom*TotalNW_NonDom)/Total CDI
+# Ploting Y = observed rawTE  & X = Predicted raw TE 
+
+keepers_ws_TE_simulation %>%
+  ggplot(aes(x = Predicted_TotalnumberTEs_CDI, y = number_of_te)) +
+  facet_grid(. ~TEgroup) +
+  labs(x = "Predicted total number of TEs (based on CDI)", y = "Observed total number of TEs",
+       title = "Observed vs. Predicted total number of TEs") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_smooth(method = "lm", se = F) +
+  geom_point(shape = 23) +
+  geom_abline(linetype = 2, alpha = 0.5) +
+  xlim(-10,430) +
+  ylim(-10,430)
+
+# Kolmogorov-Smirnov test to compare the observed and predicted TE
+stats::ks.test(keepers_ws_TE_simulation$number_of_te,
+               keepers_ws_TE_simulation$Predicted_TotalnumberTEs_CDI)
+
+###Prediction 2: Predicted raw TE = TotalNW_Dom * TotalNW_NonDom/(Total_90percentile/2)
+# Ploting Y = observed rawTE  & X = Predicted raw TE 
+
 TEprediction_percentile <- keepers_ws_TE_simulation %>%
-  ggplot(aes(x = Predicted_TE_percentile, y = number_of_te)) +
+  ggplot(aes(x = Predicted_TotalnumberTEs_percentile, y = number_of_te)) +
 #  facet_grid(. ~TEgroup) +
-  labs(x = "Number of TEs predicted by the Bilingual Vocabulary Model", y = "Observed total number of TEs") +
+  labs(x = "Simulated total number of TEs (based on percentile)", y = "Observed total number of TEs") +
   theme(plot.title = element_text(hjust = 0.5)) +
   geom_smooth(method = "lm", se = F) +
   geom_point(shape = 23) +
@@ -583,59 +685,155 @@ TEprediction_percentile <- keepers_ws_TE_simulation %>%
   ylim(-10,430) +
   theme_minimal()
 
-ggsave(here("Output/TEprediction_percentile.png"), TEprediction_percentile,
-       height=5, width=5)
+ggsave(here("Output/TEprediction_percentile.png"), TEprediction_percentile)
 
 # Kolmogorov-Smirnov test to compare the observed and predicted TE
-#stats::ks.test(keepers_ws_TE_simulation$number_of_te,
-#               keepers_ws_TE_simulation$Predicted_TE_percentile)
+stats::ks.test(keepers_ws_TE_simulation$number_of_te,
+               keepers_ws_TE_simulation$Predicted_TotalnumberTEs_percentile)
+
+keepers_ws_TE_simulation_LessThan10 <- keepers_ws_TE_simulation %>%
+  filter(TEgroup == "Observed TE less than 100")
+
+stats::ks.test(keepers_ws_TE_simulation_LessThan10$number_of_te,
+               keepers_ws_TE_simulation_LessThan10$Predicted_TotalnumberTEs_percentile)
+
+keepers_ws_TE_simulation_MoreThan10 <- keepers_ws_TE_simulation %>%
+  filter(TEgroup == "Observed TE more than 100")
+
+stats::ks.test(keepers_ws_TE_simulation_MoreThan10$number_of_te,
+               keepers_ws_TE_simulation_MoreThan10$Predicted_TotalnumberTEs_percentile)
 
 
 
-## Looking closer at the infants with total vocabulary < 150
+### Plotting the 2 predictions together
 
-keepers_ws_TE_simulation_LessThan300 <- keepers_ws_TE_simulation %>%
-  filter(word_vocab < 300)
-
-stats::ks.test(keepers_ws_TE_simulation_LessThan300$number_of_te,
-               keepers_ws_TE_simulation_LessThan300$Predicted_TE_percentile)
-
-keepers_ws_TE_simulation_MoreThan300 <- keepers_ws_TE_simulation %>%
-  filter(word_vocab > 300)
-
-stats::ks.test(keepers_ws_TE_simulation_MoreThan300$number_of_te,
-               keepers_ws_TE_simulation_MoreThan300$Predicted_TE_percentile)
-
-# Plot
-TEprediction_percentile_facetW <- keepers_ws_TE_simulation %>%
-  mutate(W_group = if_else(word_vocab < 300, "Less than 300 total vocabulary", "More than 300 total vocabulary")) %>%
-  ggplot(aes(x = Predicted_TE_percentile, y = number_of_te)) +
-  facet_wrap(~ W_group, scales = "free") +
-  #facet_grid(. ~ W_group, scales = "free") +
-  labs(x = "Number of TEs predicted by the Bilingual Vocabulary Model", y = "Observed total number of TEs") +
+TEprediction_percentile_CDI <- keepers_ws_TE_simulation %>%
+  select(baby_id, number_of_te, Predicted_TotalnumberTEs_CDI, Predicted_TotalnumberTEs_percentile, TEgroup) %>%
+  dplyr::rename("=Dom*NonDom/TotalCDI" = Predicted_TotalnumberTEs_CDI,
+                "=Dom*NonDom/Percentile" = Predicted_TotalnumberTEs_percentile) %>%
+  pivot_longer(-c(baby_id, number_of_te, TEgroup), 
+               names_to = "Predicted_TotalnumberTEs", values_to = "PredictedNumber") %>%
+  ggplot(aes(x = PredictedNumber, y = number_of_te, color = Predicted_TotalnumberTEs)) +
+#  facet_grid(. ~TEgroup) +
+  labs(x = "Predicted total number of TEs", 
+       y = "Observed total number of TEs",
+       title = 
+       "Observed vs. Predicted total number of TEs") +
   theme(plot.title = element_text(hjust = 0.5)) +
   geom_smooth(method = "lm", se = F) +
   geom_point(shape = 23) +
   geom_abline(linetype = 2, alpha = 0.5) +
-  theme_minimal()
+  xlim(-10,500) +
+  ylim(-10,500) +
+  theme(axis.text.x = element_text(angle = 90), legend.position = "bottom") +
+  guides(colour = guide_legend(nrow = 1))
 
-ggsave(here("Output/TEprediction_percentile_facetW.png"), TEprediction_percentile_facetW,
-       height=5,width=10)
+ggsave(here("Output/TEprediction_percentile&CDI.png"), TEprediction_percentile_CDI)
+
+#Less Than 100 observed TEs
+TEprediction_percentile_CDI_LessThan100 <- keepers_ws_TE_simulation %>%
+  filter(TEgroup == "Observed TE less than 100") %>%
+  select(baby_id, number_of_te, Predicted_TotalnumberTEs_CDI, Predicted_TotalnumberTEs_percentile) %>%
+  dplyr::rename("=Dom*NonDom/TotalCDI" = Predicted_TotalnumberTEs_CDI,
+                "=Dom*NonDom/Percentile" = Predicted_TotalnumberTEs_percentile) %>%
+  pivot_longer(-c(baby_id, number_of_te), 
+               names_to = "Predicted_TotalnumberTEs", values_to = "PredictedNumber") %>%
+  ggplot(aes(x = PredictedNumber, y = number_of_te, color = Predicted_TotalnumberTEs)) +
+  labs(x = "Predicted total number of TEs", 
+       y = "Observed total number of TEs",
+       title = 
+       "Observed vs. Predicted total number of TEs \n (Less than 100 observed TEs)") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_smooth(method = "lm", se = F) +
+  geom_point(shape = 23) +
+  geom_abline(linetype = 2, alpha = 0.5) +
+  xlim(-10,100) +
+  ylim(-10,100) +
+  theme(plot.title = element_text(size = 12, face = "bold"), 
+        axis.text.x = element_text(angle = 90), 
+        legend.position = "bottom", legend.text=element_text(size = 10)) +
+  guides(colour = guide_legend(nrow = 2))
+
+ggsave(here("Output/TEprediction_percentile&CDI_LessThan100.png"), TEprediction_percentile_CDI_LessThan100)
+
+#Less Than 50 observed TEs
+TEprediction_percentile_CDI_LessThan50 <- keepers_ws_TE_simulation %>%
+  filter(number_of_te < 50) %>%
+  select(baby_id, number_of_te, Predicted_TotalnumberTEs_CDI, Predicted_TotalnumberTEs_percentile) %>%
+  dplyr::rename("=Dom*NonDom/TotalCDI" = Predicted_TotalnumberTEs_CDI,
+                "=Dom*NonDom/Percentile" = Predicted_TotalnumberTEs_percentile) %>%
+  pivot_longer(-c(baby_id, number_of_te), 
+               names_to = "Predicted_TotalnumberTEs", values_to = "PredictedNumber") %>%
+  ggplot(aes(x = PredictedNumber, y = number_of_te, color = Predicted_TotalnumberTEs)) +
+  labs(x = "Predicted total number of TEs", 
+       y = "Observed total number of TEs",
+       title = 
+       "Observed vs. Predicted total number of TEs \n (Less than 50 observed TEs)") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_smooth(method = "lm", se = F) +
+  geom_point(shape = 23) +
+  geom_abline(linetype = 2, alpha = 0.5) +
+  xlim(-10,50) +
+  ylim(-10,50) +
+  theme(plot.title = element_text(size = 12, face = "bold"),
+        axis.text.x = element_text(angle = 90), 
+        legend.position = "bottom", legend.box="vertical", legend.text=element_text(size = 10)) +
+  guides(colour = guide_legend(nrow = 2))
+
+ggsave(here("Output/TEprediction_percentile&CDI_LessThan50.png"), TEprediction_percentile_CDI_LessThan50)
 
 
-Percentile_model_LessThan300W <- keepers_ws_TE_simulation %>%
-  filter(word_vocab < 300) %>%
-  lm(number_of_te*(Average_90percentile) ~ 0 + TotalNW_Dom:TotalNW_NonDom, 
-     data = .)
+# More than 100 Observed TEs
+TEprediction_percentile_CDI_MoreThan100 <- keepers_ws_TE_simulation %>%
+  filter(TEgroup == "Observed TE more than 100") %>%
+  select(baby_id, number_of_te, Predicted_TotalnumberTEs_CDI, Predicted_TotalnumberTEs_percentile) %>%
+  dplyr::rename("=Dom*NonDom/TotalCDI" = Predicted_TotalnumberTEs_CDI,
+                "=Dom*NonDom/Percentile" = Predicted_TotalnumberTEs_percentile) %>%
+  pivot_longer(-c(baby_id, number_of_te), 
+               names_to = "Predicted_TotalnumberTEs", values_to = "PredictedNumber") %>%
+  ggplot(aes(x = PredictedNumber, y = number_of_te, color = Predicted_TotalnumberTEs)) +
+  labs(x = "Predicted total number of TEs", 
+       y = "Observed total number of TEs",
+       title = "Observed vs. Predicted total number of TEs \n (More than 100 observed TEs)") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_smooth(method = "lm", se = F) +
+  geom_point(shape = 23) +
+  geom_abline(linetype = 2, alpha = 0.5) +
+  xlim(-10,500) +
+  ylim(-10,500) +
+  theme(plot.title = element_text(size = 12, face = "bold"),
+        axis.text.x = element_text(angle = 90), 
+        legend.position = "bottom", legend.text=element_text(size=10)) +
+  guides(colour = guide_legend(nrow = 2))
 
-summary(Percentile_model_LessThan300W)
+ggsave(here("Output/TEprediction_percentile&CDI_MoreThan100.png"), TEprediction_percentile_CDI_MoreThan100)
 
-Percentile_model_MoreThan300W <- keepers_ws_TE_simulation %>%
-  filter(word_vocab > 300) %>%
-  lm(number_of_te*(Average_90percentile) ~ 0 + TotalNW_Dom:TotalNW_NonDom, 
-     data = .)
 
-summary(Percentile_model_MoreThan300W)
+##### Facet by W (< 100 vs. > 100)
+
+
+
+
+
+###Prediction 2: Predicted raw TE = TotalNW_NonDom
+# Ploting Y = observed rawTE  & X = Predicted raw TE 
+
+#keepers_ws_TE_simulation%>%
+#  ggplot(aes(x = TotalNW_NonDom, y = number_of_te)) +
+#  labs(x = "Predicted total number of TEs", 
+#       y = "Observed total number of TEs",
+#       title = 
+#       "Observed vs. Predicted total number of TEs 
+#       (based on total number of NonDom vocab)") +
+#  theme(plot.title = element_text(hjust = 0.5)) +
+#  geom_smooth(method = "lm", se = F) +
+#  geom_point(shape = 23) +
+#  geom_abline(linetype = 2, alpha = 0.5) +
+#  xlim(-10,500) +
+#  ylim(-10,500)
+
+## Kolmogorov-Smirnov test to compare the observed and predicted TE
+#stats::ks.test(keepers_ws_TE_simulation$TotalnumberTEs, keepers_ws_TE_simulation$TotalNW_NonDom)
 
 ```
 

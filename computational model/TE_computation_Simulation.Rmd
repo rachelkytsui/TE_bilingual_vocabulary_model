@@ -12,8 +12,8 @@ library(here)
 library(tidyverse)
 library(tidylog)
 library(ggpubr)
-library(regclass) # for correlation
-library(effects)
+#library(regclass) # for correlation
+#library(effects)
 # library(jtools)
 #library(FRACTION) # this allows us to use the is.wholenumber function
 
@@ -21,26 +21,167 @@ library(effects)
 
 ```
 
+
 # Read in data
 ```{r}
 TE_computation <- read.csv(here::here("computational model/TE_computation.csv"))
 ```
 
-# Correlation
+
+# Simulation 1
+## Infants of the same developmental level with different word vocabularies and balances of exposure
+### V = 600
 ```{r}
-Correlation <- TE_computation %>%
-  cor_matrix()
+Simulation1 <- TE_computation %>%
+  # V = 600
+  filter(V == 600) %>%
+  # Convert to long data
+  pivot_longer(c(W, D, N, C, Du, Nu), names_to = "vocab_type", values_to = "number") %>%
+  filter(vocab_type == c("W", "D", "N")) %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("W", "D", "N"))) %>%
+  mutate(vocab_type = recode(vocab_type, 
+                             W = "Panel A: Total vocabulary (W)", 
+                             D = "Panel B: Dominant vocabulary (D)", 
+                             N = "Panel C: Non-dominant vocabulary (N)")) %>%
+  mutate(bin_B = cut(B, breaks = 6, 
+                     labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
+  #mutate(bin_W = cut_interval(W, 12,
+  #                   labels = c(100,200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200))) %>%
+  ggplot(aes(x = number, y = TE, color = bin_B)) +
+  #geom_point() +
+  stat_smooth(method = lm, se = F) +
+  theme_minimal() + 
+  facet_grid(. ~ vocab_type) +
+  ylim(0, 600) +
+  theme(axis.text.x = element_text(angle = 90),
+        legend.position = "bottom") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  labs(x = "Number of words", 
+       y = "Total number of translation equivalents (TE)", 
+       color = "Balance (B)"
+       #, title = "Number of translation equivalent by balance in relation to different input measures "
+       ) +
+  guides(colour = guide_legend(nrow = 1))
 
-library(Hmisc)
-mycor <- rcorr(as.matrix(TE_computation), type="pearson")
-mycor$r
-mycor$P
+ggsave("plot_Simulation1.png", plot_inputs_TE,
+       width = 10, height = 5)
 
-library(corrplot)
-mycor <- cor(TE_computation)
-corrplot(mycor)
-#write.table(Correlation, "TEcomputation_correlations.tsv", col.names=NA)
 ```
+
+
+# Simulation 2
+## Patterns of translation equivalent learning as a function of different developmental timepoints
+```{r}
+timepoints <- c(150, 300, 450, 600)
+
+Simulation2 <- TE_computation %>%
+  filter(V %in% timepoints) %>%
+  pivot_longer(c(D, N, TE, C, Du, Nu), names_to = "vocab_type", values_to = "number") %>%
+  filter(vocab_type %notin% c("D", "N", "C")) %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("Nu", "Du", "TE"))) %>%
+  mutate(bin_B = cut(B, breaks = 6, 
+                     labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
+  group_by(V, bin_B, vocab_type) %>%
+  summarise(n_words = mean(number)) %>%
+  ggplot(aes(x = bin_B, y = n_words, fill = vocab_type)) + 
+  geom_bar(position="stack", stat="identity") +
+  facet_grid(. ~ V) +
+  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) + 
+  #scale_y_continuous(limits = c(0, 1200)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90), legend.position = "bottom",
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Balance", 
+       y = "Number of concepts", 
+       title = "Vocabulary composition across different developmental timepoints (V)") 
+
+ggsave("plot_Simulation2.png", plot_composition_byV,
+        width = 10, height = 5)
+
+```
+
+
+# Simulation 3
+## Non-independence of dominant-language (D) and non-dominant language words (N)
+```{r}
+
+# I * (D*N/V)
+I1 = 1.5
+I2 = 0.5
+
+Simulation3 <- TE_computation %>%
+  filter(V==600) %>%
+  ## Calculate where I > 1
+  mutate(TE_easier = I1*(D*N/V)) %>%
+  ## Calculate where I < 1
+  mutate(TE_harder = I2*(D*N/V)) %>%
+  pivot_longer(c(TE, TE_harder, TE_easier), 
+               names_to = "Model", values_to = "number_TE") %>%
+  mutate(Model = factor(Model, levels=c("TE_harder", "TE", "TE_easier"))) %>%
+  mutate(Model = recode(Model, 
+                        TE = "I = 1 (assuming independence of D and N)",
+                        TE_easier = "I = 1.5 (TEs are more easily learned)",
+                        TE_harder = "I = 0.5 (TE are less easily learned)")) %>%
+  mutate(bin_B = cut(B, breaks = 6, 
+                     labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
+  ggplot(aes(x = W, y = number_TE, color = bin_B)) +
+  #geom_point() +
+  stat_smooth(method = lm, se = F) +
+  theme_minimal() + 
+  facet_grid(. ~ Model) +
+  ylim(0, 600) +
+  theme(axis.text.x = element_text(angle = 90),
+        legend.position = "bottom") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  labs(x = "Total word vocabulary (W)", 
+       y = "Total number of translation equivalents (TE)", 
+       color = "Balance (B)") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave("plot_Simulation3.png", Simulation3, 
+       width = 10, height = 5)
+
+
+
+#Simulation3 <- TE_computation %>%
+#  pivot_longer(c(TE_harder, TE_easier), 
+#               names_to = "Nonindependence_type", values_to = "Simulated_TEs") %>%
+#  mutate(Nonindependence_type = recode(Nonindependence_type, 
+#                                       TE_easier = "I = 1.5 (TEs are more easily learned)",
+#                                       TE_harder = "I = 0.5 (TE are less easily learned)")) %>%
+#  ggplot(aes(y = Simulated_TEs, x = TE, color = Nonindependence_type)) +
+#  geom_smooth(method = "lm", se = F) +
+#  geom_point(shape = 23) +
+#  geom_abline(linetype = 2, alpha = 0.5) +
+#  labs(y = "Simulated number of TEs assuming non-independence of D and N", 
+#       x = "Expected number of TEs assuming independence of D and N",
+#       color = "Scenarios"
+#       #, title = "Non-independence vs. Independence of dominant and non-dominant words"
+#       ) +
+#  theme(plot.title = element_text(hjust = 0.5)) +
+#  theme_minimal()
+
+##ggsave("plot_Simulation3.png", Simulation3, 
+##       width = 8, height = 6)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Plotting relations between variables
 ## Stacked barchart showing the vocabulary composition across different balance proportions
@@ -212,39 +353,6 @@ ggsave("plot_inputs.png", plot_inputs,
 
 
 
-plot_inputs_TE <- TE_computation %>%
-  # V = 600
-  filter(V == 600) %>%
-  # Convert to long data
-  pivot_longer(c(W, D, N, C, Du, Nu), names_to = "vocab_type", values_to = "number") %>%
-  filter(vocab_type == c("W", "D", "N")) %>%
-  mutate(vocab_type = factor(vocab_type, levels=c("W", "D", "N"))) %>%
-  mutate(vocab_type = recode(vocab_type, 
-                             W = "Panel A: Total vocabulary (W)", 
-                             D = "Panel B: Dominant vocabulary (D)", 
-                             N = "Panel C: Non-dominant vocabulary (N)")) %>%
-  mutate(bin_B = cut(B, breaks = 6, 
-                     labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
-  #mutate(bin_W = cut_interval(W, 12,
-  #                   labels = c(100,200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200))) %>%
-  ggplot(aes(x = number, y = TE, color = bin_B)) +
-  #geom_point() +
-  stat_smooth(method = lm, se = F) +
-  theme_minimal() + 
-  facet_grid(. ~ vocab_type) +
-  ylim(0, 600) +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  labs(x = "Number of words", 
-       y = "Total number of translation equivalents (TE)", 
-       color = "Balance (B)"
-       #, title = "Number of translation equivalent by balance in relation to different input measures "
-       ) +
-  guides(colour = guide_legend(nrow = 1))
-
-ggsave("plot_inputs_TE.png", plot_inputs_TE,
-       width = 10, height = 5)
 
 
 
@@ -266,6 +374,30 @@ plot_inputs_TE_V <- TE_computation %>%
        y = "Total number of translation equivalents (TE)", 
        color = "Balance (B)") +
   guides(colour = guide_legend(nrow = 1))
+
+
+plot_inputs_TE_V <- TE_computation %>%
+  filter(W == 400) %>%
+  mutate(bin_B = cut(B, breaks = 6, 
+                     labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
+  #mutate(bin_W = cut_interval(W, 3,
+  #                   labels = c("W = 0 - 400" , "W = 401 - 800", "W = 801 - 1200"))) %>%
+  ggplot(aes(x = V, y = TE, color = bin_B)) +
+  #geom_point() +
+  stat_smooth(method = lm, se = F) +
+  theme_minimal() + 
+  #facet_grid(. ~ bin_B) +
+  #ylim(0, 600) +
+  theme(axis.text.x = element_text(angle = 90),
+        legend.position = "bottom") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  labs(x = "Developmental timepoint (V)", 
+       y = "Total number of translation equivalents (TE)", 
+       color = "Balance (B)") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave("plot_inputs_TE_V.png", plot_inputs_TE_V,
+       width = 6, height = 6)
 
 
 plot_inputs_TE_V <- TE_computation %>%
@@ -584,82 +716,3 @@ stats::ks.test(TE_computation$predicted_TE, TE_computation$learned_TE)
 
 ```
 
-#Simulation3: Non-independence of D and N
-```{r}
-# I * (D*N/V)
-I1 = 1.5
-I2 = 0.5
-
-TE_computation <- TE_computation %>%
-  ## Calculate where I > 1
-  mutate(TE_easier = I1*(D*N/V)) %>%
-  ## Calculate where I < 1
-  mutate(TE_harder = I2*(D*N/V)) 
-
-Simulation3 <- TE_computation %>%
-  ## Calculate where I > 1
-  mutate(TE_easier = I1*(D*N/V)) %>%
-  ## Calculate where I < 1
-  mutate(TE_harder = I2*(D*N/V)) %>%
-  pivot_longer(c(TE, TE_harder, TE_easier), 
-               names_to = "Model", values_to = "number_TE") %>%
-  mutate(Model = factor(Model, levels=c("TE_harder", "TE", "TE_easier"))) %>%
-  mutate(Model = recode(Model, 
-                        TE = "I = 1 (assuming independence of D and N)",
-                        TE_easier = "I = 1.5 (TEs are more easily learned)",
-                        TE_harder = "I = 0.5 (TE are less easily learned)")) %>%
-  # Convert to long data
-  #pivot_longer(c(W, D, N, C, Du, Nu), names_to = "vocab_type", values_to = "number") %>%
-  #filter(vocab_type == c("W", "D", "N")) %>%
-  #mutate(vocab_type = factor(vocab_type, levels=c("W", "D", "N"))) %>%
-  #mutate(vocab_type = recode(vocab_type, 
-  #                           W = "Panel A: Total vocabulary (W)", 
-  #                           D = "Panel B: Dominant vocabulary (D)", 
-  #                           N = "Panel C: Non-dominant vocabulary (N)")) %>%
-  mutate(bin_B = cut(B, breaks = 6, 
-                     labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
-  #mutate(bin_W = cut_interval(W, 12,
-  #                   labels = c(100,200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200))) %>%
-  ggplot(aes(x = W, y = number_TE, color = bin_B)) +
-  #geom_point() +
-  stat_smooth(method = lm, se = F) +
-  theme_minimal() + 
-  facet_grid(. ~ Model) +
-  ylim(0, 600) +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  labs(x = "Total word vocabulary (W)", 
-       y = "Total number of translation equivalents (TE)", 
-       color = "Balance (B)"
-       #, title = "Number of translation equivalent by balance in relation to different input measures "
-       ) +
-  guides(colour = guide_legend(nrow = 1))
-
-ggsave("plot_Simulation3.png", Simulation3, 
-       width = 10, height = 5)
-
-
-
-Simulation3 <- TE_computation %>%
-  pivot_longer(c(TE_harder, TE_easier), 
-               names_to = "Nonindependence_type", values_to = "Simulated_TEs") %>%
-  mutate(Nonindependence_type = recode(Nonindependence_type, 
-                                       TE_easier = "I = 1.5 (TEs are more easily learned)",
-                                       TE_harder = "I = 0.5 (TE are less easily learned)")) %>%
-  ggplot(aes(y = Simulated_TEs, x = TE, color = Nonindependence_type)) +
-  geom_smooth(method = "lm", se = F) +
-  geom_point(shape = 23) +
-  geom_abline(linetype = 2, alpha = 0.5) +
-  labs(y = "Simulated number of TEs assuming non-independence of D and N", 
-       x = "Expected number of TEs assuming independence of D and N",
-       color = "Scenarios"
-       #, title = "Non-independence vs. Independence of dominant and non-dominant words"
-       ) +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  theme_minimal()
-
-ggsave("plot_Simulation3.png", Simulation3, 
-       width = 8, height = 6)
-
-```
