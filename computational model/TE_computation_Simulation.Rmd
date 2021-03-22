@@ -21,13 +21,6 @@ library(ggpubr)
 
 ```
 
-
-# Read in data
-```{r}
-TE_computation <- read.csv(here::here("computational model/TE_computation.csv"))
-```
-
-
 # Simulation 1
 ## Infants of the same developmental level with different word vocabularies and balances of exposure
 ### V = 600
@@ -102,7 +95,7 @@ ggsave("plot_Simulation1.png", Simulation1,
 ## Generating the parameters
 V <- 600
 W <- V # holding W constant
-B <- seq(0.5, 1, by = 0.1) # a range of Balance, i.e. proportion use of dominant language (B ≤ .50)
+B <- seq(0.5, 1, by = 0.01) # a range of Balance, i.e. proportion use of dominant language (B ≤ .50)
 
 ## Generating sequence of W and B
 W_seq <- W %>% 
@@ -117,7 +110,7 @@ TE_V600 <- data.frame(V, W_seq) %>%
 ## Generating the parameters
 V <- 450
 W <- V # holding W constant
-B <- seq(0.5, 1, by = 0.1) # a range of Balance, i.e. proportion use of dominant language (B ≤ .50)
+B <- seq(0.5, 1, by = 0.01) # a range of Balance, i.e. proportion use of dominant language (B ≤ .50)
 
 ## Generating sequence of W and B
 W_seq <- W %>% 
@@ -132,7 +125,7 @@ TE_V450 <- data.frame(V, W_seq) %>%
 ## Generating the parameters
 V <- 300
 W <- V # holding W constant
-B <- seq(0.5, 1, by = 0.1) # a range of Balance, i.e. proportion use of dominant language (B ≤ .50)
+B <- seq(0.5, 1, by = 0.01) # a range of Balance, i.e. proportion use of dominant language (B ≤ .50)
 
 ## Generating sequence of W and B
 W_seq <- W %>% 
@@ -147,7 +140,7 @@ TE_V300 <- data.frame(V, W_seq) %>%
 ## Generating the parameters
 V <- 150
 W <- V # holding W constant
-B <- seq(0.5, 1, by = 0.1) # a range of Balance, i.e. proportion use of dominant language (B ≤ .50)
+B <- seq(0.5, 1, by = 0.01) # a range of Balance, i.e. proportion use of dominant language (B ≤ .50)
 
 ## Generating sequence of W and B
 W_seq <- W %>% 
@@ -165,20 +158,25 @@ data_Simulation2 <- rbind(TE_V150, TE_V300, TE_V450, TE_V600) %>%
   mutate(D = B*W, # Words produced in the dominant language
          N = (1-B)*W, # Words produced in non-dominant language
          TE = (D*N)/V, # If D and N are independent, TE = DN/V
-         Du = D-TE, # Unique words in dominant language
-         Nu = N-TE) %>% # Unique words in non-dominant language
+         DU = D-TE, # Unique words in dominant language
+         NU = N-TE) %>% # Unique words in non-dominant language
   # Round to keep whole numbers only
   mutate_at(vars(-B), round, 0)
 
 
 # Visualizing Simulation 2
 Simulation2 <- data_Simulation2 %>%
-  pivot_longer(-c(V, W, B), names_to = "vocab_type", values_to = "number") %>%
+  mutate(bin_B = case_when(B < 0.6 ~ "0.5",
+                           B >= 0.6 & B < 0.7 ~ "0.6",
+                           B >= 0.7 & B < 0.8 ~ "0.7",
+                           B >= 0.8 & B < 0.9 ~ "0.8",
+                           TRUE ~ "0.9")) %>%
+  pivot_longer(-c(V, W, B, bin_B), names_to = "vocab_type", values_to = "number") %>%
   filter(vocab_type %notin% c("D", "N")) %>%
-  mutate(vocab_type = factor(vocab_type, levels=c("Nu", "Du", "TE"))) %>%
-  group_by(V, B, vocab_type) %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("NU", "DU", "TE"))) %>%
+  group_by(V, bin_B, vocab_type) %>%
   summarise(n_words = mean(number)) %>%
-  ggplot(aes(x = B, y = n_words, fill = vocab_type)) + 
+  ggplot(aes(x = bin_B, y = n_words, fill = vocab_type)) + 
   geom_bar(position="stack", stat="identity") +
   facet_grid(. ~ V) +
   scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) + 
