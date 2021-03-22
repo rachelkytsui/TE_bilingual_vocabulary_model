@@ -73,7 +73,9 @@ Simulation1 <- data_Simulation1 %>%
   theme(axis.text.x = element_text(angle = 90),
         legend.position = "bottom",
         plot.title = element_text(hjust = 0.5),
-        text = element_text(size=12)) +
+        text = element_text(size=12),
+        panel.spacing.x = unit(2, "lines"),
+        panel.background = element_rect(fill = NA, color = "black")) +
   labs(x = "Number of words", 
        y = "Total number of translation equivalents (TE)", 
        color = "Balance (B)"
@@ -180,12 +182,13 @@ Simulation2 <- data_Simulation2 %>%
   geom_bar(position="stack", stat="identity") +
   facet_grid(. ~ V) +
   scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) + 
-  #scale_y_continuous(limits = c(0, 1200)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90), 
         legend.position = "bottom",
         plot.title = element_text(hjust = 0.5),
-        text = element_text(size=12)) + 
+        text = element_text(size=12),
+        panel.spacing.x = unit(2, "lines"),
+        panel.background = element_rect(fill = NA, color = "black")) + 
   labs(x = "Balance", 
        y = "Number of concepts", 
        title = "Vocabulary composition across different developmental timepoints (V)") 
@@ -322,7 +325,9 @@ Simulation3 <- data_Simulation3 %>%
   theme(axis.text.x = element_text(angle = 90),
         legend.position = "bottom") +
   theme(plot.title = element_text(hjust = 0.5),
-        text = element_text(size=12)) +
+        text = element_text(size=12),
+        panel.spacing.x = unit(2, "lines"),
+        panel.background = element_rect(fill = NA, color = "black")) +
   labs(x = "Total word vocabulary (W)", 
        y = "Total number of translation equivalents (TE)", 
        color = "Balance (B)") +
