@@ -169,8 +169,9 @@ keepers_ws_TE %>%
 
 ```
 
+# Figure 6
 ```{r}
-real_plot_inputs_TE <- keepers_ws_TE %>% 
+Observed_plot_inputs_TE <- keepers_ws_TE %>% 
   select(baby_id, ID_testdate, age_days, number_of_te, word_vocab, TotalNW_Dom, TotalNW_NonDom, balance_vocab) %>%
   pivot_longer(c(word_vocab, TotalNW_Dom, TotalNW_NonDom), names_to = "vocab_type", values_to = "number") %>%
   mutate(vocab_type = factor(vocab_type, levels=c("word_vocab", "TotalNW_Dom", "TotalNW_NonDom"))) %>%
@@ -178,11 +179,14 @@ real_plot_inputs_TE <- keepers_ws_TE %>%
                              word_vocab = "Panel A: Total vocabulary", 
                              TotalNW_Dom = "Panel B: Dominant vocabulary", 
                              TotalNW_NonDom = "Panel C: Non-dominant vocabulary")) %>%
-  mutate(bin_B = cut(balance_vocab, breaks = 5, 
-                     labels = c("0.5", "0.6", "0.7", "0.8", "0.9"))) %>%
+  mutate(bin_B = case_when(balance_vocab < 0.6 ~ "0.5",
+                           balance_vocab >= 0.6 & balance_vocab < 0.7 ~ "0.6",
+                           balance_vocab >= 0.7 & balance_vocab < 0.8 ~ "0.7",
+                           balance_vocab >= 0.8 & balance_vocab < 0.9 ~ "0.8",
+                           TRUE ~ "0.9")) %>%
   ggplot(aes(x = number, y = number_of_te, color = bin_B)) +
   #geom_point() +
-  stat_smooth(method = lm, se = F, size = 1.5) +
+  stat_smooth(method = lm, se = F) +
   theme_minimal() + 
   facet_grid(. ~ vocab_type) +
   ylim(0, 400) +
@@ -190,15 +194,131 @@ real_plot_inputs_TE <- keepers_ws_TE %>%
         legend.position = "bottom") +
   theme(plot.title = element_text(hjust = 0.5)) +
   labs(x = "Number of words", 
-       y = "Total number of translation equivalents", 
+       y = "Total observed number of translation equivalents", 
        color = "Balance"
        #, title = "Number of translation equivalent by balance in relation to different input measures "
        ) +
-  guides(colour = guide_legend(nrow = 1)) +   
-  theme(text = element_text(size=16))
+  guides(colour = guide_legend(nrow = 1)) 
 
-ggsave("real_plot_inputs_TE.png", real_plot_inputs_TE,
+ggsave("Output/Observed_plot_inputs_TE.png", Observed_plot_inputs_TE,
        width = 10, height = 5)
+
+```
+
+# Figure 7
+```{r}
+plot_stacked_byV <- keepers_ws_TE %>%
+  select(baby_id, age_months_percentile, balance_vocab, word_vocab, number_of_te, Dom_unique_words, NonDom_unique_words) %>%
+  # Subset developmental level (i.e., Average_90percentile) by 3 levels 
+  mutate(V_subset = case_when(age_months_percentile <= 22 ~ "18-22 months",
+                              age_months_percentile > 22 & age_months_percentile <= 27 ~ "23-27 months",
+                              TRUE ~ "28-33 months")) %>%
+  #mutate(V_subset = case_when(age_months_percentile <= 21 ~ "18-21",
+  #                            age_months_percentile > 21 & age_months_percentile <= 25 ~ "22-25",
+  #                            age_months_percentile > 25 & age_months_percentile <= 29 ~ "26-29",
+  #                            TRUE ~ "30-33")) %>%
+  #mutate(bin_B = case_when(balance_vocab < 0.6 ~ "0.5",
+  #                         balance_vocab >= 0.6 & balance_vocab < 0.7 ~ "0.6",
+  #                         balance_vocab >= 0.7 & balance_vocab < 0.8 ~ "0.7",
+  #                         balance_vocab >= 0.8 & balance_vocab < 0.9 ~ "0.8",
+  #                         TRUE ~ "0.9")) %>%
+  mutate(BalSubset = case_when(balance_vocab <= 0.65 ~ "Most Balanced",
+                               balance_vocab >= 0.80 ~ "Least Balanced",
+                               TRUE ~ "Medium Balanced")) %>%
+  mutate(BalSubset = factor(BalSubset, levels=c("Most Balanced", "Medium Balanced", "Least Balanced"))) %>%
+  arrange(desc(number_of_te)) %>%
+  mutate(TE = number_of_te) %>%
+  pivot_longer(-c(baby_id, age_months_percentile, balance_vocab, V_subset, BalSubset, word_vocab, TE), 
+               names_to = "Type", values_to = "NumberOfWords") %>%
+  mutate(Type = factor(Type, levels=c("NonDom_unique_words", "Dom_unique_words", "number_of_te"))) %>%
+  mutate(Type = recode(Type, 
+                       NonDom_unique_words = "Unique non-dominant word", 
+                       Dom_unique_words = "Unique dominant word", 
+                       number_of_te = "Translation equivalent")) %>%
+  group_by(V_subset, BalSubset, Type) %>%
+  summarise(n_words = mean(NumberOfWords)) %>%
+  ggplot(aes(x = BalSubset, y = n_words, fill = Type)) +
+  geom_bar(position="stack", stat="identity") +
+  facet_grid(. ~ V_subset) +
+  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) + 
+  #scale_y_continuous(limits = c(0, 1200)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 0) , 
+        legend.position = "bottom",
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Balance", 
+       y = "Observed number of concepts", 
+       title = "Vocabulary composition across different subset of developmental timepoints") 
+
+ggsave("Output/Observed_plot_stacked_byV.png", plot_stacked_byV,
+       width = 10, height = 5)
+
+
+## Mean proportion of TE
+stacked_byV_wide <- keepers_ws_TE %>%
+  select(baby_id, age_months_percentile, balance_vocab, word_vocab, concept_vocab, 
+         propTE, number_of_te, Dom_unique_words, NonDom_unique_words) %>%
+  # Subset developmental level (i.e., Average_90percentile) by 3 levels 
+  mutate(V_subset = case_when(age_months_percentile <= 22 ~ "18-22 months",
+                              age_months_percentile > 22 & age_months_percentile <= 27 ~ "23-27 months",
+                              TRUE ~ "28-33 months")) %>%
+  mutate(BalSubset = case_when(balance_vocab <= 0.65 ~ "Most Balanced",
+                               balance_vocab >= 0.80 ~ "Least Balanced",
+                               TRUE ~ "Medium Balanced")) 
+
+
+stacked_byV_wide %>%
+  group_by(V_subset) %>%
+  summarise(mean_propTE = mean(propTE, na.rm=T), 
+            sd_propTE = sd(propTE, na.rm=T),
+            min_propTE = min(propTE, na.rm=T),
+            max_propTE = max(propTE, na.rm=T))
+
+# Anova to compare the number of TEs among the 3 developmental groups in the stacked barchart
+stacked_byV_wide %>%  
+  group_by(V_subset) %>%
+  summarise(mean_TE = mean(number_of_te, na.rm=T), 
+            sd_TE = sd(number_of_te, na.rm=T),
+            min_TE = min(number_of_te, na.rm=T),
+            max_TE = max(number_of_te, na.rm=T))
+
+TE_byV_anova <- aov(propTE ~ V_subset, data = stacked_byV_wide)
+summary(TE_byV_anova)
+
+pairwise.t.test(stacked_byV_wide$number_of_te, stacked_byV_wide$V_subset,
+                 p.adjust.method = "BH")
+
+
+## Anova to compare the unique dom vocab size and unique non-dom vocab size among the 3 developmental groups in the stacked barchart
+stacked_byV_wide %>%  
+  group_by(BalSubset) %>%
+  summarise(mean_Du = mean(Dom_unique_words, na.rm=T), 
+            sd_Du = sd(Dom_unique_words, na.rm=T),
+            min_Du = min(Dom_unique_words, na.rm=T),
+            max_Du = max(Dom_unique_words, na.rm=T))
+
+Du_byB_anova <- aov(Dom_unique_words ~ BalSubset, data = stacked_byV_wide)
+summary(Du_byB_anova)
+
+pairwise.t.test(stacked_byV_wide$Dom_unique_words, stacked_byV_wide$BalSubset,
+                 p.adjust.method = "BH")
+
+
+stacked_byV_wide %>% 
+  group_by(BalSubset) %>%
+  summarise(mean_Nu = mean(NonDom_unique_words, na.rm=T), 
+            sd_Nu = sd(NonDom_unique_words, na.rm=T),
+            min_Nu = min(NonDom_unique_words, na.rm=T),
+            max_Nu = max(NonDom_unique_words, na.rm=T))
+
+Nu_byB_anova <- aov(NonDom_unique_words ~ BalSubset, data = stacked_byV_wide)
+summary(Nu_byB_anova)
+
+pairwise.t.test(stacked_byV_wide$NonDom_unique_words, stacked_byV_wide$BalSubset,
+                 p.adjust.method = "BH")
+
+
+
 
 ```
 
@@ -329,17 +449,15 @@ stacked_wide_most <- stacked_wide %>%
 
 cor.test(stacked_wide_most$number_of_te, stacked_wide_most$concept_vocab, method = "pearson")
 
+
 stacked_wide_med <- stacked_wide %>%
   filter(BalSubset == "MediumBalanced")
 
 cor.test(stacked_wide_med$number_of_te, stacked_wide_med$concept_vocab, method = "pearson")
 
+
 stacked_wide_least <- stacked_wide %>%
   filter(BalSubset == "LeastBalanced")
-
-cor.test(stacked_wide_most$number_of_te, stacked_wide_most$concept_vocab, method = "pearson")
-
-cor.test(stacked_wide_med$number_of_te, stacked_wide_med$concept_vocab, method = "pearson")
 
 cor.test(stacked_wide_least$number_of_te, stacked_wide_least$concept_vocab, method = "pearson")
 
@@ -503,6 +621,7 @@ keepers_ws_TE <- keepers_ws_TE %>%
   # merge with the percentile data frame
   left_join(ws_percentile, by = "age_months_percentile") 
 
+
 %>%
   # calculate TE in relation to CDI percentile data
   mutate(propTE_percentile = number_of_te*2/Total_90percentile)
@@ -525,6 +644,9 @@ MoreThanPercentile <- keepers_ws_TE %>%
 Correlation <- keepers_ws_TE %>%
   select(age_continuous, Average_90percentile, balance_vocab, word_vocab, TotalNW_Dom, TotalNW_NonDom,
          number_of_te, Dom_unique_words, NonDom_unique_words, concept_vocab) %>%
+  # recode the balance_vocab so that it would be in descending order, so the value of the most balanced would be the greatest
+  mutate(balance_vocab = balance_vocab*-1) %>%
+  # rename variables
   rename(Age_month = age_continuous,
          V = Average_90percentile,
          B = balance_vocab, 
@@ -540,17 +662,20 @@ Correlation <- keepers_ws_TE %>%
 library(Hmisc)
 mycor <- rcorr(as.matrix(Correlation), type="pearson")
 mycor$r
-mycor$P
+round(mycor$P, 2)
 
 library(corrplot)
 mycor <- round(cor(Correlation), 2)
 corrplot(mycor)
-write.csv(mycor, "ObservedTE_correlations.csv", col.names=NA)
+write.csv(mycor, "Output/ObservedTE_correlations.csv", col.names=NA)
 
 cor.test(Correlation$TE, Correlation$B, method = "pearson")
 cor.test(Correlation$TE, Correlation$W, method = "pearson")
 cor.test(Correlation$TE, Correlation$D, method = "pearson")
 cor.test(Correlation$TE, Correlation$N, method = "pearson")
+cor.test(Correlation$TE, Correlation$V, method = "pearson")
+cor.test(Correlation$Du, Correlation$B, method = "pearson")
+cor.test(Correlation$Nu, Correlation$B, method = "pearson")
 
 ```
 
