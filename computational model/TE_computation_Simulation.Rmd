@@ -293,17 +293,17 @@ data_Simulation3 <- rbind(TE_V150, TE_V300, TE_V450, TE_V600) %>%
   mutate_at(vars(-B), round, 0)
 
 
-# Simulation3: TE = I * (D*N/V)
+# Simulation3: TE = IND * (D*N/V)
 ## Defining the independence parameter I
-I1 = 1.5 # I > 1, TEs are MORE easily learned than unique words
-I2 = 0.5 # I < 1, TEs are LESS easily learned than unique words
+IND1 = 1.5 # IND > 1, TEs are MORE easily learned than unique words
+IND2 = 0.5 # IND < 1, TEs are LESS easily learned than unique words
 
 ## Visualizing the simulation
 Simulation3 <- data_Simulation3 %>%
-  ## Calculate where I > 1
-  mutate(TE_easier = I1*(D*N/V)) %>%
-  ## Calculate where I < 1
-  mutate(TE_harder = I2*(D*N/V)) %>%
+  ## Calculate where IND > 1
+  mutate(TE_easier = IND1*(D*N/V)) %>%
+  ## Calculate where IND < 1
+  mutate(TE_harder = IND2*(D*N/V)) %>%
   # Round to keep whole numbers only
   mutate_at(vars(-B), round, 0) %>%
   # Prepare dataset to plot
@@ -311,9 +311,9 @@ Simulation3 <- data_Simulation3 %>%
                names_to = "Model", values_to = "number_TE") %>%
   mutate(Model = factor(Model, levels=c("TE_harder", "TE", "TE_easier"))) %>%
   mutate(Model = recode(Model, 
-                        TE = "I = 1 (assuming independence of D and N)",
-                        TE_easier = "I = 1.5 (TEs are more easily learned)",
-                        TE_harder = "I = 0.5 (TE are less easily learned)")) %>%
+                        TE = "IND = 1 (assuming independence of D and N)",
+                        TE_easier = "IND = 1.5 (TEs are more easily learned)",
+                        TE_harder = "IND = 0.5 (TE are less easily learned)")) %>%
   mutate(bin_B = cut(B, breaks = 6, 
                      labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
   # ggplot
