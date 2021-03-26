@@ -21,38 +21,57 @@ library(ggpubr)
 
 ```
 
+
 # Simulation 1
 ## Infants of the same developmental level with different word vocabularies and balances of exposure
 ### V = 600
 ```{r}
+V = 600
+
 # Generating the parameters
-V <- 600 # setting V = 600 for the Simulation (keep V constant)
+W <- V # a range of total word vocabulary of a child
+N <- seq(0, W/2, by = 10) # a range of non-dominant words
+TE_W1 <- data.frame(V, W, N)
 
-W <- seq(0, 2*V, by = 25) # a range of total word vocabulary of a child
+W <- V-100 # a range of total word vocabulary of a child
+N <- seq(0, W/2, by = 10) # a range of non-dominant words
+TE_W2 <- data.frame(V, W, N)
 
-B <- seq(0.5, 1, by = 0.1) # a range of Balance, i.e. proportion use of dominant language (B ≤ .50)
+W <- V-100*2 # a range of total word vocabulary of a child
+N <- seq(0, W/2, by = 10) # a range of non-dominant words
+TE_W3 <- data.frame(V, W, N)
 
-# Generating sequence of W and B
-W_seq <- W %>% # a sequence of 0 to 2V
-  rep(., length(B)) # generate N repetitions of the sequence based on length of B
+W <- V-100*3 # a range of total word vocabulary of a child
+N <- seq(0, W/2, by = 10) # a range of non-dominant words
+TE_W4 <- data.frame(V, W, N)
 
-B_seq <- B %>%  # a sequence of 0.5 to 1
-  rep(., length(W)) # generate N repetitions of the sequence based on length of W
+W <- V-100*4 # a range of total word vocabulary of a child
+N <- seq(0, W/2, by = 10) # a range of non-dominant words
+TE_W5 <- data.frame(V, W, N)
+
+W <- V-100*5 # a range of total word vocabulary of a child
+N <- seq(0, W/2, by = 10) # a range of non-dominant words
+TE_W6 <- data.frame(V, W, N)
+
 
 # Creating the dataframe
-data_Simulation1 <- data.frame(V, W_seq) %>%
-  arrange(W_seq) %>%
-  rename(W = W_seq) %>%
-  mutate(B = B_seq) %>%
+data_Simulation1 <- rbind(TE_W1, TE_W2, TE_W3, TE_W4, TE_W5, TE_W6) %>%
+  # Get dominant words D
+  mutate(D = W - N) %>%
   # Create other variables
-  mutate(D = B*W, # Words produced in the dominant language
-         N = (1-B)*W, # Words produced in non-dominant language
+  mutate(B = N/(D+N), # balance,
          TE = (D*N)/V) %>% # If D and N are independent, TE = DN/V
-  # It is also not possible for D or N to exceed V, so filter out cases where D or N > V
-  filter_at(vars(D, N), all_vars(. <= V)) %>%
   # Round to keep whole numbers only
-  mutate_at(vars(-B), round, 0)
-
+  mutate_at(vars(-B), round, 0) %>%
+  # bin B into 6 groups
+  mutate(bin_B = case_when(B == 0.0 ~ "0",
+                           B > 0 & B <= 0.1 ~ "0.1",
+                           B > 0.1 & B <= 0.2 ~ "0.2",
+                           B > 0.2 & B <= 0.3 ~ "0.3", 
+                           B > 0.3 & B <= 0.4 ~ "0.4", 
+                           TRUE ~ "0.5")) %>%
+  arrange(bin_B)
+  
 
 # Visualizing Simulation 1
 Simulation1 <- data_Simulation1 %>%
@@ -60,119 +79,82 @@ Simulation1 <- data_Simulation1 %>%
   pivot_longer(c(W, D, N), names_to = "vocab_type", values_to = "number") %>%
   mutate(vocab_type = factor(vocab_type, levels=c("W", "D", "N"))) %>%
   mutate(vocab_type = recode(vocab_type, 
-                             W = "Panel A: Total vocabulary (W)", 
-                             D = "Panel B: Dominant vocabulary (D)", 
-                             N = "Panel C: Non-dominant vocabulary (N)")) %>%
-  mutate(B = as.factor(B)) %>%
-  ggplot(aes(x = number, y = TE, color = B)) +
-  #geom_point() +
+                             W = "Panel 1A: Total vocabulary (W)", 
+                             D = "Panel 1B: Dominant vocabulary (D)", 
+                             N = "Panel 1C: Non-dominant vocabulary (N)")) %>%
+  ggplot(aes(x = number, y = TE, color = bin_B, linetype = bin_B)) +
   stat_smooth(method = lm, se = F) +
+  scale_color_manual(values=c("#bdbdbd", "#969696", "#737373", "#525252", "#252525", "#000000")) + 
+  scale_linetype_manual(values=c("longdash", "dotted", "dotdash", "dashed", "twodash", "solid")) +
+  #scale_color_manual(values=c("#5e4fa2", "#3288bd", "#abdda4", "#fee08b", "#fc8d59", "#d53e4f")) + 
+  #scale_color_discrete(direction = -1) +
   theme_minimal() + 
   facet_grid(. ~ vocab_type) +
-  ylim(0, 600) +
   theme(axis.text.x = element_text(angle = 90),
         legend.position = "bottom",
-        plot.title = element_text(hjust = 0.5),
-        text = element_text(size=12),
+        plot.title = element_text(face = 'bold', size = 18, hjust = 0, vjust = 2),
+        plot.title.position = "plot",
+        text = element_text(size=14),
         panel.spacing.x = unit(2, "lines"),
         panel.background = element_rect(fill = NA, color = "black")) +
+  ylim(0, 200) +
+  xlim(0, 700) +
   labs(x = "Number of words", 
        y = "Total number of translation equivalents (TE)", 
-       color = "Balance (B)"
-       #, title = "Number of translation equivalent by balance in relation to different input measures "
-       ) +
-  guides(colour = guide_legend(nrow = 1))
+       color = "Balance (B)",
+       linetype = "Balance (B)",
+       title = "1) Simulated data") +
+  guides(color = guide_legend(reverse = T, nrow = 1),
+         linetype = guide_legend(reverse = T, nrow = 1)) 
 
 ggsave("plot_Simulation1.png", Simulation1,
        width = 10, height = 5)
-
 ```
 
 
 # Simulation 2
 ## Patterns of translation equivalent learning as a function of different developmental timepoints
-### V = 150, 300, 450, or 600
+### V = 200, 400, or 600
 ```{r}
 # V = 600
 ## Generating the parameters
 V <- 600
 W <- V # holding W constant
-B <- seq(0.5, 1, by = 0.01) # a range of Balance, i.e. proportion use of dominant language (B ≤ .50)
+N <- seq(0, W/2, by = 10) # a range of non-dominant words
+TE_V600 <- data.frame(V, W, N) 
 
-## Generating sequence of W and B
-W_seq <- W %>% 
-  rep(., length(B)) # generate N repetitions of the sequence based on length of B
-
-## Creating the dataframe
-TE_V600 <- data.frame(V, W_seq) %>%
-  rename(W = W_seq) %>%
-  mutate(B = B)
-
-# V = 450
-## Generating the parameters
-V <- 450
+V <- 400
 W <- V # holding W constant
-B <- seq(0.5, 1, by = 0.01) # a range of Balance, i.e. proportion use of dominant language (B ≤ .50)
+N <- seq(0, W/2, by = 10) # a range of non-dominant words
+TE_V400 <- data.frame(V, W, N) 
 
-## Generating sequence of W and B
-W_seq <- W %>% 
-  rep(., length(B)) # generate N repetitions of the sequence based on length of B
-
-## Creating the dataframe
-TE_V450 <- data.frame(V, W_seq) %>%
-  rename(W = W_seq) %>%
-  mutate(B = B)
-
-# V = 300
-## Generating the parameters
-V <- 300
+V <- 200
 W <- V # holding W constant
-B <- seq(0.5, 1, by = 0.01) # a range of Balance, i.e. proportion use of dominant language (B ≤ .50)
-
-## Generating sequence of W and B
-W_seq <- W %>% 
-  rep(., length(B)) # generate N repetitions of the sequence based on length of B
-
-## Creating the dataframe
-TE_V300 <- data.frame(V, W_seq) %>%
-  rename(W = W_seq) %>%
-  mutate(B = B)
-
-# V = 150
-## Generating the parameters
-V <- 150
-W <- V # holding W constant
-B <- seq(0.5, 1, by = 0.01) # a range of Balance, i.e. proportion use of dominant language (B ≤ .50)
-
-## Generating sequence of W and B
-W_seq <- W %>% 
-  rep(., length(B)) # generate N repetitions of the sequence based on length of B
-
-## Creating the dataframe
-TE_V150 <- data.frame(V, W_seq) %>%
-  rename(W = W_seq) %>%
-  mutate(B = B)
+N <- seq(0, W/2, by = 10) # a range of non-dominant words
+TE_V200 <- data.frame(V, W, N) 
 
 
-# Combining all the dataframes
-data_Simulation2 <- rbind(TE_V150, TE_V300, TE_V450, TE_V600) %>%
+# Creating the dataframe
+data_Simulation2 <- rbind(TE_V200, TE_V400, TE_V600) %>%
+  # Get dominant words D
+  mutate(D = W - N) %>%
   # Create other variables
-  mutate(D = B*W, # Words produced in the dominant language
-         N = (1-B)*W, # Words produced in non-dominant language
+  mutate(B = N/(D+N), # balance,
          TE = (D*N)/V, # If D and N are independent, TE = DN/V
          DU = D-TE, # Unique words in dominant language
          NU = N-TE) %>% # Unique words in non-dominant language
   # Round to keep whole numbers only
-  mutate_at(vars(-B), round, 0)
+  mutate_at(vars(-B), round, 0) %>%
+  # bin B into 3 groups
+  mutate(bin_B = case_when(B >= 0.35 ~ "Most Balanced",
+                           B <= 0.20 ~ "Least Balanced",
+                           TRUE ~ "Medium Balanced")) %>%
+  mutate(bin_B  = fct_rev(bin_B)) %>%
+  arrange(bin_B)
 
 
 # Visualizing Simulation 2
 Simulation2 <- data_Simulation2 %>%
-  mutate(bin_B = case_when(B < 0.6 ~ "0.5",
-                           B >= 0.6 & B < 0.7 ~ "0.6",
-                           B >= 0.7 & B < 0.8 ~ "0.7",
-                           B >= 0.8 & B < 0.9 ~ "0.8",
-                           TRUE ~ "0.9")) %>%
   pivot_longer(-c(V, W, B, bin_B), names_to = "vocab_type", values_to = "number") %>%
   filter(vocab_type %notin% c("D", "N")) %>%
   mutate(vocab_type = factor(vocab_type, levels=c("NU", "DU", "TE"))) %>%
@@ -181,21 +163,21 @@ Simulation2 <- data_Simulation2 %>%
   ggplot(aes(x = bin_B, y = n_words, fill = vocab_type)) + 
   geom_bar(position="stack", stat="identity") +
   facet_grid(. ~ V) +
-  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) + 
+  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) +
+  scale_x_discrete(labels = function(BalSubset) str_wrap(BalSubset, width = 10)) + 
+  ylim(0, 600) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90), 
-        legend.position = "bottom",
-        plot.title = element_text(hjust = 0.5),
-        text = element_text(size=12),
-        panel.spacing.x = unit(2, "lines"),
-        panel.background = element_rect(fill = NA, color = "black")) + 
-  labs(x = "Balance", 
-       y = "Number of concepts", 
-       title = "Vocabulary composition across different developmental timepoints (V)") 
+  theme(legend.position = "bottom",
+        plot.title = element_text(face = 'bold', size = 18, hjust = 0, vjust = 2),
+        plot.title.position = "plot",
+        text = element_text(size=14),
+        panel.spacing.x = unit(2, "lines")) + 
+  labs(x = "\nBalance (B)", 
+       y = "Number of concepts (C)", 
+       title = "Panel A: Simulated data")
 
 ggsave("plot_Simulation2.png", Simulation2,
         width = 10, height = 5)
-
 ```
 
 
@@ -205,92 +187,46 @@ ggsave("plot_Simulation2.png", Simulation2,
 # V = 600
 ## Generating the parameters
 V <- 600
-D <- seq(0, V, by = 25) 
-N <- seq(0, V, by = 25)
+W <- V
+N <- seq(0, W/2, by = 10)
+TE_V600 <- data.frame(V, W, N) 
 
-## Generating sequence of D and N
-D_seq <- D %>% # Words produced in the dominant language
-  rep(., length(N)) # generate N repetitions of the sequence based on length of N
-
-N_seq <- N %>% # Words produced in non-dominant language
-  rep(., length(D)) # generate N repetitions of the sequence based on length of D
-
-## Creating the dataframe
-TE_V600 <- data.frame(V, D_seq) %>%
-  arrange(D_seq) %>%
-  rename(D = D_seq) %>%
-  mutate(N = N_seq) 
-
-# V = 450
-## Generating the parameters
 V <- 450
-D <- seq(0, V, by = 25) 
-N <- seq(0, V, by = 25)
+W <- V
+N <- seq(0, W/2, by = 10)
+TE_V450 <- data.frame(V, W, N) 
 
-## Generating sequence of D and N
-D_seq <- D %>% # Words produced in the dominant language
-  rep(., length(N)) # generate N repetitions of the sequence based on length of N
-
-N_seq <- N %>% # Words produced in non-dominant language
-  rep(., length(D)) # generate N repetitions of the sequence based on length of D
-
-## Creating the dataframe
-TE_V450 <- data.frame(V, D_seq) %>%
-  arrange(D_seq) %>%
-  rename(D = D_seq) %>%
-  mutate(N = N_seq) 
-
-# V = 300
-## Generating the parameters
 V <- 300
-D <- seq(0, V, by = 25) 
-N <- seq(0, V, by = 25)
+W <- V
+N <- seq(0, W/2, by = 10)
+TE_V300 <- data.frame(V, W, N) 
 
-## Generating sequence of D and N
-D_seq <- D %>% # Words produced in the dominant language
-  rep(., length(N)) # generate N repetitions of the sequence based on length of N
-
-N_seq <- N %>% # Words produced in non-dominant language
-  rep(., length(D)) # generate N repetitions of the sequence based on length of D
-
-## Creating the dataframe
-TE_V300 <- data.frame(V, D_seq) %>%
-  arrange(D_seq) %>%
-  rename(D = D_seq) %>%
-  mutate(N = N_seq) 
-
-# V = 150
-## Generating the parameters
 V <- 150
-D <- seq(0, V, by = 25) 
-N <- seq(0, V, by = 25)
-
-## Generating sequence of D and N
-D_seq <- D %>% # Words produced in the dominant language
-  rep(., length(N)) # generate N repetitions of the sequence based on length of N
-
-N_seq <- N %>% # Words produced in non-dominant language
-  rep(., length(D)) # generate N repetitions of the sequence based on length of D
-
-## Creating the dataframe
-TE_V150 <- data.frame(V, D_seq) %>%
-  arrange(D_seq) %>%
-  rename(D = D_seq) %>%
-  mutate(N = N_seq) 
+W <- V
+N <- seq(0, W/2, by = 10)
+TE_V150 <- data.frame(V, W, N) 
 
 
-# Combining all the dataframes
+# Creating the dataframe
 data_Simulation3 <- rbind(TE_V150, TE_V300, TE_V450, TE_V600) %>%
-  # It is not possible for N > D, so keep only cases where D >= N
-  filter(D >= N) %>%
-  # Create TE 
-  mutate(W = D+N, # Total word vocabulary of a child
-         B = D/(D+N), # Balance, i.e. proportion use of non-dominant language (B ≤ .50)
-         TE = D*N/V) %>% # If D and N are independent, TE = DN/V
-  # Remove cases where B = NaN (those were all cases where both D and N are 0)
-  filter(!is.na(B)) %>%
+  # Get dominant words D
+  mutate(D = W - N) %>%
+  # Create other variables
+  mutate(B = N/(D+N), # balance,
+         TE = (D*N)/V) %>% # If D and N are independent, TE = DN/V
   # Round to keep whole numbers only
-  mutate_at(vars(-B), round, 0)
+  mutate_at(vars(-B), round, 0) %>%
+  # bin B into 6 groups
+  mutate(bin_B = case_when(B == 0.0 ~ "0",
+                           B > 0 & B <= 0.1 ~ "0.1",
+                           B > 0.1 & B <= 0.2 ~ "0.2",
+                           B > 0.2 & B <= 0.3 ~ "0.3", 
+                           B > 0.3 & B <= 0.4 ~ "0.4", 
+                           TRUE ~ "0.5")) %>%
+  arrange(bin_B)
+
+  mutate(bin_B = cut(B, breaks = 6, 
+                     labels = c("0", "0.1", "0.2", "0.3", "0.4", "0.5"))) %>%
 
 
 # Simulation3: TE = IND * (D*N/V)
@@ -305,7 +241,7 @@ Simulation3 <- data_Simulation3 %>%
   ## Calculate where IND < 1
   mutate(TE_harder = IND2*(D*N/V)) %>%
   # Round to keep whole numbers only
-  mutate_at(vars(-B), round, 0) %>%
+  mutate_at(vars(-c(B, bin_B)), round, 0) %>%
   # Prepare dataset to plot
   pivot_longer(c(TE, TE_harder, TE_easier), 
                names_to = "Model", values_to = "number_TE") %>%
@@ -314,26 +250,27 @@ Simulation3 <- data_Simulation3 %>%
                         TE = "IND = 1 (assuming independence of D and N)",
                         TE_easier = "IND = 1.5 (TEs are more easily learned)",
                         TE_harder = "IND = 0.5 (TE are less easily learned)")) %>%
-  mutate(bin_B = cut(B, breaks = 6, 
-                     labels = c("0.5", "0.6", "0.7", "0.8", "0.9", "1"))) %>%
   # ggplot
-  ggplot(aes(x = W, y = number_TE, color = bin_B)) +
+  ggplot(aes(x = W, y = number_TE, color = bin_B, linetype = bin_B)) +
   stat_smooth(method = lm, se = F) +
+  scale_color_manual(values=c("#bdbdbd", "#969696", "#737373", "#525252", "#252525", "#000000")) + 
+  scale_linetype_manual(values=c("longdash", "dotted", "dotdash", "dashed", "twodash", "solid")) +
+  #scale_color_discrete(direction = -1) +
   theme_minimal() + 
   facet_grid(. ~ Model) +
-  ylim(0, 600) +
   theme(axis.text.x = element_text(angle = 90),
         legend.position = "bottom") +
   theme(plot.title = element_text(hjust = 0.5),
         text = element_text(size=12),
-        panel.spacing.x = unit(2, "lines"),
+        panel.spacing.x = unit(2.5, "lines"),
         panel.background = element_rect(fill = NA, color = "black")) +
   labs(x = "Total word vocabulary (W)", 
        y = "Total number of translation equivalents (TE)", 
-       color = "Balance (B)") +
-  guides(colour = guide_legend(nrow = 1))
+       color = "Balance (B)",
+       linetype = "Balance (B)") +
+  guides(colour = guide_legend(reverse = T, nrow = 1),
+         linetype = guide_legend(reverse = T, nrow = 1))
 
 ggsave("plot_Simulation3.png", Simulation3, 
        width = 10, height = 5)
-
 ```
