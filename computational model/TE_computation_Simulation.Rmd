@@ -21,6 +21,77 @@ library(ggpubr)
 
 ```
 
+# Simulation 1
+## Infants of the same developmental level with different word vocabularies and balances of exposure
+### V = 600
+```{r}
+V = 600
+
+D_seq = seq(50, 600, by = 25)
+N_seq = seq(0, 600, by = 25)
+
+D = rep(D_seq, length(N_seq))
+N = rep(N_seq, length(D_seq))
+
+data_Simulation1 <- data.frame(V, D, N) %>%
+  arrange(D, N) %>%
+  filter(N <= D) %>%
+  # Get word vocabulary W
+  mutate(W = D + N) %>%
+  # Create other variables
+  mutate(B = N/(D+N), # balance,
+         TE = (D*N)/V) %>% # If D and N are independent, TE = DN/V
+  # Round to keep whole numbers only
+  mutate_at(vars(-B), round, 0) %>%
+  # bin B into 6 groups
+  mutate(bin_B = cut(B, breaks = 5, 
+                     labels = c("0.1", "0.2", "0.3", "0.4", "0.5"))) %>%
+  arrange(W, bin_B)
+
+
+# Visualizing Simulation 1
+Simulation1 <- data_Simulation1 %>%
+  # Convert to long data
+  pivot_longer(c(W, D, N), names_to = "vocab_type", values_to = "number") %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("W", "D", "N"))) %>%
+  mutate(vocab_type = recode(vocab_type, 
+                             W = "Panel 1A: Total vocabulary (W)", 
+                             D = "Panel 1B: Dominant vocabulary (D)", 
+                             N = "Panel 1C: Non-dominant vocabulary (N)")) %>%
+  ggplot(aes(x = number, y = TE, color = bin_B, linetype = bin_B)) +
+  stat_smooth(method = lm, se = F) +
+  scale_color_manual(values=c("#bdbdbd", "#969696", "#737373", "#525252", "#252525", "#000000")) + 
+  scale_linetype_manual(values=c("longdash", "dotted", "dotdash", "dashed", "twodash", "solid")) +
+  #scale_color_manual(values=c("#5e4fa2", "#3288bd", "#abdda4", "#fee08b", "#fc8d59", "#d53e4f")) + 
+  #scale_color_discrete(direction = -1) +
+  theme_minimal() + 
+  facet_grid(. ~ vocab_type) +
+  theme(axis.text.x = element_text(angle = 90),
+        legend.position = "bottom",
+        plot.title = element_text(face = 'bold', size = 18, hjust = 0, vjust = 2),
+        plot.title.position = "plot",
+        text = element_text(size=14),
+        panel.spacing.x = unit(2, "lines"),
+        panel.background = element_rect(fill = NA, color = "black")) +
+  ylim(0, 200) +
+  xlim(0, 700) +
+  labs(x = "Number of words", 
+       y = "Total number of translation equivalents (TE)", 
+       color = "Balance (B)",
+       linetype = "Balance (B)",
+       title = "1) Simulated data") +
+  guides(color = guide_legend(reverse = T, nrow = 1),
+         linetype = guide_legend(reverse = T, nrow = 1)) 
+
+ggsave("plot_Simulation1.png", Simulation1,
+       width = 10, height = 5)
+```
+
+
+
+
+
+
 
 # Simulation 1
 ## Infants of the same developmental level with different word vocabularies and balances of exposure
