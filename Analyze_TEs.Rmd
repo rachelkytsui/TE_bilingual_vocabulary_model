@@ -447,7 +447,6 @@ plot_stacked_byV <- keepers_ws_TE %>%
                                balance_vocab <= 0.20 ~ "Least Balanced",
                                TRUE ~ "Medium Balanced")) %>%
   mutate(BalSubset = fct_rev(BalSubset)) %>%
- # mutate(BalSubset = factor(BalSubset, levels=c("Most Balanced", "Medium Balanced", "Least Balanced"))) %>%
   arrange(desc(number_of_te)) %>%
   mutate(TE = number_of_te) %>%
   pivot_longer(-c(baby_id, age_months_percentile, balance_vocab, V_subset, BalSubset, word_vocab, TE), 
@@ -457,12 +456,11 @@ plot_stacked_byV <- keepers_ws_TE %>%
                        NonDom_unique_words = "Initial non-dominant word (NI)", 
                        Dom_unique_words = "Initial dominant word (DI)", 
                        number_of_te = "Translation equivalent (TE)")) %>%
-  group_by(age_months_percentile, BalSubset, Type) %>%
+  group_by(V_subset, BalSubset, Type) %>%
   summarise(n_words = mean(NumberOfWords)) %>%
   ggplot(aes(x = BalSubset, y = n_words, fill = Type)) +
   geom_bar(position="stack", stat="identity") +
-#  facet_grid(. ~ age_months_percentile) +
-  facet_wrap(. ~ age_months_percentile, ncol = 4) +
+  facet_grid(. ~ V_subset) +
   scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) + 
   scale_x_discrete(labels = function(BalSubset) str_wrap(BalSubset, width = 10)) + 
   ylim(0, 600) +
