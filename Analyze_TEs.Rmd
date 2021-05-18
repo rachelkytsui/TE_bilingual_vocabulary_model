@@ -576,7 +576,7 @@ pairwise.t.test(stacked_byV_wide$NonDom_unique_words, stacked_byV_wide$BalSubset
 V <- seq(150, 600, by = 150) # set V to 300, 450, and 600
 
 simulation3 <- function (V) {
-  D_seq = seq(100, V, by = 100) # sequence of D from 100 to V at an interval of 50
+  D_seq = seq(100, V, by = 100) # sequence of D from 100 to V at an interval of 100
   N_seq = seq(0, V, by = 25) # sequence of N from 0 to V at an interval of 25
   D <- rep(D_seq, length(N_seq))
   N <- rep(N_seq, length(D_seq))
@@ -970,13 +970,13 @@ cor.test(keepers_ws_TE$balance_vocab, keepers_ws_TE$balance_input, method = "pea
 ### Correlation between balance by vocabulary and raw language exposure to the non-dominant language
 cor.test(keepers_ws_TE$balance_vocab, keepers_ws_TE$LangNonDom_input, method = "pearson")
 
-plot(keepers_ws_TE$balance_vocab, keepers_ws_TE$LangNonDom_input,
      xlab = "Vocabulary balance (= N/W)",
-     ylab = "raw exposure to the non-dominant language") +
-  lines(lowess(keepers_ws_TE$balance_vocab, keepers_ws_TE$LangNonDom_input), col="blue") # lowess line (x,y)
-
+balance_correlation <- plot(keepers_ws_TE$balance_vocab, keepers_ws_TE$LangNonDom_input,
+                            xlab = "Vocabulary balance (= N/W)",
+                            ylab = "Raw exposure to the non-dominant language",
+                            cex.lab=1.0) +
+  #lines(lowess(keepers_ws_TE$balance_vocab, keepers_ws_TE$LangNonDom_input), col="blue") # lowess line (x,y)
   abline(lm(keepers_ws_TE$LangNonDom_input~keepers_ws_TE$balance_vocab), col="red") # regression line (y~x)
-lines(lowess(wt,mpg), col="blue") # lowess line (x,y)
 
 ```
 
