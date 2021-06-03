@@ -47,8 +47,7 @@ cdi_ws = readRDS(here::here("Data","output_analyzeSent.Rdata"))
 exclude babies out of 18-33m age range, monolinguals and those with >10% 3rd language exposure
 ```{r}
 # exclude kids that are bilingual at one visit, monolingual at another (regardless of direction)
-# switch from other to bilingual, or vice versa, or from other to monolingual and vice versa are ok
-exclude.lang_group_change  = cdi_ws %>%
+exclude.lang_group_change <- cdi_ws %>%
   filter(lang_group !="other") %>%
   group_by(baby_id) %>% 
   distinct(ID_testdate, .keep_all = T) %>%
@@ -58,7 +57,7 @@ exclude.lang_group_change  = cdi_ws %>%
   # uncomment see all visits for babies that have one visit excluded
   #filter(any(changed_language_group_status == TRUE) ) %>% View()
   filter(changed_language_group_status == TRUE) %>% 
-  pull(ID_testdate)
+  pull(baby_id)
 
 
 # Create exclusion criteria variables
@@ -69,7 +68,7 @@ cdi_ws_TE <- cdi_ws %>%
       # exclude babies with more than 10% exposure to a 3rd language
       lang_exp_other > 10 ~ 1,
       # exclude language group status changed from bilingual to mono or vice versa
-      ID_testdate %in% exclude.lang_group_change ~ 1, 
+      baby_id %in% exclude.lang_group_change ~ 1, 
       lang_group == "bilingual" ~ 0, #bilingual
       lang_group == "monolingual" ~ 0, # monolingual
       TRUE ~ 1), # all other cases exlude
@@ -77,7 +76,7 @@ cdi_ws_TE <- cdi_ws %>%
     # create an exclusion criteria for age
     exclude.age = case_when(!between(age_months_binned, 18, 33) ~ 1, 
                             TRUE ~ 0) # all other cases keep
-  )
+    )
 
 
 # Exclude participants
@@ -89,9 +88,9 @@ keepers_ws_TE <- cdi_ws_TE %>%
     exclude.age == 0,
     # exclude participants who don't have both CDI filled
     both_cdi_filled == "Y",
-    # keep only babies with at least 15% of E and 15% of F (i.e., exclude monolinguals)
-    lang_exp_eng >= 15 & lang_exp_eng <= 85,
-    lang_exp_fre >= 15 & lang_exp_fre <= 85)
+    # keep only babies with at least 25% of E and 25% of F (i.e., exclude monolinguals)
+    lang_exp_eng >= 25 & lang_exp_eng <= 75,
+    lang_exp_fre >= 25 & lang_exp_fre <= 75)
 
 
 ### Check how many distinct participants and data point we have
@@ -162,6 +161,153 @@ write.csv(keepers_ws_TE, "Data/keepers_ws_TE.csv", row.names = F)
 
 ```
 
+
+# descriptives
+## how many distinct participants and data point we have
+```{r}
+keepers_ws_TE %>% summarize(N_babies = n_distinct(baby_id),
+                            N_admin = n_distinct(ID_testdate))
+
+# number of participants who contributed multiple data points
+keepers_ws_TE %>% 
+  count(baby_id) %>% 
+  filter(n>1) %>%
+  nrow()
+
+N_duplicatedBabyID <- keepers_ws_TE %>%
+  filter(duplicated(baby_id)) # checking which baby_id has multiple data
+```
+
+## percentage of english-dominant & french-dominant children
+```{r}
+# dominance defined by language exposure
+keepers_ws_TE %>% group_by(lang_dom) %>% distinct(baby_id) %>%
+  count()
+
+# dominance defined by vocab size
+keepers_ws_TE %>% 
+  distinct(ID_testdate, .keep_all = TRUE) %>%
+  mutate(Eng_Dom = ifelse(LangDom_vocab == "English", 1, 0)) %>%
+  summarise(n = n(),
+            n_EngDom = sum(Eng_Dom),
+            percent_EngDom = n_EngDom/n * 100,
+            percent_FrDom = 100 - percent_EngDom)
+```
+
+## gender: percentage of girls
+```{r}
+keepers_ws_TE %>%
+  group_by(gender) %>% 
+  distinct(baby_id, .keep.all=T) %>%
+  count() 
+```
+
+## demographics table: age (in months), maternal edu in years, lang_exp_eng, lang_exp_fre, lang_exp_other
+```{r}
+# Create dataframe of demographics
+d_participants <- keepers_ws_TE %>%
+  select(ID_testdate, age_continuous, years_education, lang_exp_eng, lang_exp_fre, lang_exp_other) %>%
+  pivot_longer(-c(ID_testdate), names_to = "info", values_to = "value") %>%
+  group_by(info) %>%
+  summarise(n_subject = n_distinct(ID_testdate),
+            mean = mean(value, na.rm=T),
+            sd = sd(value, na.rm=T),
+            min = min(value, na.rm=T),
+            max = max(value, na.rm=T))
+```
+
+## who filled out the CDIs
+```{r}
+keepers_ws_TE %>% 
+  # combine grandmother & other family member
+  mutate(cdi_filled_by = replace(cdi_filled_by, cdi_filled_by == "Grandmother", "Other family member")) %>% 
+  # count number of respondents
+  count(cdi_filled_by) %>%
+  mutate(percentage = n/sum(n)*100) # calculate percentages
+```
+
+## average # of vocabulary
+```{r}
+vocabulary_average <- keepers_ws_TE %>%
+  select(ID_testdate, word_vocab, TotalNW_Dom, TotalNW_NonDom, concept_vocab,
+         number_of_te, Dom_unique_words, NonDom_unique_words) %>%
+  pivot_longer(-ID_testdate, names_to = "vocabulary", values_to = "number") %>%
+  group_by(vocabulary) %>%
+  summarise(mean = mean(number, na.rm = T), 
+            sd = sd(number, na.rm = T),
+            min = min(number, na.rm = T),
+            max = max(number, na.rm = T)) %>%
+  mutate_if(is.numeric, round, digits = 2)
+
+## paired-sample t-test to compare DOM and NONDOM
+t.test(keepers_ws_TE$TotalNW_Dom, keepers_ws_TE$TotalNW_NonDom, 
+       paired = TRUE) 
+
+## paired-sample t-test to compare DI and NI
+t.test(keepers_ws_TE$Dom_unique_words, keepers_ws_TE$NonDom_unique_words, 
+       paired = TRUE) 
+```
+
+## average balance and comparison with balance by input
+```{r}
+# Average BALANCE score (defined by vocabulary balance)
+keepers_ws_TE %>%
+  summarise(mean = mean(balance_vocab, na.rm = T),
+            sd = sd(balance_vocab, na.rm = T),
+            min = min(balance_vocab, na.rm = T),
+            max = max(balance_vocab, na.rm = T))
+
+# grouped by language-dominance
+keepers_ws_TE %>%
+  group_by(LangDom_vocab) %>%
+  summarise(mean = mean(balance_vocab, na.rm = T),
+            sd = sd(balance_vocab, na.rm = T),
+            min = min(balance_vocab, na.rm = T),
+            max = max(balance_vocab, na.rm = T))
+
+t.test(balance_vocab ~ LangDom_vocab, keepers_ws_TE) # t-test to compare the two language groups
+
+# Comparsion with balance by input (which is defined with reference to the lang_dom defined by vocab size)
+keepers_ws_TE %>%
+  mutate(consistent_LangDom = if_else(lang_dom != LangDom_vocab, 0, 1)) %>% # 1= consistent, 0 = inconsistent
+  summarise(n = n(),
+            n_consistent = sum(consistent_LangDom),
+            percentage_consistent = n_consistent/n*100,
+            n_inconsistent = n - n_consistent,
+            percentage_inconsistent = n_inconsistent/n*100)
+
+keepers_ws_TE_withoutInconsistent <- keepers_ws_TE %>%
+  mutate(consistent_LangDom = if_else(lang_dom != LangDom_vocab, 0, 1)) %>% # 1= consistent, 0 = inconsistent
+  filter(consistent_LangDom == 1)
+
+## Correlation between balance by vocabulary and balance by input
+#cor.test(keepers_ws_TE$balance_vocab, keepers_ws_TE$balance_input, method = "pearson")
+
+### Correlation between balance by vocabulary and raw language exposure to the non-dominant language
+cor.test(keepers_ws_TE$balance_vocab, keepers_ws_TE$LangNonDom_input, method = "pearson")
+
+balance_correlation <- plot(keepers_ws_TE$balance_vocab, keepers_ws_TE$LangNonDom_input,
+                            xlab = "Vocabulary balance (= N/W)",
+                            ylab = "Raw exposure to the non-dominant language",
+                            cex.lab=1.0) +
+  #lines(lowess(keepers_ws_TE$balance_vocab, keepers_ws_TE$LangNonDom_input), col="blue") # lowess line (x,y)
+  abline(lm(keepers_ws_TE$LangNonDom_input~keepers_ws_TE$balance_vocab), col="red") # regression line (y~x)
+
+balance_correlation <- keepers_ws_TE %>%
+  ggplot(aes(x = balance_vocab, y = LangNonDom_input)) +
+  stat_smooth(method = lm, se = F, color = "black") +
+  geom_point(shape = 1) + 
+  theme_light() + 
+  labs(x = "Vocabulary BALANCE (= NONDOM/WORD)", 
+       y = "Raw exposure to the non-dominant language (%)") +
+  theme(text = element_text(size=12))
+
+ggsave("Output/plot_BALANCE_correlation.png", balance_correlation,
+       width = 6, height = 5)
+
+```
+
+
 # Percentile information from WordbankR
 ```{r}
 
@@ -195,6 +341,7 @@ ws_percentile <- merge(english_ws_percentile, french_ws_percentile,
 
 write.csv(ws_percentile, "Output/ws_percentile.csv", row.names = F)
 ```
+
 
 # CDI percentile for the hypothetical child Jamie
 ```{r}
@@ -233,45 +380,91 @@ keepers_ws_TE <- keepers_ws_TE %>%
 ```
 
 
-# Simulation 1: simulating infants of the same developmental level with different word vocabularies and balances of exposure (V = 600)
+# Correlation among variables in the observed data
+```{r}
+Correlation <- keepers_ws_TE %>%
+  select(age_continuous, Average_90percentile, balance_vocab, word_vocab, TotalNW_Dom, TotalNW_NonDom,
+         number_of_te, Dom_unique_words, NonDom_unique_words, concept_vocab) %>%
+  # rename variables
+  rename(Age_month = age_continuous,
+         V = Average_90percentile,
+         B = balance_vocab, 
+         W = word_vocab,
+         D = TotalNW_Dom, 
+         N = TotalNW_NonDom, 
+         TE = number_of_te, 
+         DI = Dom_unique_words, 
+         NI = NonDom_unique_words, 
+         C = concept_vocab)
+
+# Correlation with corrections for multiple comparisons
+library(psych)
+TE_corr <- corr.test(Correlation, use = "pairwise", method = "pearson", adjust = "BY")
+
+write.csv(round(TE_corr$r, 3), file="Output/ObservedTE_correlations_r.csv")  ## coefficients
+write.csv(round(TE_corr$p, 3), file="Output/ObservedTE_correlations_p.csv")  ## p-values
+
+
+library(Hmisc)
+mycor <- rcorr(as.matrix(Correlation), type="pearson")
+mycor$r
+round(mycor$P, 3)
+round(p.adjust(mycor$P, "BY"))
+
+library(corrplot)
+corrplot(mycor)
+write.csv(mycor, "Output/ObservedTE_correlations.csv", col.names=NA)
+
+cor.test(Correlation$TE, Correlation$B, method = "pearson")
+cor.test(Correlation$TE, Correlation$W, method = "pearson")
+cor.test(Correlation$TE, Correlation$D, method = "pearson")
+cor.test(Correlation$TE, Correlation$N, method = "pearson")
+cor.test(Correlation$TE, Correlation$V, method = "pearson")
+cor.test(Correlation$DI, Correlation$B, method = "pearson")
+cor.test(Correlation$NI, Correlation$B, method = "pearson")
+
+```
+
+
+# Simulation 1: simulating infants of the same developmental level with different word vocabularies and balances of exposure (LEARNABLE = 600)
 ```{r}
 ## generate the simulation data
-simulation1 <- function (V) {
-  D_seq <- seq(100, V, by = 100) # sequence of D from 100 to V at an interval of 100
-  N_seq <- seq(0, V, by = 10) # sequence of N from 0 to V at an interval of 10
-  D <- rep (D_seq, length(N_seq))
-  N <- rep(N_seq, length(D_seq))
-  data_simulation1 <<- data.frame(V, D, N)
+simulation1 <- function (LEARNABLE) {
+  DOM_seq <- seq(100, LEARNABLE, by = 100) # sequence of D from 100 to V at an interval of 100
+  NONDOM_seq <- seq(0, LEARNABLE, by = 10) # sequence of N from 0 to V at an interval of 10
+  DOM <- rep (DOM_seq, length(NONDOM_seq))
+  NONDOM <- rep(NONDOM_seq, length(DOM_seq))
+  data_simulation1 <<- data.frame(LEARNABLE, DOM, NONDOM)
 }
 
 simulation1(600) # setting V = 600
 
 ## clean the simulation data
 data_simulation1 <- data_simulation1 %>%
-  arrange(D, N) %>%
-  filter(N <= D) %>%
+  arrange(DOM, NONDOM) %>%
+  filter(NONDOM <= DOM) %>%
   # Get word vocabulary W
-  mutate(W = D + N) %>%
+  mutate(WORD = DOM + NONDOM) %>%
   # Create other variables
-  mutate(B = N/(D+N), # balance,
-         TE = (D*N)/V) %>% # If D and N are independent, TE = DN/V
+  mutate(BALANCE = NONDOM/(DOM+NONDOM), 
+         TE = (DOM*NONDOM)/LEARNABLE) %>% # If DOM and NONDOM are independent, TE = DOM*NONDOM/LEARNABLE
   # Round to keep whole numbers only
-  mutate_at(vars(-B), round, 0) %>%
+  mutate_at(vars(-BALANCE), round, 0) %>%
   # bin B into 6 groups
-  mutate(bin_B = cut(B, breaks = 5, 
+  mutate(bin_BALANCE = cut(BALANCE, breaks = 5, 
                      labels = c("0.1", "0.2", "0.3", "0.4", "0.5"))) %>%
-  arrange(D, N, bin_B)
+  arrange(DOM, NONDOM, bin_BALANCE)
 
 ## visualizing Simulation 1
 simulation1 <- data_simulation1 %>%
   # convert to long data
-  pivot_longer(c(W, D, N), names_to = "vocab_type", values_to = "number") %>%
-  mutate(vocab_type = factor(vocab_type, levels=c("D", "N", "W"))) %>%
+  pivot_longer(c(WORD, DOM, NONDOM), names_to = "vocab_type", values_to = "number") %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("DOM", "NONDOM", "WORD"))) %>%
   mutate(vocab_type = recode(vocab_type, 
-                             D = "Panel 1A: Dominant vocabulary (D)", 
-                             N = "Panel 1B: Non-dominant vocabulary (N)",
-                             W = "Panel 1C: Total vocabulary (W)")) %>%
-  ggplot(aes(x = number, y = TE, color = bin_B, linetype = bin_B)) +
+                             DOM = "Panel 1A: Dominant vocabulary \n (DOM)", 
+                             NONDOM = "Panel 1B: Non-dominant vocabulary \n (NONDOM)",
+                             WORD = "Panel 1C: Total vocabulary \n (WORD)")) %>%
+  ggplot(aes(x = number, y = TE, color = bin_BALANCE, linetype = bin_BALANCE)) +
   stat_smooth(method = lm, se = F) +
   scale_color_manual(values=c("#bdbdbd", "#737373", "#525252", "#252525", "#000000")) + 
   scale_linetype_manual(values=c("longdash", "dotdash", "dashed", "twodash", "solid")) +
@@ -286,11 +479,12 @@ simulation1 <- data_simulation1 %>%
         text = element_text(size=14),
         panel.spacing.x = unit(2, "lines"),
         panel.background = element_rect(fill = NA, color = "black")) +
-  ylim(0, 200) +
+  ylim(0, 600) +
+  xlim(0, 1000) +
   labs(x = "Number of words", 
        y = "Total number of translation equivalents (TE)", 
-       color = "Balance (B)",
-       linetype = "Balance (B)",
+       color = "Vocabulary balance (BALANCE)",
+       linetype = "Vocabulary balance (BALANCE)",
        title = "1) Simulated data") +
   guides(color = guide_legend(reverse = T, nrow = 1),
          linetype = guide_legend(reverse = T, nrow = 1)) 
@@ -306,20 +500,19 @@ Observed_plot_inputs_TE <- keepers_ws_TE %>%
   pivot_longer(c(word_vocab, TotalNW_Dom, TotalNW_NonDom), names_to = "vocab_type", values_to = "number") %>%
   mutate(vocab_type = factor(vocab_type, levels=c("TotalNW_Dom", "TotalNW_NonDom", "word_vocab"))) %>%
   mutate(vocab_type = recode(vocab_type, 
-                             TotalNW_Dom = "Panel 2A: Dominant vocabulary (D)", 
-                             TotalNW_NonDom = "Panel 2B: Non-dominant vocabulary (N)",
-                             word_vocab = "Panel 2C: Total vocabulary (W)")) %>%
-  mutate(bin_B = cut(balance_vocab, breaks = 5, 
+                             TotalNW_Dom = "Panel 2A: Dominant vocabulary \n (DOM)", 
+                             TotalNW_NonDom = "Panel 2B: Non-dominant vocabulary \n (NONDOM)",
+                             word_vocab = "Panel 2C: Total vocabulary \n (WORD)")) %>%
+  mutate(bin_BALANCE = cut(balance_vocab, breaks = 5, 
                      labels = c("0.1", "0.2", "0.3", "0.4", "0.5"))) %>%
   #mutate(bin_B = case_when(balance_vocab < 0.2 ~ "0.1",
   #                         balance_vocab >= 0.2 & balance_vocab < 0.3 ~ "0.2",
   #                         balance_vocab >= 0.3 & balance_vocab < 0.4 ~ "0.3",
   #                         balance_vocab >= 0.4 & balance_vocab < 0.5 ~ "0.5",
   #                         TRUE ~ "0.5")) %>%
-  ggplot(aes(x = number, y = number_of_te, color = bin_B, linetype = bin_B)) +
+  ggplot(aes(x = number, y = number_of_te, color = bin_BALANCE, linetype = bin_BALANCE)) +
   #geom_point() +
   stat_smooth(method = lm, se = F) +
-  #scale_color_manual(values=c("#3288bd", "#abdda4", "#fee08b", "#fc8d59", "#d53e4f")) + 
   scale_color_manual(values=c("#bdbdbd", "#737373", "#525252", "#252525", "#000000")) + 
   scale_linetype_manual(values=c("longdash", "dotdash", "dashed", "twodash", "solid")) + 
   theme_minimal() + 
@@ -331,10 +524,12 @@ Observed_plot_inputs_TE <- keepers_ws_TE %>%
         legend.position = "bottom",
         panel.spacing.x = unit(2, "lines"),
         panel.background = element_rect(fill = NA, color = "black")) +
+  ylim(0, 600) +
+  xlim(0, 1000) +
   labs(x = "Number of words", 
        y = "Total number of translation equivalents (TE)", 
-       color = "Balance (B)",
-       linetype = "Balance (B)",
+       color = "Vocabulary balance (BALANCE)",
+       linetype = "Vocabulary balance (BALANCE)",
        title = "2) Observed data") +
   guides(colour = guide_legend(reverse = T, nrow = 1),
          linetype = guide_legend(reverse = T, nrow = 1))
@@ -348,22 +543,25 @@ plot_Simulation1plusData <- ggarrange(simulation1,
 ggsave("Output/plot_Simulation1plusData.png", plot_Simulation1plusData,
        width = 10, height = 10)
 
-#ggsave("Output/Observed_plot_inputs_TE.png", Observed_plot_inputs_TE,
-#       width = 10, height = 5)
-
 
 ### one-way ANOVA to compare the 5 balance groups
-aov_TE_binB <- keepers_ws_TE %>% 
-  mutate(bin_B = cut(balance_vocab, breaks = 5, 
+aov_TE_binBALANCE <- keepers_ws_TE %>% 
+  mutate(bin_BALANCE = cut(balance_vocab, breaks = 5, 
                      labels = c("0.1", "0.2", "0.3", "0.4", "0.5"))) %>%
-  aov(number_of_te ~ bin_B, data = .)
+  aov(number_of_te ~ bin_BALANCE, data = .)
 
-summary(aov_TE_binB)
+summary(aov_TE_binBALANCE)
 
-mean_TE_binB <- keepers_ws_TE %>% 
-  mutate(bin_B = cut(balance_vocab, breaks = 5, 
+check <- keepers_ws_TE %>% 
+  mutate(bin_BALANCE = cut(balance_vocab, breaks = 5, 
+                     labels = c("0.1", "0.2", "0.3", "0.4", "0.5"))) 
+
+pairwise.t.test(check$number_of_te, check$bin_BALANCE)
+
+mean_TE_binBALANCE <- keepers_ws_TE %>% 
+  mutate(bin_BALANCE = cut(balance_vocab, breaks = 5, 
                      labels = c("0.1", "0.2", "0.3", "0.4", "0.5"))) %>%
-  group_by(bin_B) %>%
+  group_by(bin_BALANCE) %>%
   summarize(n = n(),
             mean_TE = mean(number_of_te, na.rm = T),
             sd_TE = sd(number_of_te, na.rm = T),
@@ -374,52 +572,52 @@ mean_TE_binB <- keepers_ws_TE %>%
 
 
 
-# Simulation 2: simulating patterns of translation equivalent learning as a function of different developmental timepoints (V = 300, 450, or 600)
+# Simulation 2: simulating patterns of translation equivalent learning as a function of different developmental timepoints (LEARNABLE = 300, 450, or 600)
 ```{r}
 ## generate the simulation data
-V <- seq(300, 600, by = 150) # set V to 300, 450, and 600
+LEARNABLE <- seq(300, 600, by = 150) # set LEARNABLE to 300, 450, and 600
 
-simulation2 <- function (V) {
-  D_seq <- seq(100, V, by = 100) # sequence of D from 100 to V at an interval of 100
-  N_seq <- seq(0, V, by = 25) # sequence of N from 0 to V at an interval of 25
-  D <- rep(D_seq, length(N_seq))
-  N <- rep(N_seq, length(D_seq))
-  data_simulation2 <<- data.frame(V, D, N)
+simulation2 <- function (LEARNABLE) {
+  DOM_seq <- seq(100, LEARNABLE, by = 100) # sequence of D from 100 to V at an interval of 100
+  NONDOM_seq <- seq(0, LEARNABLE, by = 25) # sequence of N from 0 to V at an interval of 25
+  DOM <- rep(DOM_seq, length(NONDOM_seq))
+  NONDOM <- rep(NONDOM_seq, length(DOM_seq))
+  data_simulation2 <<- data.frame(LEARNABLE, DOM, NONDOM)
 }
 
-data_simulation2 <- do.call(rbind, lapply(V, simulation2)) %>%
-  arrange(V, D, N) %>%
-  filter(N <= D) %>%
+data_simulation2 <- do.call(rbind, lapply(LEARNABLE, simulation2)) %>%
+  arrange(LEARNABLE, DOM, NONDOM) %>%
+  filter(NONDOM <= DOM) %>%
   # Create other variables
-  mutate(W = D + N, # word vocabulary W
-         B = N/(D+N), # balance,
-         TE = (D*N)/V, # If D and N are independent, TE = DN/V
-         DI = D-TE, # Unique words in dominant language
-         NI = N-TE) %>% # Unique words in non-dominant language
+  mutate(WORD = DOM + NONDOM, # word vocabulary 
+         BALANCE = NONDOM/(DOM+NONDOM), # balance,
+         TE = (DOM*NONDOM)/LEARNABLE, # If D and N are independent, TE = DN/V
+         DOM_SINGLET = DOM-TE, # Unique words in dominant language
+         NONDOM_SINGLET = NONDOM-TE) %>% # Unique words in non-dominant language
   # Round to keep whole numbers only
-  mutate_at(vars(-B), round, 0) %>%
+  mutate_at(vars(-BALANCE), round, 0) %>%
   # bin B into 3 groups
-  mutate(bin_B = case_when(B >= 0.36 ~ "Most Balanced",
-                           B <= 0.20 ~ "Least Balanced",
-                           TRUE ~ "Medium Balanced")) %>%
-  mutate(bin_B  = fct_rev(bin_B)) %>%
-  arrange(D, N, bin_B)
+  mutate(bin_BALANCE = case_when(BALANCE >= 0.36 ~ "Most Balanced",
+                                 BALANCE <= 0.20 ~ "Least Balanced",
+                                 TRUE ~ "Medium Balanced")) %>%
+  mutate(bin_BALANCE  = fct_rev(bin_BALANCE)) %>%
+  arrange(DOM, NONDOM, bin_BALANCE)
 
 ## visualizing Simulation 2
 simulation2 <- data_simulation2 %>%
-  pivot_longer(-c(V, W, B, bin_B), names_to = "vocab_type", values_to = "number") %>%
-  filter(vocab_type %notin% c("D", "N")) %>%
-  mutate(vocab_type = factor(vocab_type, levels=c("NI", "DI", "TE"))) %>%
-  mutate(V_label = case_when(V == 600 ~ "V = 600",
-                             V == 450 ~ "V = 450",
-                             V == 300 ~ "V = 300")) %>%
-  group_by(V, V_label, bin_B, vocab_type) %>%
+  pivot_longer(-c(LEARNABLE, WORD, BALANCE, bin_BALANCE), names_to = "vocab_type", values_to = "number") %>%
+  filter(vocab_type %notin% c("DOM", "NONDOM")) %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("NONDOM_SINGLET", "DOM_SINGLET", "TE"))) %>%
+  mutate(LEARNABLE_label = case_when(LEARNABLE == 600 ~ "LEARNABLE = 600",
+                                     LEARNABLE == 450 ~ "LEARNABLE = 450",
+                                     LEARNABLE == 300 ~ "LEARNABLE = 300")) %>%
+  group_by(LEARNABLE, LEARNABLE_label, bin_BALANCE, vocab_type) %>%
   summarise(n_words = mean(number)) %>%
-  ggplot(aes(x = bin_B, y = n_words, fill = vocab_type)) + 
+  ggplot(aes(x = bin_BALANCE, y = n_words, fill = vocab_type)) + 
   geom_bar(position="stack", stat="identity") +
-  facet_grid(. ~ V_label) +
+  facet_grid(. ~ LEARNABLE_label) +
   scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) +
-  scale_x_discrete(labels = function(BalSubset) str_wrap(BalSubset, width = 10)) + 
+  scale_x_discrete(labels = function(bin_BALANCE) str_wrap(bin_BALANCE, width = 10)) + 
   ylim(0, 600) +
   theme_minimal() +
   theme(legend.position = "bottom",
@@ -427,8 +625,8 @@ simulation2 <- data_simulation2 %>%
         plot.title.position = "plot",
         text = element_text(size=14),
         panel.spacing.x = unit(2, "lines")) + 
-  labs(x = "\nBalance (B)", 
-       y = "Number of concepts (C)", 
+  labs(x = "\nVocabulary balance (BALANCE)", 
+       y = "Number of concepts (CONCEPT)", 
        title = "Panel A: Simulated data")
 
 ggsave("Output/plot_Simulation2.png", simulation2,
@@ -437,30 +635,30 @@ ggsave("Output/plot_Simulation2.png", simulation2,
 
 ## Observed data: Testing Simulation 2
 ```{r}
-plot_stacked_byV <- keepers_ws_TE %>%
+plot_stacked_byLEARNABLE <- keepers_ws_TE %>%
   select(baby_id, age_months_percentile, balance_vocab, word_vocab, number_of_te, Dom_unique_words, NonDom_unique_words) %>%
   # Subset developmental level (i.e., Average_90percentile) by 3 levels 
-  mutate(V_subset = case_when(age_months_percentile <= 22 ~ "18-22 months (V = 244.9 - 451.9)",
-                              age_months_percentile > 22 & age_months_percentile <= 27 ~ "23-27 months (V = 491.8 - 604.1)",
-                              TRUE ~ "28-33 months (V = 620.4 - 638.9)")) %>%
-  mutate(BalSubset = case_when(balance_vocab >= 0.36 ~ "Most Balanced",
+  mutate(LEARNABLE_subset = case_when(age_months_percentile <= 22 ~ "18-22 months \n (LEARNABLE = 244.9 - 451.9)",
+                                      age_months_percentile > 22 & age_months_percentile <= 27 ~ "23-27 months \n (LEARNABLE = 491.8 - 604.1)",
+                                      TRUE ~ "28-33 months \n (LEARNABLE = 620.4 - 638.9)")) %>%
+  mutate(BalSubset = case_when(balance_vocab > 0.35 ~ "Most Balanced",
                                balance_vocab <= 0.20 ~ "Least Balanced",
                                TRUE ~ "Medium Balanced")) %>%
   mutate(BalSubset = fct_rev(BalSubset)) %>%
   arrange(desc(number_of_te)) %>%
   mutate(TE = number_of_te) %>%
-  pivot_longer(-c(baby_id, age_months_percentile, balance_vocab, V_subset, BalSubset, word_vocab, TE), 
+  pivot_longer(-c(baby_id, age_months_percentile, balance_vocab, LEARNABLE_subset, BalSubset, word_vocab, TE), 
                names_to = "Type", values_to = "NumberOfWords") %>%
   mutate(Type = factor(Type, levels=c("NonDom_unique_words", "Dom_unique_words", "number_of_te"))) %>%
   mutate(Type = recode(Type, 
-                       NonDom_unique_words = "Initial non-dominant word (NI)", 
-                       Dom_unique_words = "Initial dominant word (DI)", 
+                       NonDom_unique_words = "Singlet in non-dominant language (NONDOM-SINGLET)", 
+                       Dom_unique_words = "Singlet in dominant language (DOM-SINGLET)", 
                        number_of_te = "Translation equivalent (TE)")) %>%
-  group_by(V_subset, BalSubset, Type) %>%
+  group_by(LEARNABLE_subset, BalSubset, Type) %>%
   summarise(n_words = mean(NumberOfWords)) %>%
   ggplot(aes(x = BalSubset, y = n_words, fill = Type)) +
   geom_bar(position="stack", stat="identity") +
-  facet_grid(. ~ V_subset) +
+  facet_grid(. ~ LEARNABLE_subset) +
   scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) + 
   scale_x_discrete(labels = function(BalSubset) str_wrap(BalSubset, width = 10)) + 
   ylim(0, 600) +
@@ -471,15 +669,16 @@ plot_stacked_byV <- keepers_ws_TE %>%
         plot.title.position = "plot",
         text = element_text(size=14),
         panel.spacing.x = unit(2, "lines")) + 
-  labs(x = "\nBalance (B)", 
-       y = "Number of concepts (C)",
+  guides(fill=guide_legend(nrow=3,byrow=TRUE)) + 
+  labs(x = "\nVocabulary balance (BALANCE)", 
+       y = "Number of concepts (CONCEPT)",
        title = "Panel B: Observed data") 
 
 
 plot_Simulation2plusData <- ggarrange(simulation2 + rremove("legend"), 
-                                      plot_stacked_byV,
+                                      plot_stacked_byLEARNABLE,
                                       nrow = 2,
-                                      heights=c(0.9,1))
+                                      heights=c(0.8,1))
 
 ggsave("Output/plot_Simulation2plusData.png", plot_Simulation2plusData,
        width = 10, height = 10)
@@ -501,18 +700,18 @@ mean_conceptV_Vsubset <- keepers_ws_TE_3Vsubset %>%
             max_conceptV = max(concept_vocab, na.rm = T))
 
 pairwise.t.test(keepers_ws_TE_3Vsubset$concept_vocab, keepers_ws_TE_3Vsubset$V_subset,
-                 p.adjust.method = "bonferroni")
+                 p.adjust.method = "BH")
 
 ## Mean proportion of TE
 stacked_byV_wide <- keepers_ws_TE %>%
   select(baby_id, age_months_percentile, balance_vocab, word_vocab, concept_vocab, 
-         propTE, number_of_te, Dom_unique_words, NonDom_unique_words) %>%
+         number_of_te, Dom_unique_words, NonDom_unique_words) %>%
   # Subset developmental level (i.e., Average_90percentile) by 3 levels 
   mutate(V_subset = case_when(age_months_percentile <= 22 ~ "18-22 months",
                               age_months_percentile > 22 & age_months_percentile <= 27 ~ "23-27 months",
                               TRUE ~ "28-33 months")) %>%
-  mutate(BalSubset = case_when(balance_vocab <= 0.65 ~ "Most Balanced",
-                               balance_vocab >= 0.80 ~ "Least Balanced",
+  mutate(BalSubset = case_when(balance_vocab > 0.35 ~ "Most Balanced",
+                               balance_vocab <= 0.20 ~ "Least Balanced",
                                TRUE ~ "Medium Balanced")) 
 
 
@@ -531,7 +730,7 @@ stacked_byV_wide %>%
             min_TE = min(number_of_te, na.rm=T),
             max_TE = max(number_of_te, na.rm=T))
 
-TE_byV_anova <- aov(propTE ~ V_subset, data = stacked_byV_wide)
+TE_byV_anova <- aov(number_of_te ~ V_subset, data = stacked_byV_wide)
 summary(TE_byV_anova)
 
 pairwise.t.test(stacked_byV_wide$number_of_te, stacked_byV_wide$V_subset,
@@ -570,58 +769,55 @@ pairwise.t.test(stacked_byV_wide$NonDom_unique_words, stacked_byV_wide$BalSubset
 
 
 
-# Simulation 3: Non-independence of dominant-language (D) and non-dominant language words (N)
+# Simulation 3: Non-independence of dominant-language (DOM) and non-dominant language words (NONDOM)
 ```{r}
 ## generate the simulation data
-V <- seq(150, 600, by = 150) # set V to 300, 450, and 600
+LEARNABLE <- seq(150, 600, by = 150) # set LEARNABLE to 300, 450, and 600
 
-simulation3 <- function (V) {
-  D_seq = seq(100, V, by = 100) # sequence of D from 100 to V at an interval of 100
-  N_seq = seq(0, V, by = 25) # sequence of N from 0 to V at an interval of 25
-  D <- rep(D_seq, length(N_seq))
-  N <- rep(N_seq, length(D_seq))
-  data_simulation3 <<- data.frame(V, D, N)
+simulation3 <- function (LEARNABLE) {
+  DOM_seq = seq(100, LEARNABLE, by = 100) # sequence of DOM from 100 to LEARNABLE at an interval of 100
+  NONDOM_seq = seq(0, LEARNABLE, by = 25) # sequence of NONDOM from 0 to LEARNABLE at an interval of 25
+  DOM <- rep(DOM_seq, length(NONDOM_seq))
+  NONDOM <- rep(NONDOM_seq, length(DOM_seq))
+  data_simulation3 <<- data.frame(LEARNABLE, DOM, NONDOM)
 }
 
-data_simulation3 <- do.call(rbind, lapply(V, simulation3)) %>%
-  arrange(V, D, N) %>%
-  filter(N <= D) %>% # eliminate cases when N > D
-  mutate(W = D+N, # word vocabulary W
-         B = N/(D+N), # balance B
-         TE = D*N/V) %>% # If D and N are independent, TE = DN/V
-  mutate_at(vars(-B), round, 0) %>%
-  mutate(bin_B = cut(B, breaks = 5, 
+data_simulation3 <- do.call(rbind, lapply(LEARNABLE, simulation3)) %>%
+  arrange(LEARNABLE, DOM, NONDOM) %>%
+  filter(NONDOM <= DOM) %>% # eliminate cases when NONDOM > DOM
+  mutate(WORD = DOM+NONDOM, # word vocabulary
+         BALANCE = NONDOM/(DOM+NONDOM), # balance 
+         TE = DOM*NONDOM/LEARNABLE) %>% # If DOM and NONDOM are independent, TE = DOM*NONDOM/LEARNABLE
+  mutate_at(vars(-BALANCE), round, 0) %>%
+  mutate(bin_BALANCE = cut(BALANCE, breaks = 5, 
                      labels = c("0.1", "0.2", "0.3", "0.4", "0.5"))) %>%
-  arrange(bin_B)
+  arrange(bin_BALANCE)
 
 
-## Simulation3: TE = IND * (D*N/V)
-### defining the independence parameter I
-IND1 = 1.5 # IND > 1, TEs are MORE easily learned than unique words
-IND2 = 0.5 # IND < 1, TEs are LESS easily learned than unique words
+## Simulation3: TE = BIAS * (DOM*NONDOM/LEARNABLE)
+### defining the bias parameter I
+BIAS1 = 1.5 # BIAS > 1, TEs are MORE easily learned than unique words
+BIAS2 = 0.5 # BIAS < 1, TEs are LESS easily learned than unique words
 
 ### visualizing the simulation
 simulation3 <- data_simulation3 %>%
-  ## calculate where IND > 1
-  mutate(TE_easier = IND1*(D*N/V)) %>%
-  ## calculate where IND < 1
-  mutate(TE_harder = IND2*(D*N/V)) %>%
+  mutate(TE_easier = BIAS1*(DOM*NONDOM/LEARNABLE), # calculate where BIAS > 1
+         TE_harder = BIAS2*(DOM*NONDOM/LEARNABLE)) %>% # calculate where BIAS < 1
   # round to keep whole numbers only
-  mutate_at(vars(-c(B, bin_B)), round, 0) %>%
+  mutate_at(vars(-c(BALANCE, bin_BALANCE)), round, 0) %>%
   # prepare dataset to plot
   pivot_longer(c(TE, TE_harder, TE_easier), 
                names_to = "Model", values_to = "number_TE") %>%
   mutate(Model = factor(Model, levels=c("TE_harder", "TE", "TE_easier"))) %>%
   mutate(Model = recode(Model, 
-                        TE = "IND = 1 (Independence Account)",
-                        TE_easier = "IND = 1.5 (Enhancement Account)",
-                        TE_harder = "IND = 0.5 (Avoidance Account)")) %>%
+                        TE = "BIAS = 1 (Neutral Account)",
+                        TE_easier = "BIAS = 1.5 (Preference Account)",
+                        TE_harder = "BIAS = 0.5 (Avoidance Account)")) %>%
   # ggplot
-  ggplot(aes(x = W, y = number_TE, color = bin_B, linetype = bin_B)) +
+  ggplot(aes(x = WORD, y = number_TE, color = bin_BALANCE, linetype = bin_BALANCE)) +
   stat_smooth(method = lm, se = F) +
   scale_color_manual(values=c("#bdbdbd", "#737373", "#525252", "#252525", "#000000")) + 
   scale_linetype_manual(values=c("longdash", "dotdash", "dashed", "twodash", "solid")) + 
-  # scale_color_discrete(direction = -1) +
   theme_minimal() + 
   facet_grid(. ~ Model) +
   theme(axis.text.x = element_text(angle = 90),
@@ -630,10 +826,10 @@ simulation3 <- data_simulation3 %>%
         text = element_text(size=12),
         panel.spacing.x = unit(2.5, "lines"),
         panel.background = element_rect(fill = NA, color = "black")) +
-  labs(x = "Total word vocabulary (W)", 
+  labs(x = "Total word vocabulary (WORD)", 
        y = "Total number of translation equivalents (TE)", 
-       color = "Balance (B)",
-       linetype = "Balance (B)") +
+       color = "Vocabulary balance (BALANCE)",
+       linetype = "Vocabulary balance (BALANCE)") +
   guides(colour = guide_legend(reverse = T, nrow = 1),
          linetype = guide_legend(reverse = T, nrow = 1))
 
@@ -672,9 +868,6 @@ TEprediction_percentile <- keepers_ws_TE_simulation %>%
 
 ggsave(here("Output/TEprediction_percentile.png"), TEprediction_percentile,
        height=5, width=5)
-
-
-
 
 
 
@@ -851,181 +1044,7 @@ summary(Percentile_model_MoreThan300W)
 
 
 
-# Descriptives
-## Gender 
-```{r}
-keepers_ws_TE %>%
-  group_by(gender) %>% 
-  distinct(baby_id, .keep.all=T) %>%
-  count()
-```
 
-## English dominant
-```{r}
-# dominance defined by language exposure
-keepers_ws_TE %>% group_by(lang_dom) %>% distinct(baby_id) %>%
-  count()
-
-# dominance defined by vocab size
-keepers_ws_TE %>% 
-  distinct(ID_testdate, .keep_all = TRUE) %>%
-  mutate(Eng_Dom = ifelse(LangDom_vocab == "English", 1, 0)) %>%
-  summarise(n = n(),
-            n_EngDom = sum(Eng_Dom),
-            percent_EngDom = n_EngDom/n * 100,
-            percent_FrDom = 100 - percent_EngDom)
-            
-```
-
-## demographics
-```{r}
-# How many data points including some babies who made multiple visits to the lab (N)
-keepers_ws_TE %>% 
-  distinct(ID_testdate) %>% 
-  count()
-
-N_duplicatedBabyID <- keepers_ws_TE %>%
-  filter(duplicated(baby_id))
-
-# how many unique babies
-keepers_ws_TE %>%
-  distinct(baby_id) %>%
-  count()
-
-keepers_ws_TE %>%
-  distinct(participant_id) %>%
-  count()
-
-# Create dataframe of demographics
-d_participants <- keepers_ws_TE %>%
-  select(ID_testdate, gender,age_continuous, years_education, lang_exp_eng, lang_exp_fre, lang_exp_other) %>%
-  mutate(female = ifelse(gender == "F", 1, 0)) %>%
-  pivot_longer(-c(ID_testdate), names_to = "info", values_to = "value") %>%
-  group_by(info) %>%
-  summarise(n_subject = n_distinct(ID_testdate),
-            mean = mean(value, na.rm=T),
-            sd = sd(value, na.rm=T),
-            min = min(value, na.rm=T),
-            max = max(value, na.rm=T))
-```
-
-## average # of vocabulary
-```{r}
-vocabulary_average <- keepers_ws_TE %>%
-  select(ID_testdate, word_vocab, TotalNW_Dom, TotalNW_NonDom, concept_vocab,
-         number_of_te, Dom_unique_words, NonDom_unique_words) %>%
-  pivot_longer(-ID_testdate, names_to = "vocabulary", values_to = "number") %>%
-  group_by(vocabulary) %>%
-  summarise(mean = mean(number, na.rm = T), 
-            sd = sd(number, na.rm = T),
-            min = min(number, na.rm = T),
-            max = max(number, na.rm = T)) %>%
-  mutate_if(is.numeric, round, digits = 2)
-
-## paired-sample t-test to compare D and N
-t.test(keepers_ws_TE$TotalNW_Dom, keepers_ws_TE$TotalNW_NonDom, 
-       paired = TRUE) 
-
-## paired-sample t-test to compare DI and NI
-t.test(keepers_ws_TE$Dom_unique_words, keepers_ws_TE$NonDom_unique_words, 
-       paired = TRUE) 
-```
-
-
-## average balance and comparison with balance by input
-```{r}
-### Average balance by vocab
-keepers_ws_TE %>%
-  summarise(mean = mean(balance_vocab, na.rm = T),
-            sd = sd(balance_vocab, na.rm = T),
-            min = min(balance_vocab, na.rm = T),
-            max = max(balance_vocab, na.rm = T))
-### grouped by language
-keepers_ws_TE %>%
-  group_by(LangDom_vocab) %>%
-  summarise(mean = mean(balance_vocab, na.rm = T),
-            sd = sd(balance_vocab, na.rm = T),
-            min = min(balance_vocab, na.rm = T),
-            max = max(balance_vocab, na.rm = T))
-
-t.test(balance_vocab ~ LangDom_vocab, keepers_ws_TE) # t-test to compare the two language groups
-
-### Comparsion with balance by input (which is defined with reference to the lang_dom defined by vocab size)
-keepers_ws_TE %>%
-  mutate(consistent_LangDom = if_else(lang_dom != LangDom_vocab, 0, 1)) %>% # 1= consistent, 0 = inconsistent
-  summarise(n = n(),
-            n_consistent = sum(consistent_LangDom),
-            percentage_consistent = n_consistent/n*100,
-            n_inconsistent = n - n_consistent,
-            percentage_inconsistent = n_inconsistent/n*100)
-
-keepers_ws_TE_withoutInconsistent <- keepers_ws_TE %>%
-  mutate(consistent_LangDom = if_else(lang_dom != LangDom_vocab, 0, 1)) %>% # 1= consistent, 0 = inconsistent
-  filter(consistent_LangDom == 1)
-
-
-### Correlation between balance by vocabulary and balance by input
-cor.test(keepers_ws_TE$balance_vocab, keepers_ws_TE$balance_input, method = "pearson")
-
-### Correlation between balance by vocabulary and raw language exposure to the non-dominant language
-cor.test(keepers_ws_TE$balance_vocab, keepers_ws_TE$LangNonDom_input, method = "pearson")
-
-     xlab = "Vocabulary balance (= N/W)",
-balance_correlation <- plot(keepers_ws_TE$balance_vocab, keepers_ws_TE$LangNonDom_input,
-                            xlab = "Vocabulary balance (= N/W)",
-                            ylab = "Raw exposure to the non-dominant language",
-                            cex.lab=1.0) +
-  #lines(lowess(keepers_ws_TE$balance_vocab, keepers_ws_TE$LangNonDom_input), col="blue") # lowess line (x,y)
-  abline(lm(keepers_ws_TE$LangNonDom_input~keepers_ws_TE$balance_vocab), col="red") # regression line (y~x)
-
-```
-
-
-
-# Correlation
-```{r}
-Correlation <- keepers_ws_TE %>%
-  select(age_continuous, Average_90percentile, balance_vocab, word_vocab, TotalNW_Dom, TotalNW_NonDom,
-         number_of_te, Dom_unique_words, NonDom_unique_words, concept_vocab) %>%
-  # rename variables
-  rename(Age_month = age_continuous,
-         V = Average_90percentile,
-         B = balance_vocab, 
-         W = word_vocab,
-         D = TotalNW_Dom, 
-         N = TotalNW_NonDom, 
-         TE = number_of_te, 
-         DI = Dom_unique_words, 
-         NI = NonDom_unique_words, 
-         C = concept_vocab)
-
-# Correlation with corrections for multiple comparisons
-library(psych)
-TE_corr <- corr.test(Correlation, use = "pairwise", method = "pearson", adjust = "BY")
-
-write.csv(round(TE_corr$r, 3), file="Output/ObservedTE_correlations_r.csv")  ## coefficients
-write.csv(round(TE_corr$p, 3), file="Output/ObservedTE_correlations_p.csv")  ## p-values
-
-
-library(Hmisc)
-mycor <- rcorr(as.matrix(Correlation), type="pearson")
-mycor$r
-round(mycor$P, 3)
-round(p.adjust(mycor$P, "BY"))
-
-library(corrplot)
-corrplot(mycor)
-write.csv(mycor, "Output/ObservedTE_correlations.csv", col.names=NA)
-
-cor.test(Correlation$TE, Correlation$B, method = "pearson")
-cor.test(Correlation$TE, Correlation$W, method = "pearson")
-cor.test(Correlation$TE, Correlation$D, method = "pearson")
-cor.test(Correlation$TE, Correlation$N, method = "pearson")
-cor.test(Correlation$TE, Correlation$V, method = "pearson")
-cor.test(Correlation$DI, Correlation$B, method = "pearson")
-cor.test(Correlation$NI, Correlation$B, method = "pearson")
-
-```
 
 # Figure 5: Stacked barchart to plot TE, DI, and NI of individual infants (facet by balance)
 ```{r}
@@ -1034,7 +1053,7 @@ stacked <- keepers_ws_TE %>%
   # Subset balance_vocab by 3 levels 
   #mutate(BalSubset = cut(balance_vocab, breaks = 3, 
   #                       labels=c("MostBalanced", "MediumBalanced", "LeastBalanced"))) %>%
-  mutate(BalSubset = case_when(balance_vocab >= 0.35 ~ "MostBalanced",
+  mutate(BalSubset = case_when(balance_vocab > 0.35 ~ "MostBalanced",
                                balance_vocab <= 0.20 ~ "LeastBalanced",
                                TRUE ~ "MediumBalanced")) %>%
   arrange(desc(number_of_te)) %>%
@@ -1098,7 +1117,7 @@ ggsave("Output/StackedPlot_byBalance.png", Bal_StackedPlot,
 stacked_wide <- keepers_ws_TE %>%
   select(baby_id, balance_vocab, word_vocab, concept_vocab, propTE, number_of_te, Dom_unique_words, NonDom_unique_words) %>%
   # Subset balance_vocab by 3 levels 
-  mutate(BalSubset = case_when(balance_vocab >= 0.35 ~ "MostBalanced",
+  mutate(BalSubset = case_when(balance_vocab > 0.35 ~ "MostBalanced",
                                balance_vocab <= 0.20 ~ "LeastBalanced",
                                TRUE ~ "MediumBalanced"))
 
@@ -1276,35 +1295,4 @@ ggsave(here("Output","PlotTE_BalanceByAge.png"), width=13, height= 7)
 
 
 ```
-
-
-
-
-
-
-
-# Statistical tests
-## ANOVA for balance
-```{r}
-res.aov <- aov(propTE ~ balance_group15*cent.age.months, data=keepers_ws_TE) 
-summary(res.aov)
-```
-
-## Age (old code, not used for poster)
-### Running linear model
-```{r}
-  linear.model<-lmer(propTE ~ cent.age.months+ (1|Baby_ID), data = keepers_ws_TE)
-  summary(linear.model)
-```
-### Running quadratic model
-```{r}
- quadratic.model <-lmer(propTE ~ poly(cent.age.months,2) + (1|Baby_ID), data = keepers_ws_TE)
-  summary(quadratic.model)
-```
-### Cubic model
-```{r}
-cubic.model<-lm(propTE ~ poly(cent.age.months,3), data = keepers_ws_TE)
-summary(cubic.model)
-```
-
 
