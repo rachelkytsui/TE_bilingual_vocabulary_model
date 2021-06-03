@@ -387,15 +387,15 @@ Correlation <- keepers_ws_TE %>%
          number_of_te, Dom_unique_words, NonDom_unique_words, concept_vocab) %>%
   # rename variables
   rename(Age_month = age_continuous,
-         V = Average_90percentile,
-         B = balance_vocab, 
-         W = word_vocab,
-         D = TotalNW_Dom, 
-         N = TotalNW_NonDom, 
+         LEARNABLE = Average_90percentile,
+         BALANCE = balance_vocab, 
+         WORD = word_vocab,
+         DOM = TotalNW_Dom, 
+         NONDOM = TotalNW_NonDom, 
          TE = number_of_te, 
-         DI = Dom_unique_words, 
-         NI = NonDom_unique_words, 
-         C = concept_vocab)
+         "DOM-SINGLET" = Dom_unique_words, 
+         "NONDOM-SINGLET" = NonDom_unique_words, 
+         CONCEPT = concept_vocab)
 
 # Correlation with corrections for multiple comparisons
 library(psych)
