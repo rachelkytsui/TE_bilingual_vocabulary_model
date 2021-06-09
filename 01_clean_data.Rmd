@@ -1,0 +1,119 @@
+---
+title: "TE_bilingual_vocabulary_model: Clean raw data to keep only bilinguals"
+author: "Rachel K.Y. Tsui, Ana Maria Gonzalez-Barrero, Esther Schott, & Krista Byers-Heinlein"
+date: '`r format(Sys.time(), "%a %b %d %X %Y")`'
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(here)
+library(tidyverse)
+```
+
+# Intro
+This script implements and documents the data cleaning process. 
+
+The raw data from Gonzalez-Barrero et al. (2020) comprises archival expressive vocabulary data from English and French monolingual children, as well as English-French bilingual children. Our current study is interested in bilingual vocabulary development, so we are only keeping data from bilingual children.
+
+```{r load_data_raw}
+# raw archival data from Gonzalez-Barrero, Schott, & Byers-Heinlein’s (2020)
+cdi_ws = readRDS(here::here("data_raw","output_analyzeSent.Rdata"))
+```
+
+
+# Generate keepers_data
+We only keep data from bilinguals, who have at least 25% exposure to both English and French, with <10% exposure to a third language. Here, we are removing data from infants who:
+
+* are out of the 18-33month age range
+* do not have at least 25% of language exposure to both English and French 
+* have an exposure of >10% to a third language
+* changed the language group across multiple visits (i.e., those are bilingual at one visit but monolingual at another, regardless of direction)
+* do not have both CDIs filled
+
+```{r}
+# change which infants changed lang_group & create a "exclude.language_group_change" criterion for subsequent step
+exclude.lang_group_change <- cdi_ws %>%
+  filter(lang_group !="other") %>%
+  group_by(baby_id) %>% 
+  distinct(ID_testdate, .keep_all = T) %>%
+  mutate(visit_num = 1:n()) %>%  
+  mutate(changed_language_group_status = if_else(visit_num == 1, NA, 
+                                                 lang_group != lag(lang_group))) %>%
+  # uncomment the next line to see all visits for babies that have one visit excluded
+  # filter(any(changed_language_group_status == TRUE) ) %>% View()
+  filter(changed_language_group_status == TRUE) %>% 
+  pull(baby_id)
+
+# create exclusion criteria which identifies all infants who don't fit the required age/language criteria listed above
+cdi_ws_TE <- cdi_ws %>%
+  mutate(
+    # create an exclusion variable for age
+    exclude.age = if_else(!between(age_months_binned, 18, 33), 1, 0), # give 1 to those who are not within 18 to 33 months
+    # create an exclusion variable for language
+    exclude.language = case_when( 
+      lang_exp_eng < 25 ~ 1, # give 1 to those who do not have at least 25% exposure to English
+      lang_exp_fre < 25 ~ 1, # give 1 to those who do not have at least 25% exposure to French
+      lang_exp_other > 10 ~ 1, # give 1 to those with more than 10% exposure to a third language
+      baby_id %in% exclude.lang_group_change ~ 1, # give 1 to those who changed language group from bilingual to mono or vice versa
+      TRUE ~ 0) # give 0 to all other cases
+    )
+      
+# generate a keepers data which exclude infants who don't fite the criteria listed
+keepers_ws_TE <- cdi_ws_TE %>%
+  filter(
+    # keep only those with a 0 in exclude.age
+    exclude.age == 0,
+    # keep only those with a 0 in exclude.language
+    exclude.language == 0,
+    # keep only those who have both CDIs filled
+    both_cdi_filled == "Y")
+```
+
+
+# Check the keepers_data
+## How many distinct infants and total number of data points are there?
+```{r}
+keepers_ws_TE %>% summarize(N_visits = n_distinct(ID_testdate),
+                            N_babies = n_distinct(baby_id))
+```
+
+## Are there any NAs in the vocabulary measures? (should all return 0)
+### Vocabulary score in total vocabulary in English/French, total word vocabulary, and total concept vocabulary
+```{r}
+keepers_ws_TE %>% filter(is.na(vocab_score)) %>% 
+  select(ID_testdate, vocab_type, vocab_score) %>%
+  nrow()
+```
+
+### Unique words in English
+```{r}
+keepers_ws_TE %>% filter(is.na(eng_unique_words)) %>% 
+  select(ID_testdate) %>% 
+  nrow()
+```
+
+### Unique words in French
+```{r}
+keepers_ws_TE %>% filter(is.na(fre_unique_words)) %>% 
+  select(ID_testdate) %>%
+  nrow()
+```
+
+### Number of translation equivalents
+```{r}
+keepers_ws_TE %>% filter(is.na(number_of_te)) %>% 
+  select(ID_testdate) %>%
+  nrow()
+```
+
+# Save the keepers_data
+The keepers_data is saved in the folder "data_keepers"
+```{r}
+write.csv(keepers_ws_TE, "data_keepers/keepers_ws_TE.csv", row.names = F)
+```

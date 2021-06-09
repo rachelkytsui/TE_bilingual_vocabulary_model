@@ -1,0 +1,104 @@
+---
+title: "TE_bilingual_vocabulary_model: Prepare the keepers_data for analysis"
+author: "Rachel K.Y. Tsui, Ana Maria Gonzalez-Barrero, Esther Schott, & Krista Byers-Heinlein"
+date: '`r format(Sys.time(), "%a %b %d %X %Y")`'
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(here)
+library(tidyverse)
+```
+
+# Intro
+This script implements and documents how we prepared the keepers_data for analysis.
+
+First, we have to read in the keepers_data who holds the bilingual data relevant for the current study.
+
+```{r load_data_raw}
+keepers_ws_TE <- read.csv(here::here("data_keepers/keepers_ws_TE.csv"))
+```
+
+
+# Pivot data from long to wide
+```{r}
+keepers_ws_TE_final <- keepers_ws_TE %>%
+  # remove irrelevant variables
+  select(-c(vocab_type_dom, vocab_cross_lang, n_administrations)) %>% 
+  # change data from long to wide format by spreading "vocab_type"
+  pivot_wider(names_from = vocab_type, values_from = vocab_score)
+```
+
+# Define language of dominance 
+The dominant language was deemed to be the language in which the child produced a greater number of words (i.e., that language with a greater vocabulary size).
+
+* If the child produced a greater number of words in English than French, then English is the dominant language.
+* If the child produced a greater numnber of words in French than English, then French is the dominant language.
+```{r}
+keepers_ws_TE_final <- keepers_ws_TE_final %>%
+  # define lang_dom_vocab
+  mutate(lang_dom_vocab = case_when(total_words_eng > total_words_fre ~ "English",
+                                 TRUE ~ "French")) %>%
+  # make lang_dom_vocab a factor with 2 levels
+  mutate(lang_dom_vocab = as.factor(lang_dom_vocab)) 
+```
+
+# Define vocabulary measures based on language dominance
+Here, we re-defined vocabulary measures with reference to the language of dominance defined in the previous step. The vocabulary measures include:
+
+* total number of words in the dominant language
+* total number of words in the non-dominant language
+* total number of singlets in the dominant language
+* total number of singlets in the non-dominant language
+* total number of singlets (i.e., across both languages)
+```{r}
+keepers_ws_TE_final <- keepers_ws_TE_final %>%
+  mutate(
+    # define total number of words in the DOMINANT language
+    total_words_dom = case_when(total_words_eng > total_words_fre ~ total_words_eng,
+                            TRUE ~ total_words_fre),
+    # define total number of words in the NON-DOMINANT language
+    total_words_nondom = case_when(total_words_eng > total_words_fre ~ total_words_fre,
+                               TRUE ~ total_words_eng),
+    # define total number of singlets in the DOMINANT language
+    total_singlet_dom = case_when(total_words_eng > total_words_fre ~ eng_unique_words,
+                                  TRUE ~ fre_unique_words),
+    # define total number of singlets in the NON-DOMINANT language
+    total_singlet_nondom = case_when(total_words_eng > total_words_fre ~ fre_unique_words,
+                                     TRUE ~ eng_unique_words),
+    # compute total number of singlets across both languages
+    singlet_vocab = total_singlet_dom + total_singlet_nondom)
+```
+
+# Define language balance
+A balance score is calculated for each child. 
+
+* **balance_vocab**: **The main balance measure** we used in the current study is a *Vocabulary Balance*, which is determined based on the proportion of words produced in the non-dominant language relative to the total words produced across both languages. The formula for calculating the vocabulary balance score is NONDOM/(DOM+NONDOM).
+* **balance_input**: Balance can also be considered in terms of input in each language. To make balance_vocab and balance_input comparable, the language designated as DOM and NONDOM was based on vocabulary-defined dominance (lang_dom_vocab), rather than the language that children heard most and least often. The formula for calculating the input balance score is also NONDOM/(DOM+NONDOM).
+
+```{r}
+keepers_ws_TE_final <- keepers_ws_TE_final %>%
+  # calculate Vocabulary Balance balance_vocab
+  mutate(balance_vocab = total_words_nondom/(total_words_dom+total_words_nondom)) %>%
+  # calculate Input Balance balance_input
+  mutate(
+    # define input dominance (with reference to the lang_dom_vocab defined by vocab size)
+    lang_dom_input = case_when(lang_dom_vocab == "English" ~ lang_exp_eng,
+                              TRUE ~ lang_exp_fre),
+    lang_dom_input = case_when(lang_dom_vocab == "English" ~ lang_exp_fre,
+                                 TRUE ~ lang_exp_eng),
+    # calculate the balance score
+    balance_input = lang_dom_input/(lang_dom_input+lang_dom_input))
+```
+
+# Save the final keepers_data
+The final keepers_data is saved in the folder "data_keepers"
+```{r}
+write.csv(keepers_ws_TE_final, "data_keepers/keepers_ws_TE_final.csv", row.names = F)
+```
