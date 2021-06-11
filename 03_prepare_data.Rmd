@@ -35,11 +35,13 @@ keepers_ws_TE_final <- keepers_ws_TE %>%
   pivot_wider(names_from = vocab_type, values_from = vocab_score)
 ```
 
+
 # Define language of dominance 
 The dominant language was deemed to be the language in which the child produced a greater number of words (i.e., that language with a greater vocabulary size).
 
 * If the child produced a greater number of words in English than French, then English is the dominant language.
 * If the child produced a greater numnber of words in French than English, then French is the dominant language.
+
 ```{r}
 keepers_ws_TE_final <- keepers_ws_TE_final %>%
   # define lang_dom_vocab
@@ -49,6 +51,7 @@ keepers_ws_TE_final <- keepers_ws_TE_final %>%
   mutate(lang_dom_vocab = as.factor(lang_dom_vocab)) 
 ```
 
+
 # Define vocabulary measures based on language dominance
 Here, we re-defined vocabulary measures with reference to the language of dominance defined in the previous step. The vocabulary measures include:
 
@@ -57,6 +60,7 @@ Here, we re-defined vocabulary measures with reference to the language of domina
 * total number of singlets in the dominant language
 * total number of singlets in the non-dominant language
 * total number of singlets (i.e., across both languages)
+
 ```{r}
 keepers_ws_TE_final <- keepers_ws_TE_final %>%
   mutate(
@@ -76,6 +80,7 @@ keepers_ws_TE_final <- keepers_ws_TE_final %>%
     singlet_vocab = total_singlet_dom + total_singlet_nondom)
 ```
 
+
 # Define language balance
 A balance score is calculated for each child. 
 
@@ -91,11 +96,28 @@ keepers_ws_TE_final <- keepers_ws_TE_final %>%
     # define input dominance (with reference to the lang_dom_vocab defined by vocab size)
     lang_dom_input = case_when(lang_dom_vocab == "English" ~ lang_exp_eng,
                               TRUE ~ lang_exp_fre),
-    lang_dom_input = case_when(lang_dom_vocab == "English" ~ lang_exp_fre,
+    lang_nondom_input = case_when(lang_dom_vocab == "English" ~ lang_exp_fre,
                                  TRUE ~ lang_exp_eng),
     # calculate the balance score
-    balance_input = lang_dom_input/(lang_dom_input+lang_dom_input))
+    balance_input = lang_nondom_input/(lang_dom_input+lang_nondom_input))
 ```
+
+
+# Append percentile data to the keepers_data
+Finally, we add the percentile data obtained from wordbankr to the keepers_data. This percentile data indicates the number of potentially learnable words for a child at the relevant age.
+
+```{r}
+# read in the percentile data
+ws_percentile <- read.csv(here::here("data_keepers/ws_percentile.csv"))
+
+# merge the percentile data to the keepers_ws_TE_final data
+keepers_ws_TE_final <- keepers_ws_TE_final %>%
+  # as the upper age limit of the CDI-WS is 30m, create a new age variable which replaces all >30m as 30m for merging with the percentile dataframe (this means the percentile should be the same for all >30m)
+  mutate(age_months_percentile = ifelse(age_months_binned > 30, 30, age_months_binned)) %>%
+  # merge with the percentile data frame
+  left_join(ws_percentile, by = "age_months_percentile") 
+```
+
 
 # Save the final keepers_data
 The final keepers_data is saved in the folder "data_keepers"

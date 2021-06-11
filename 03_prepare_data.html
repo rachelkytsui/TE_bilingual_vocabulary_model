@@ -266,7 +266,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">TE_bilingual_vocabulary_model: Prepare the keepers_data for analysis</h1>
 <h4 class="author">Rachel K.Y. Tsui, Ana Maria Gonzalez-Barrero, Esther Schott, &amp; Krista Byers-Heinlein</h4>
-<h4 class="date">Wed Jun 09 13:05:58 2021</h4>
+<h4 class="date">Wed Jun 09 20:34:07 2021</h4>
 
 </div>
 
@@ -341,13 +341,26 @@ div.tocify {
     # define input dominance (with reference to the lang_dom_vocab defined by vocab size)
     lang_dom_input = case_when(lang_dom_vocab == &quot;English&quot; ~ lang_exp_eng,
                               TRUE ~ lang_exp_fre),
-    lang_dom_input = case_when(lang_dom_vocab == &quot;English&quot; ~ lang_exp_fre,
+    lang_nondom_input = case_when(lang_dom_vocab == &quot;English&quot; ~ lang_exp_fre,
                                  TRUE ~ lang_exp_eng),
     # calculate the balance score
-    balance_input = lang_dom_input/(lang_dom_input+lang_dom_input))</code></pre>
+    balance_input = lang_nondom_input/(lang_dom_input+lang_nondom_input))</code></pre>
 </div>
-<div id="save-the-final-keepers_data" class="section level1" number="6">
-<h1 number="6"><span class="header-section-number">6</span> Save the final keepers_data</h1>
+<div id="append-percentile-data-to-the-keepers_data" class="section level1" number="6">
+<h1 number="6"><span class="header-section-number">6</span> Append percentile data to the keepers_data</h1>
+<p>Finally, we add the percentile data obtained from wordbankr to the keepers_data. This percentile data indicates the number of potentially learnable words for a child at the relevant age.</p>
+<pre class="r"><code># read in the percentile data
+ws_percentile &lt;- read.csv(here::here(&quot;data_keepers/ws_percentile.csv&quot;))
+
+# merge the percentile data to the keepers_ws_TE_final data
+keepers_ws_TE_final &lt;- keepers_ws_TE_final %&gt;%
+  # as the upper age limit of the CDI-WS is 30m, create a new age variable which replaces all &gt;30m as 30m for merging with the percentile dataframe (this means the percentile should be the same for all &gt;30m)
+  mutate(age_months_percentile = ifelse(age_months_binned &gt; 30, 30, age_months_binned)) %&gt;%
+  # merge with the percentile data frame
+  left_join(ws_percentile, by = &quot;age_months_percentile&quot;) </code></pre>
+</div>
+<div id="save-the-final-keepers_data" class="section level1" number="7">
+<h1 number="7"><span class="header-section-number">7</span> Save the final keepers_data</h1>
 <p>The final keepers_data is saved in the folder “data_keepers”</p>
 <pre class="r"><code>write.csv(keepers_ws_TE_final, &quot;data_keepers/keepers_ws_TE_final.csv&quot;, row.names = F)</code></pre>
 </div>

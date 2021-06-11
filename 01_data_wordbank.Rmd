@@ -1,0 +1,69 @@
+---
+title: "TE_bilingual_vocabulary_model: Retrieve percentile information from wordbankr"
+author: "Rachel K.Y. Tsui, Ana Maria Gonzalez-Barrero, Esther Schott, & Krista Byers-Heinlein"
+date: '`r format(Sys.time(), "%a %b %d %X %Y")`'
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(here)
+library(tidyverse)
+```
+
+# Intro
+This script implements and documents how we retrieve the percentile information from wordbankr. 
+
+In our study, we define developmental level of a child as the number of potentially learnable words. The number of learnable words is determined by the averaging of English and French productive CDI vocabulary at the 90th percentile at different ages. So we need to retrieve the percentile information from Wordbank (Frank et al., 2016).
+```{r load_wordbankr}
+library(wordbankr)
+```
+
+# Obtain the 90th percentile information from WordbankR
+Here, we extract the information about the number of words child can produce at the 90th percentile across ages.
+
+## English CDI-Words and sentences: Vocabulary size at 90th percentile
+```{r eng_percentile_info}
+english_ws_percentile <-  
+  fit_vocab_quantiles(get_administration_data("English (American)", "WS"), 
+                      production,
+                      quantile = "standard") %>%
+  # keep only the 90% percentile
+  filter(quantile == 0.90) %>%
+  rename(EngWS_90percentile = production)
+```
+
+## French CDI-Mots et énoncés: Vocabulary size at 90th percentile
+```{r fre_percentile_info}
+french_ws_percentile <-  
+  fit_vocab_quantiles(get_administration_data("French (Quebecois)", "WS"), 
+                      production,
+                      quantile = "standard") %>%
+  # keep only the 90% percentile
+  filter(quantile == 0.90) %>%
+  rename(FrWS_90percentile = production)
+```
+
+# Merge the two percentile dataframe
+Then we merge the two percentile dataframe by age.
+```{r merge_percentile}
+ws_percentile <- merge(english_ws_percentile, french_ws_percentile, 
+                       by = "age") %>%
+  # compute estimate total vocab by adding the two languages
+  mutate(Average_90percentile = (EngWS_90percentile + FrWS_90percentile)/2) %>%
+  # keep only necessary columns
+  select(age, EngWS_90percentile, FrWS_90percentile, Average_90percentile) %>%
+  # rename age to prepare for the next step (i.e., merging with keepers_ws_TE
+  rename(age_months_percentile = age)
+```
+
+# Save the percentile data for subsequent analysis
+The percentile data is saved in the folder "data_keepers"
+```{r}
+write.csv(ws_percentile, "data_keepers/ws_percentile.csv", row.names = F)
+```
