@@ -23,3 +23,10 @@ Matrix
 lme4
 lmerTest
 scales
+lsr
+broom
+lattice
+survival
+Formula
+Hmisc
+xtable

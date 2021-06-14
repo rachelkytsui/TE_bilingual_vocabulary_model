@@ -1,0 +1,107 @@
+\begin{longtable}{>{\raggedright\arraybackslash}p{450px}}
+\toprule
+Box 1. Example of test for independence.\\
+\midrule
+To test the independence of two events from the same population, as an example, we might ask whether Psychology majors are more likely to be left-handed. To determine independence, we must know the probability of being a psychology major, the probability of being left handed, and the probability of being both a psychology major and left-handed. The numerator of these probabilities will be the number of students who are left-handed, psychology majors, and both (respectively) and the denominator will be the total population of students we are observing. Imagine a college of 1000 students. If 100/1000 (or 1/10) students are left-handed, and 200/1000 (or 1/5) students are psychology majors, then if these variables are independent we expect a proportion of 1/10 × 1/5 = 1/50 students to be left-handed psychology majors. To determine the number we expect to observe in the college, we multiple 1/50 × 1000 = 20 students. When we compare this expected number to the actual number of left-handed students, there are three possible outcomes. First, we may observe many more than 20 left-handed psychology students at the college (say 100 students), which suggests that being left-handed increases the probability of majoring in psychology. Or, second, we may observe many fewer than 20 left-handed psychology students at the college (say 5 students), this suggests that being left-handed decreases the probability of majoring in psychology (in this example by a factor of 1/4). Finally, if left-handedness and majoring in psychology are independent, we can predict the number of left-handed psychology students by multiplying the observed number of left-handed students (100) by the observed number of psychology students (200), and dividing by the total population of the college (1000), so for example 100×200/1000 = 20. Thus, comparing expected and observed numbers can inform us about the independence of the underlying phenomena.\\
+\bottomrule
+\end{longtable}
+\begin{table*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+
+\caption{\label{tab:table1}Summary of the parameters in the Bilingual Vocabulary Model.}
+\centering
+\fontsize{7}{9}\selectfont
+\begin{tabular}[t]{l>{\raggedright\arraybackslash}p{175px}>{\raggedright\arraybackslash}p{175px}>{\raggedright\arraybackslash}p{175px}}
+\toprule
+Variable & Definition & Constraints & Relationship.to.other.parameters\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Main Parameters}}\\
+\hspace{1em}LEARNABLE & Number of learnable words in each language, given the child’s developmental level & Varies by age. No greater than the number of words on CDI. & Maximum number that could be learned in DOM or NONDOM\\
+\hspace{1em}DOM & Words produced in the dominant language & DOM ≥ NONDOM (children always produce more words in dominant than non-dominant language); DOM ≤ LEARNABLE & DOM = (1-BALANCE)×WORD; DOM = WORD - NONDOM\\
+\hspace{1em}NONDOM & Words produced in the non-dominant language & NONDOM ≤ DOM (children always produce fewer words in non-dominant than dominant language); NONDOM ≤ LEARNABLE & NONDOM = BALANCE×WORD; NONDOM = WORD - DOM\\
+\hspace{1em}BIAS & Bias parameter & BIAS < 1 implies the Avoidance Account; BIAS > 1 implies the Preference Account; BIAS = 1 implies the Neutral Account & \\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Derived Parameters}}\\
+\hspace{1em}BALANCE & Balance (relative proportion of words produced in the non-dominant language to the total words produced in both languages) & 0 ≤ BALANCE ≤ .50 (greater values indicate children producing a more similar number of words in their two languages) & BALANCE = NONDOM/WORD; BALANCE = NONDOM/(DOM+NONDOM)\\
+\hspace{1em}WORD & Word vocabulary (or total vocabulary size) & W ≤ 2×LEARNABLE (maximum word vocabulary is knowing each word in both languages) & WORD = DOM+NONDOM; WORD = DOM/(1-BALANCE); WORD = NONDOM/(BALANCE)\\
+\hspace{1em}TE & Translation equivalents produced &  & TE = BIAS × (DOM×NONDOM/LEARNABLE)\\
+\hspace{1em}CONCEPT & Concept vocabulary (or total conceptual vocabulary size) &  & CONCEPT = WORD - TE; CONCEPT = TE + DOM-SINGLET + NONDOM-SINGLET\\
+\hspace{1em}DOM-SINGLET & Singlets in dominant language &  & DOM-SINGLET = DOM - TE\\
+\hspace{1em}NONDOM-SINGLET & Singlets in non-dominant language &  & NONDOM\_SINGLET = NONCOM - TE\\
+\bottomrule
+\multicolumn{4}{l}{\rule{0pt}{1em}\textit{Note: }}\\
+\multicolumn{4}{l}{\rule{0pt}{1em}All vocabulary measures are constrained to be integers.}\\
+\end{tabular}
+\end{table*}
+\begin{table*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+
+\caption{\label{tab:table2}Summary of the parameters used in each simulation.}
+\centering
+\fontsize{8}{10}\selectfont
+\begin{tabular}[t]{>{\centering\arraybackslash}p{45px}>{\raggedright\arraybackslash}p{45px}>{\raggedright\arraybackslash}p{75px}>{\raggedright\arraybackslash}p{75px}>{\raggedright\arraybackslash}p{75px}>{\raggedright\arraybackslash}p{75px}>{\raggedright\arraybackslash}p{75px}>{\raggedright\arraybackslash}p{45px}}
+\toprule
+Simulation & Learnable words (LEARNABLE) & Words in dominant Language (DOM) & Words in non-dominant language (NONDOM) & Word vocabulary (WORD) & Balance of vocabulary (BALANCE) & Bias parameter (BIAS) & Total number of data points generated\\
+\midrule
+1 & Constant at 600 & Varied, ranging from 100 to LEARNABLE at an interval of 100 & Varied, ranging from 0 to DOM at an interval of 10 & Calculated as WORD = DOM + NONDOM & Calculated as BALANCE = NONDOM / (DOM+NONDOM) & Constant at 1 & 216\\
+2 & Varied at 300, 450, and 600 & Varied, ranging from 100 to LEARNABLE at an interval of 100 & Varied, ranging from 0 to DOM at an interval of 25 & Calculated as WORD = DOM + NONDOM & Calculated as BALANCE = NONDOM / (DOM+NONDOM) & Constant at 1 & 161\\
+3 & Varied at 150, 300, 450, and 600 & Varied, ranging from 100 to LEARNABLE at an interval of 100 & Varied, ranging from 0 to DOM at an interval of 25 & Calculated as WORD = DOM + NONDOM & Calculated as BALANCE = NONDOM / (DOM+NONDOM) & Varied at 0.5 (Avoidance Account), 1 (Neutral Account), and 1.5 (Preference Account) & 166\\
+\bottomrule
+\end{tabular}
+\end{table*}
+\begin{table*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+
+\caption{\label{tab:table3}Examples for Simulation 1 of three hypothetical children with different hypothetical word vocabularies (WORD) and vocabulary balance (BALANCE), where the number of learnable words (LEARNABLE) = 600 and BIAS = 1.}
+\centering
+\fontsize{8}{10}\selectfont
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{100px}>{\raggedright\arraybackslash}p{140px}>{\raggedright\arraybackslash}p{140px}>{\raggedright\arraybackslash}p{60px}>{\raggedright\arraybackslash}p{60px}>{\raggedright\arraybackslash}p{60px}}
+\toprule
+Variable & Definition & Calculation & Infant Anne (small vocabulary, unbalanced) & Infant Bernie (small vocabulary, balanced) & Infant Charlie (large vocabulary, balanced)\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{6}{l}{\textbf{Main Parameters}}\\
+\hspace{1em}BIAS & Bias parameter &  & 1.0 & 1.0 & 1.0\\
+\hspace{1em}LEARNABLE & Learnable words in each language &  & 600.0 & 600.0 & 600.0\\
+\hspace{1em}DOM & Words produced in the dominant language &  & 270.0 & 180.0 & 540.0\\
+\hspace{1em}NONDOM & Words produced in the non-dominant language &  & 30.0 & 120.0 & 360.0\\
+\addlinespace[0.3em]
+\multicolumn{6}{l}{\textbf{Derived Parameters}}\\
+\hspace{1em}WORD & Word vocabulary (or total vocabulary size) & DOM + NONDOM & 300.0 & 300.0 & 900.0\\
+\hspace{1em}BALANCE & Vocabulary balance & NONDOM / (DOM + NONDOM) & 0.1 & 0.4 & 0.4\\
+\hspace{1em}TE & Translation equivalents produced & DOM × NONDOM / LEARNABLE & 13.5 & 36.0 & 324.0\\
+\hspace{1em}CONCEPT & Concept vocabulary (or total conceptual vocabulary size) & WORD - TE & 286.5 & 264.0 & 576.0\\
+\hspace{1em}DOM-SINGLET & Singlets in dominant language & DOM - TE & 256.5 & 144.0 & 216.0\\
+\hspace{1em}NONDOM-SINGLET & Singlets in non-dominant language & NONDOM - TE & 16.5 & 84.0 & 36.0\\
+\bottomrule
+\end{tabular}
+\end{table*}
+\begin{table*}[hbt]
+\ifnextchar[{\eatarg}{}
+[tbp]
+
+\begin{center}
+\begin{threeparttable}
+
+\caption{\label{tab:table4}Demographic characteristics of participants (data points = 229).}
+
+\begin{tabular}{lccc}
+\toprule
+ & Mean & $SD$ & Range\\
+\midrule
+Age in months & 24.4 & 4.7 & 18.4 - 33.5\\
+Maternal education in years & 16.6 & 2.1 & 10 - 21\\
+\% Global exposure to English & 51.7 & 14.8 & 25 - 75\\
+\% Global exposure to French & 47.8 & 15.0 & 25 - 75\\
+\% Global exposure to Other & 0.6 & 1.8 & 0 - 10\\
+\bottomrule
+\end{tabular}
+
+\end{threeparttable}
+\end{center}
+
+\end{table*}

@@ -1,0 +1,40 @@
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+
+{\centering \includegraphics[width=0.9\linewidth]{./Figure1_illustration}
+
+}
+
+\caption{Illustration of the Bilingual Vocabulary Model.}\label{fig:fig1}
+\end{figure*}
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+{\centering \includegraphics[width=1.1\linewidth,height=0.8\textheight]{paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1}
+
+}
+
+\caption{Number of translation equivalents (TE) across different levels of vocabulary balance (BALANCE) in relation to dominant vocabulary size (DOM; Panel A), non-dominant vocabulary size (NONDOM; Panel B), and word vocabulary (WORD; Panel C). Row 1 represents the simulated data in Study 1 while holding the number of learnable words (LEARNABLE) constant at 600 and BIAS constant at 1. Row 2 represents the observed vocabulary data in Study 2.}\label{fig:fig2}
+\end{figure*}
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+{\centering \includegraphics[width=0.8\linewidth,height=0.8\textheight]{paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1}
+
+}
+
+\caption{Number of translation equivalents (TE) and singlets in dominant (DOM-SINGLET) and non-dominant language (NONDOM-SINGLET) across different developmental levels/ages, which sets the number of LEARNABLE words. Panel A represents the model simulation in Study 1, where developmental levels of simulated children are set at three values: LEARNABLE = 300, 450, and 600. Panel B represents the observed vocabulary data in Study 2, where developmental level was divided into 3 subsets with children of 18-22 months (left), children of 23-27 months (middle), and children of 28-33 months (right). Proportion of balance (BALANCE) was divided into three groups, where the least balanced group had a range of .00 - .20 vocabulary balance, the medium balanced group had a range of .20 - .35, and the most balanced group had a range of .35 - .50.}\label{fig:fig3}
+\end{figure*}
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+{\centering \includegraphics[width=1\linewidth,height=0.8\textheight]{paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1}
+
+}
+
+\caption{Different scenarios of expected translation equivalents learning (TE) while assuming bias towards (BIAS < 1) or against learning translation equivalents (BIAS > 1), or no bias (BIAS = 1).}\label{fig:fig4}
+\end{figure*}

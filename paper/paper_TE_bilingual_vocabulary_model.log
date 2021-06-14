@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.6.10)  10 JUN 2021 22:27
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.6.10)  14 JUN 2021 18:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -734,121 +734,183 @@ LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 2
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [11]
-<./Figure1_illustration.jpg, id=159, 1371.1225pt x 770.88pt>
+<./Figure1_illustration.jpg, id=187, 1371.1225pt x 770.88pt>
 File: ./Figure1_illustration.jpg Graphic file (type jpg)
 <use ./Figure1_illustration.jpg>
-Package pdftex.def Info: ./Figure1_illustration.jpg  used on input line 236.
-(pdftex.def)             Requested size: 469.75308pt x 264.10715pt.
+Package pdftex.def Info: ./Figure1_illustration.jpg  used on input line 235.
+(pdftex.def)             Requested size: 422.78404pt x 237.69997pt.
 [12]
-Underfull \vbox (badness 7291) has occurred while \output is active []
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
 [13 <./Figure1_illustration.jpg>]
 Underfull \vbox (badness 7649) has occurred while \output is active []
 
-[14]
-Underfull \vbox (badness 3977) has occurred while \output is active []
-
-[15] [16]
+[14] [15]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 261.
+(Font)              <7> on input line 260.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 261.
+(Font)              <5> on input line 260.
 
-Overfull \hbox (7.93095pt too wide) in paragraph at lines 261--281
+Overfull \hbox (7.93095pt too wide) in paragraph at lines 260--282
  [][] 
  []
 
-[17] [18
+[16] [17
 
 
-] [19] [20
+] [18] [19
 
 ]
 Underfull \vbox (badness 1838) has occurred while \output is active []
 
-[21
+[20
 
-] [22] [23]
-<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf, id=225, 469
+] [21] [22]
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf, id=251, 469
 .755pt x 505.89pt>
 File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf Graphic
  file (type pdf)
 <use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf>
 Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
-/fig2-1.pdf  used on input line 366.
+/fig2-1.pdf  used on input line 365.
 (pdftex.def)             Requested size: 483.18645pt x 520.35461pt.
 
-Overfull \hbox (13.43143pt too wide) in paragraph at lines 366--367
+Overfull \hbox (13.43143pt too wide) in paragraph at lines 365--366
  [][] 
  []
 
 
-LaTeX Warning: Float too large for page by 23.90948pt on input line 371.
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[24
+[23
 
 
-] [25]
-<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf, id=236, 469
+]
+Overfull \vbox (23.90948pt too high) has occurred while \output is active []
+
+[24 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf>]
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf, id=267, 469
 .755pt x 505.89pt>
 File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf Graphic
  file (type pdf)
 <use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf>
 Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
-/fig3-1.pdf  used on input line 396.
+/fig3-1.pdf  used on input line 381.
 (pdftex.def)             Requested size: 375.80452pt x 404.71254pt.
 
-LaTeX Warning: Float too large for page by 4.25734pt on input line 401.
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[26]
-Underfull \vbox (badness 1838) has occurred while \output is active []
+[25]
+Overfull \vbox (4.25734pt too high) has occurred while \output is active []
 
-[27]
-<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf, id=246, 469
+[26 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf>] [27]
+[28]
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf, id=294, 469
 .755pt x 252.945pt>
 File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf Graphic
  file (type pdf)
 <use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf>
 Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
-/fig4-1.pdf  used on input line 418.
+/fig4-1.pdf  used on input line 417.
 (pdftex.def)             Requested size: 469.75386pt x 252.94438pt.
-[28] [29] AED endfloat: Processing end Figures and Tables [30] [31 <./paper_TE_
-bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf>] [32 <./paper_TE_bili
-ngual_vocabulary_model_files/figure-latex/fig3-1.pdf>] [33 <./paper_TE_bilingua
-l_vocabulary_model_files/figure-latex/fig4-1.pdf>] (./paper_TE_bilingual_vocabu
-lary_model.aux)
+[29 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf>] [30]
+[31] [32] [33] [34]
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig5-1.pdf, id=342, 469
+.755pt x 325.215pt>
+File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig5-1.pdf Graphic
+ file (type pdf)
+<use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig5-1.pdf>
+Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
+/fig5-1.pdf  used on input line 505.
+(pdftex.def)             Requested size: 352.31538pt x 243.91064pt.
+[35 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig5-1.pdf>] [36]
+[37
+
+] [38
+
+] [39] [40]
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10> on input line 603.
+
+Overfull \hbox (29.93413pt too wide) in paragraph at lines 603--626
+ [][] 
+ []
+
+[41]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[42]
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig6-1.pdf, id=391, 469
+.755pt x 505.89pt>
+File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig6-1.pdf Graphic
+ file (type pdf)
+<use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig6-1.pdf>
+Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
+/fig6-1.pdf  used on input line 644.
+(pdftex.def)             Requested size: 328.82626pt x 354.12057pt.
+
+Underfull \vbox (badness 3977) has occurred while \output is active []
+
+[43]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[44 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig6-1.pdf>]
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig7-1.pdf, id=410, 469
+.755pt x 289.08pt>
+File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig7-1.pdf Graphic
+ file (type pdf)
+<use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig7-1.pdf>
+Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
+/fig7-1.pdf  used on input line 655.
+(pdftex.def)             Requested size: 469.77536pt x 289.09251pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[45 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig7-1.pdf>] [46]
+
+Underfull \vbox (badness 7649) has occurred while \output is active []
+
+[47] [48] [49] [50]
+Underfull \vbox (badness 7649) has occurred while \output is active []
+
+[51] [52] AED endfloat: Processing end Figures and Tables [53] (./paper_TE_bili
+ngual_vocabulary_model.aux)
 Package rerunfilecheck Info: File `paper_TE_bilingual_vocabulary_model.out' has
  not changed.
-(rerunfilecheck)             Checksum: B4D71E8A12C01CA8D46528C1B2112D7D;6199.
+(rerunfilecheck)             Checksum: 65F0CE462CC77C986BA99DE83ACCA700;9756.
  ) 
 Here is how much of TeX's memory you used:
- 14822 strings out of 480496
- 226666 string characters out of 5898332
- 570673 words of memory out of 5000000
- 32112 multiletter control sequences out of 15000+600000
- 475498 words of font info for 87 fonts, out of 8000000 for 9000
+ 14932 strings out of 480496
+ 230224 string characters out of 5898332
+ 574226 words of memory out of 5000000
+ 32173 multiletter control sequences out of 15000+600000
+ 491041 words of font info for 99 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 72i,11n,80p,2274b,541s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/Users/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.en
-c}{/Users/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/
-Users/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/Use
-rs/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}</Use
-rs/racheltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></Use
-rs/racheltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx7.pfb></User
-s/racheltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx8.pfb></Users
-/racheltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi12.pfb></Users
-/racheltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb></Users/
-racheltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb></Users/r
-acheltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb></Users/rac
-heltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr8.pfb></Users/rache
-ltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri12.pfb></Users/rache
-ltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmss8.pfb></Users/rachel
-tsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy7.pfb>
-Output written on paper_TE_bilingual_vocabulary_model.pdf (33 pages, 559355 byt
+ 72i,11n,80p,2274b,527s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/Users/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/
+Users/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/User
+s/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/User
+s/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/User
+s/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}</Users/r
+acheltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></Users/r
+acheltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx7.pfb></Users/ra
+cheltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx8.pfb></Users/rac
+heltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi12.pfb></Users/rac
+heltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb></Users/rach
+eltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb></Users/rache
+ltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb></Users/rachelt
+sui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr8.pfb></Users/racheltsu
+i/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr9.pfb></Users/racheltsui/
+Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri12.pfb></Users/racheltsui/
+Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri7.pfb></Users/racheltsui/L
+ibrary/TinyTeX/texmf-dist/fonts/type1/public/lm/lmss8.pfb></Users/racheltsui/Li
+brary/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></Users/racheltsui/Li
+brary/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy7.pfb>
+Output written on paper_TE_bilingual_vocabulary_model.pdf (53 pages, 693011 byt
 es).
 PDF statistics:
- 386 PDF objects out of 1000 (max. 8388607)
- 315 compressed objects within 4 object streams
- 92 named destinations out of 1000 (max. 500000)
- 205 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 571 PDF objects out of 1000 (max. 8388607)
+ 463 compressed objects within 5 object streams
+ 132 named destinations out of 1000 (max. 500000)
+ 276 words of extra memory for PDF output out of 10000 (max. 10000000)
 
