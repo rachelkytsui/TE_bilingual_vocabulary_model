@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.6.10)  14 JUN 2021 21:19
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.6.10)  15 JUN 2021 15:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -557,6 +557,21 @@ Package babel Info: Hyphen rules for 'newzealand' set to \l@english
 .ldf
 Language: english 2017/06/06 v3.3r English support from the babel system
 ))
+\cslhangindent=\skip85
+\csllabelwidth=\skip86
+(/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count317
+\calc@Bcount=\count318
+\calc@Adimen=\dimen197
+\calc@Bdimen=\dimen198
+\calc@Askip=\skip87
+\calc@Bskip=\skip88
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count319
+\calc@Cskip=\skip89
+)
 Package csquotes Info: Checking for multilingual support...
 Package csquotes Info: ... found 'babel' package.
 Package csquotes Info: Adjusting default style.
@@ -565,29 +580,29 @@ Package csquotes Info: Redefining alias 'default' -> 'english'.
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-pdf
 tex.def
 File: l3backend-pdftex.def 2021-05-07 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count317
+\l__color_backend_stack_int=\count320
 \l__pdf_internal_box=\box64
 ) (./paper_TE_bilingual_vocabulary_model.aux)
 \openout1 = `paper_TE_bilingual_vocabulary_model.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 158.
-LaTeX Font Info:    ... okay on input line 158.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 158.
-LaTeX Font Info:    ... okay on input line 158.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 158.
-LaTeX Font Info:    ... okay on input line 158.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 158.
-LaTeX Font Info:    ... okay on input line 158.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 158.
-LaTeX Font Info:    ... okay on input line 158.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 158.
-LaTeX Font Info:    ... okay on input line 158.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 158.
-LaTeX Font Info:    ... okay on input line 158.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 158.
-LaTeX Font Info:    ... okay on input line 158.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 158.
-LaTeX Font Info:    ... okay on input line 158.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 178.
+LaTeX Font Info:    ... okay on input line 178.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 178.
+LaTeX Font Info:    ... okay on input line 178.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 178.
+LaTeX Font Info:    ... okay on input line 178.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 178.
+LaTeX Font Info:    ... okay on input line 178.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 178.
+LaTeX Font Info:    ... okay on input line 178.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 178.
+LaTeX Font Info:    ... okay on input line 178.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 178.
+LaTeX Font Info:    ... okay on input line 178.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 178.
+LaTeX Font Info:    ... okay on input line 178.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 178.
+LaTeX Font Info:    ... okay on input line 178.
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -626,15 +641,8 @@ LaTeX Font Info:    ... okay on input line 158.
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-b
 ase.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
-(/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/grfext/grfext.sty
-Package: grfext 2019/12/03 v1.3 Manage graphics extensions (HO)
-)
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 85.
-Package grfext Info: Graphics extension search list:
-(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
-G,.JBIG2,.JB2,.eps]
-(grfext)             \AppendGraphicsExtensions on input line 504.
 
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/latexconfig/epstopdf-sy
 s.cfg
@@ -653,7 +661,7 @@ Package caption Info: longtable package is loaded.
 Package: ltcaption 2020/05/30 v1.4b longtable captions (AR)
 )
 Package caption Info: End \AtBeginDocument code.
-Package hyperref Info: Link coloring OFF on input line 158.
+Package hyperref Info: Link coloring OFF on input line 178.
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/refcount/refcount.sty
@@ -663,53 +671,53 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 lestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count318
+\c@section@level=\count321
 )
-LaTeX Info: Redefining \ref on input line 158.
-LaTeX Info: Redefining \pageref on input line 158.
-LaTeX Info: Redefining \nameref on input line 158.
+LaTeX Info: Redefining \ref on input line 178.
+LaTeX Info: Redefining \pageref on input line 178.
+LaTeX Info: Redefining \nameref on input line 178.
 (./paper_TE_bilingual_vocabulary_model.out) (./paper_TE_bilingual_vocabulary_mo
 del.out)
 \@outlinefile=\write5
 \openout5 = `paper_TE_bilingual_vocabulary_model.out'.
 
 LaTeX Font Info:    Trying to load font information for T1+lmss on input line 1
-60.
+80.
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/lm/t1lmss.fd
 File: t1lmss.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 1
-60.
+80.
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 1
-60.
+80.
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-160.
+180.
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
-160.
+180.
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 160.
+(Font)              <12> on input line 180.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 160.
+(Font)              <8> on input line 180.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 160.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 160
+(Font)              <6> on input line 180.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 180
 .
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 160
+LaTeX Font Info:    Trying to load font information for U+msb on input line 180
 .
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -725,160 +733,172 @@ Package fancyhdr Warning: \headheight is too small (15.2pt):
 [1{/Users/racheltsui/Library/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.m
 ap}
 
-] [2]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-[3] [4] [5] [6] [7] [8] [9] [10]
+] [2] [3] [4] [5] [6] [7] [8] [9] [10]
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 2
-23.
+43.
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [11]
-<./Figure1_illustration.jpg, id=187, 1371.1225pt x 770.88pt>
+) [11] [12]
+<./Figure1_illustration.jpg, id=195, 1371.1225pt x 770.88pt>
 File: ./Figure1_illustration.jpg Graphic file (type jpg)
 <use ./Figure1_illustration.jpg>
-Package pdftex.def Info: ./Figure1_illustration.jpg  used on input line 239.
+Package pdftex.def Info: ./Figure1_illustration.jpg  used on input line 259.
 (pdftex.def)             Requested size: 422.78404pt x 237.69997pt.
-[12]
+[13]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[13 <./Figure1_illustration.jpg>]
+[14 <./Figure1_illustration.jpg>]
 Underfull \vbox (badness 7649) has occurred while \output is active []
 
-[14] [15]
+[15] [16]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 264.
+(Font)              <7> on input line 284.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 264.
+(Font)              <5> on input line 284.
 
-Overfull \hbox (7.93095pt too wide) in paragraph at lines 264--286
+Overfull \hbox (7.93095pt too wide) in paragraph at lines 284--306
  [][] 
  []
 
-[16] [17
+[17] [18
 
 
-] [18] [19
+] [19] [20
 
 ]
 Underfull \vbox (badness 1838) has occurred while \output is active []
 
-[20
+[21
 
-] [21] [22
+] [22] [23
 
 ]
-<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf, id=251, 469
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf, id=259, 469
 .755pt x 505.89pt>
 File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf Graphic
  file (type pdf)
 <use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf>
 Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
-/fig2-1.pdf  used on input line 369.
+/fig2-1.pdf  used on input line 389.
 (pdftex.def)             Requested size: 483.18645pt x 520.35461pt.
 
-Overfull \hbox (13.43143pt too wide) in paragraph at lines 369--370
+Overfull \hbox (13.43143pt too wide) in paragraph at lines 389--390
  [][] 
  []
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[23
+[24
 
 ]
 Overfull \vbox (23.90948pt too high) has occurred while \output is active []
 
-[24 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf>]
-<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf, id=267, 469
+[25 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf>]
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf, id=276, 469
 .755pt x 505.89pt>
 File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf Graphic
  file (type pdf)
 <use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf>
 Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
-/fig3-1.pdf  used on input line 385.
+/fig3-1.pdf  used on input line 405.
 (pdftex.def)             Requested size: 375.80452pt x 404.71254pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[25]
+[26]
 Overfull \vbox (4.25734pt too high) has occurred while \output is active []
 
-[26 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf>] [27]
-[28]
-<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf, id=294, 469
+[27 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf>] [28]
+[29]
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf, id=302, 469
 .755pt x 252.945pt>
 File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf Graphic
  file (type pdf)
 <use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf>
 Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
-/fig4-1.pdf  used on input line 421.
+/fig4-1.pdf  used on input line 441.
 (pdftex.def)             Requested size: 469.75386pt x 252.94438pt.
-[29 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf>] [30]
-[31] [32] [33] [34]
-<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig5-1.pdf, id=342, 469
+[30 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf>] [31]
+[32] [33] [34] [35]
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig5-1.pdf, id=350, 469
 .755pt x 325.215pt>
 File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig5-1.pdf Graphic
  file (type pdf)
 <use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig5-1.pdf>
 Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
-/fig5-1.pdf  used on input line 511.
+/fig5-1.pdf  used on input line 531.
 (pdftex.def)             Requested size: 352.31538pt x 243.91064pt.
-[35 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig5-1.pdf>] [36]
-[37
+[36 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig5-1.pdf>] [37]
+[38
 
-] [38
+] [39
 
-] [39] [40]
+] [40] [41]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 609.
+(Font)              <10> on input line 629.
 
-Overfull \hbox (29.93413pt too wide) in paragraph at lines 609--632
+Overfull \hbox (29.93413pt too wide) in paragraph at lines 629--652
  [][] 
  []
 
-[41] [42]
-<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig6-1.pdf, id=392, 469
+[42] [43]
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig6-1.pdf, id=401, 469
 .755pt x 505.89pt>
 File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig6-1.pdf Graphic
  file (type pdf)
 <use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig6-1.pdf>
 Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
-/fig6-1.pdf  used on input line 650.
+/fig6-1.pdf  used on input line 670.
 (pdftex.def)             Requested size: 328.82626pt x 354.12057pt.
-[43]
+[44]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[44 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig6-1.pdf>]
-<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig7-1.pdf, id=410, 469
+[45 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig6-1.pdf>]
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig7-1.pdf, id=418, 469
 .755pt x 289.08pt>
 File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig7-1.pdf Graphic
  file (type pdf)
 <use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig7-1.pdf>
 Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
-/fig7-1.pdf  used on input line 661.
+/fig7-1.pdf  used on input line 683.
 (pdftex.def)             Requested size: 469.77536pt x 289.09251pt.
-[45 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig7-1.pdf>] [46]
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[46 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig7-1.pdf>] [47]
 
 Underfull \vbox (badness 7649) has occurred while \output is active []
 
-[47] [48] [49] [50] [51]
+[48] [49] [50] [51]
 Underfull \vbox (badness 7649) has occurred while \output is active []
 
-[52] AED endfloat: Processing end Figures and Tables [53] (./paper_TE_bilingual
+[52]
+Underfull \vbox (badness 7649) has occurred while \output is active []
+
+[53] [54] [55] [56] [57]
+Underfull \vbox (badness 3199) has occurred while \output is active []
+
+[58]
+Underfull \vbox (badness 3199) has occurred while \output is active []
+
+[59] [60] [61] [62]
+Underfull \vbox (badness 1389) has occurred while \output is active []
+
+[63] AED endfloat: Processing end Figures and Tables [64] (./paper_TE_bilingual
 _vocabulary_model.aux)
 Package rerunfilecheck Info: File `paper_TE_bilingual_vocabulary_model.out' has
  not changed.
-(rerunfilecheck)             Checksum: 65F0CE462CC77C986BA99DE83ACCA700;9756.
+(rerunfilecheck)             Checksum: 3F79EFD1E69846346B8FD0D9C987AAE2;9852.
  ) 
 Here is how much of TeX's memory you used:
- 14932 strings out of 480496
- 230224 string characters out of 5898332
- 574280 words of memory out of 5000000
- 32173 multiletter control sequences out of 15000+600000
+ 15072 strings out of 480496
+ 232289 string characters out of 5898332
+ 574551 words of memory out of 5000000
+ 32233 multiletter control sequences out of 15000+600000
  491041 words of font info for 99 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 72i,11n,80p,2274b,529s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 72i,11n,80p,2339b,553s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/Users/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/
 Users/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/User
 s/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/User
@@ -898,11 +918,11 @@ Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri7.pfb></Users/racheltsui/L
 ibrary/TinyTeX/texmf-dist/fonts/type1/public/lm/lmss8.pfb></Users/racheltsui/Li
 brary/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></Users/racheltsui/Li
 brary/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy7.pfb>
-Output written on paper_TE_bilingual_vocabulary_model.pdf (53 pages, 692995 byt
+Output written on paper_TE_bilingual_vocabulary_model.pdf (64 pages, 718169 byt
 es).
 PDF statistics:
- 571 PDF objects out of 1000 (max. 8388607)
- 463 compressed objects within 5 object streams
- 132 named destinations out of 1000 (max. 500000)
- 276 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 766 PDF objects out of 1000 (max. 8388607)
+ 645 compressed objects within 7 object streams
+ 213 named destinations out of 1000 (max. 500000)
+ 284 words of extra memory for PDF output out of 10000 (max. 10000000)
 
