@@ -119,6 +119,8 @@
 \linenumbers
 \usepackage{csquotes}
 \usepackage{amsmath}
+\usepackage[labelformat=empty]{caption}
+\usepackage{caption}
 \renewcommand{\topfraction}{1}
 \renewcommand{\bottomfraction}{1}
 \renewcommand{\textfraction}{.1}
@@ -155,6 +157,8 @@ The acquisition of translation equivalents is often considered a special compone
 
 \begin{document}
 \maketitle
+
+\captionsetup[table]{labelformat=empty}
 
 Bilingual children must learn words that take a different form in each of their languages, but share the same or highly similar meanings. For instance, to refer to the same crisp red-skinned fruit, an English--French bilingual child must use the word ``apple'' when speaking English, and the word \emph{``pomme''} when speaking French. These cross-language synonyms are known as translation equivalents (also called doublets; Umbel et al., 1992), and are observed amongst bilingual children's first words (e.g., David \& Wei, 2008; De Houwer, Bornstein, \& De Coster, 2006; Pearson et al., 1995). Translation equivalents are thought to hold a special status in a bilingual's developing lexicon due to the strong overlap in their semantics. For example, studies with bilingual toddlers show that the associative semantic properties of a word in one language facilitate the activation of its translation equivalent (e.g., Bilson et al., 2015; Floccia et al., 2020; Jardak \& Byers-Heinlein, 2019). That is, upon hearing the English word ``apple,'' the corresponding French word \emph{``pomme''} is more easily activated in bilinguals' minds. In vocabulary acquisition, bilingual children must learn a first label for a referent ( a ``singlet''; Umbel et al., 1992) before they can learn its translation equivalent. Is translation equivalent learning different from singlet learning? The current paper contrasts three competing accounts: 1) translation equivalents are harder to learn than singlets (Avoidance Account), 2) translation equivalents are easier to learn than singlets (Preference Account), and 3) translation equivalents are similar to learn than singlets (Neutral Account). To adjudicate between these accounts, we introduce the Bilingual Vocabulary Model, which provides a computational account of vocabulary learning, with parameters including bilinguals' vocabulary in each language and their developmental level. In Study 1, we use the Bilingual Vocabulary Model to derive a set of predictions, which we then test against vocabulary data from 200 18- to 33-month-old bilingual children in Study 2.
 
@@ -254,7 +258,7 @@ Concept vocabulary (CONCEPT; sometimes called total conceptual vocabulary) is th
 
 \begin{landscape}\begin{table}
 
-\caption{\label{tab:table1}Summary of the parameters in the Bilingual Vocabulary Model.}
+\caption{\label{tab:table1}Table 1. Summary of the parameters in the Bilingual Vocabulary Model.}
 \centering
 \fontsize{7}{9}\selectfont
 \begin{tabular}[t]{l>{\raggedright\arraybackslash}p{175px}>{\raggedright\arraybackslash}p{175px}>{\raggedright\arraybackslash}p{175px}}
@@ -298,7 +302,7 @@ Three simulations were generated to explore expected patterns of translation equ
 
 \begin{landscape}\begin{table}
 
-\caption{\label{tab:table2}Summary of the parameters used in each simulation.}
+\caption{\label{tab:table2}Table 2. Summary of the parameters used in each simulation.}
 \centering
 \fontsize{8}{10}\selectfont
 \begin{tabular}[t]{>{\centering\arraybackslash}p{45px}>{\raggedright\arraybackslash}p{45px}>{\raggedright\arraybackslash}p{75px}>{\raggedright\arraybackslash}p{75px}>{\raggedright\arraybackslash}p{75px}>{\raggedright\arraybackslash}p{75px}>{\raggedright\arraybackslash}p{75px}>{\raggedright\arraybackslash}p{45px}}
@@ -322,7 +326,7 @@ We first illustrate with three hypothetical children. Infant Annie (small vocabu
 
 \begin{landscape}\begin{table}
 
-\caption{\label{tab:table3}Examples for Simulation 1 of three hypothetical children with different hypothetical word vocabularies (WORD) and vocabulary balance (BALANCE), where the number of learnable words (LEARNABLE) = 600 and BIAS = 1.}
+\caption{\label{tab:table3}Table 3. Examples for Simulation 1 of three hypothetical children with different hypothetical word vocabularies (WORD) and vocabulary balance (BALANCE), where the number of learnable words (LEARNABLE) = 600 and BIAS = 1.}
 \centering
 \fontsize{8}{10}\selectfont
 \begin{tabular}[t]{>{\raggedright\arraybackslash}p{100px}>{\raggedright\arraybackslash}p{140px}>{\raggedright\arraybackslash}p{140px}>{\raggedright\arraybackslash}p{60px}>{\raggedright\arraybackslash}p{60px}>{\raggedright\arraybackslash}p{60px}}
@@ -436,12 +440,14 @@ Ethics approval was obtained by the Human Research Ethics Board of Concordia Uni
 
 Archival data from 200 bilingual children acquiring English and French (age range: 18.38 - 33.50 months; 94 girls and 106 boys) who participated in prior studies at the XYZ lab were included in the present study, drawn from the same set of participants as Gonzalez-Barrero et al.~(2020). Some children took part in more than one in-lab study (n = 28); thus, they contributed data at more than one time point. This resulted in a larger number of datapoints relative to the number of unique participants. The total number of data points included in the analyses was 229 (i.e., 229 English and 229 French CDI questionnaires). Participants were recruited through government birth lists, online ads, daycares, and infant-parent group activities (e.g., children's library activities). Inclusion criteria were the following: full term-pregnancy ( i.e., \textgreater{} 36 weeks of gestation), normal birth weight (\textgreater{} 2500 grams), and absence of major medical conditions (i.e., meningitis). Only children who had complete data in both CDI forms (i.e., English and French) were retained for analysis. Bilingual children were defined as those exposed at least 25\% of the time over the course of their lives globally to both English and French and with less than 10\% of exposure to a third language. For children who participated more than once, their language exposure followed such criteria for all visits. Following the approach in Study 1, children's dominant language was deemed to be the language in which the child produced a greater number of words; vocabulary balance was then determined based on the proportion of words produced in the non-dominant language relative to the total words produced across both languages using the same formula as in Study 1: NONDOM/(DOM+NONDOM). Within the 229 data points, 59.83\% of children were English-dominant and 40.17\% were French-dominant. Data collection was conducted in Montréal, Québec, Canada. Montréal is a multicultural city where both English and French are widely used in society. Children's demographic characteristics including age, maternal education, and language exposure, are presented in Table 4.
 
-\begin{table}[tbp]
+~
+
+\begin{table}[h]
 
 \begin{center}
 \begin{threeparttable}
 
-\caption{\label{tab:table4}Demographic characteristics of participants (data points = 229).}
+\caption{\label{tab:table4}Table 4. Demographic characteristics of participants (data points = 229).}
 
 \begin{tabular}{lccc}
 \toprule
@@ -529,7 +535,7 @@ Prediction 1c was that children who produce more words in the non-dominant langu
 \scriptsize{
 
 \begin{longtable}{llllllllll}\noalign{\getlongtablewidth\global\LTcapwidth=\longtablewidth}
-\caption{\label{tab:table5}Pairwise correlations among variables (corrected for multiple comparisons using Benjamini and Yekutieli [2001]).}\\
+\caption{\label{tab:table5}Table 5. Pairwise correlations among variables (corrected for multiple comparisons using Benjamini and Yekutieli [2001]).}\\
 \toprule
  & \multicolumn{1}{c}{Age (in month)} & \multicolumn{1}{c}{LEARNABLE} & \multicolumn{1}{c}{BALANCE} & \multicolumn{1}{c}{WORD} & \multicolumn{1}{c}{DOM} & \multicolumn{1}{c}{NONDOM} & \multicolumn{1}{c}{TE} & \multicolumn{1}{c}{DOM-SINGLET} & \multicolumn{1}{c}{NONDOM-SINGLET}\\
 \midrule
@@ -560,7 +566,7 @@ CONCEPT &  &  &  &  &  &  &  &  & \\
 
 \begin{table}
 
-\caption{\label{tab:table6}Average number of translation equivalents (TE) produced by each balance group.}
+\caption{\label{tab:table6}Table 6. Average number of translation equivalents (TE) produced by each balance group.}
 \centering
 \begin{tabular}[t]{>{\centering\arraybackslash}p{150px}>{\centering\arraybackslash}p{50px}>{\centering\arraybackslash}p{50px}>{\centering\arraybackslash}p{50px}>{\centering\arraybackslash}p{75px}}
 \toprule
@@ -578,7 +584,7 @@ CONCEPT &  &  &  &  &  &  &  &  & \\
 \hypertarget{testing-prediction-set-2-the-vocabulary-composition-of-bilingual-children-at-different-developmental-levels}{%
 \subsection{2.2.3 Testing Prediction Set 2: The vocabulary composition of bilingual children at different developmental levels}\label{testing-prediction-set-2-the-vocabulary-composition-of-bilingual-children-at-different-developmental-levels}}
 
-Prediction Set 2 pertained to expected patterns of acquisition of translation equivalents and singlets for children of different developmental levels. In our dataset, developmental level was approximated by children's age. Figure 3 Panel B shows the concept vocabulary (CONCEPT) of the bilingual children as a function of different ages (a proxy for developmental level), used to estimate the number of LEARNABLE words. To illustrate the acquisition of translation equivalents and singlets at different developmental levels, we divided children into three age groups: younger children of 18--22 months, middle children of 23--27 months, and older children of 28--33 months.
+Prediction Set 2 pertained to expected patterns of acquisition of translation equivalents and singlets for children of different developmental levels. In our data set, developmental level was approximated by children's age. Figure 3 Panel B shows the concept vocabulary (CONCEPT) of the bilingual children as a function of different ages (a proxy for developmental level), used to estimate the number of LEARNABLE words. To illustrate the acquisition of translation equivalents and singlets at different developmental levels, we divided children into three age groups: younger children of 18--22 months, middle children of 23--27 months, and older children of 28--33 months.
 
 Prediction 2a was that older children (i.e., those at a later developmental level) would have larger concept vocabularies than younger children (i.e., those at an earlier developmental level). We observed a positive correlation between age (used as a proxy for developmental level, which determines LEARNABLE) and concept vocabulary (CONCEPT) in our dataset, \emph{r}(227) = 0.69, \(p < .001\), and therefore confirmed the prediction. This pattern was further confirmed by a one-way ANOVA, where the three age groups significantly differed in the number of concept vocabulary they produced, (\(F\)(2, 226) = 90.86, \(p < .001\)). Older children of 28--33 months (i.e., at a later developmental level) produced the most with an average concept vocabulary of 414.60 (\(p\)s \textless{} .001), those middle children of 23--27 months (i.e., at an intermediate developmental level) produced an average concept vocabulary of 252.10, and those younger children of 18--22 months (i.e., at an earlier developmental level) produced the least with an average concept vocabulary of 119.90 (\(p\)s \textless{} .001).
 
@@ -597,7 +603,7 @@ First, we will walk through the parameters in this model. The size of dominant v
 
 \begin{table}
 
-\caption{\label{tab:table7}The number of total English and French productive CDI vocabulary at the 90th percentile at different ages, and the average between the two which serves as the denominator in our computation model.}
+\caption{\label{tab:table7}Table 7. The number of total English and French productive CDI vocabulary at the 90th percentile at different ages, and the average between the two which serves as the denominator in our computation model.}
 \centering
 \fontsize{10}{12}\selectfont
 \begin{tabular}[t]{>{\centering\arraybackslash}p{75px}>{\centering\arraybackslash}p{125px}>{\centering\arraybackslash}p{125px}>{\centering\arraybackslash}p{125px}}

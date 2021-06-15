@@ -5,6 +5,8 @@ shorttitle: "Are translation equivalents special for bilingual infants?"
 
 header-includes:
   - \usepackage{amsmath}
+  - \usepackage[labelformat=empty]{caption}
+  - \usepackage{caption}
   - \renewcommand{\topfraction}{1}
   - \renewcommand{\bottomfraction}{1}
   - \renewcommand{\textfraction}{.1}
@@ -56,6 +58,8 @@ mask              : no # "yes" to omit identifying information from the title pa
 class             : "man"
 output            : papaja::apa6_pdf
 ---
+
+\captionsetup[table]{labelformat=empty}
 
 ```{r load_packages_settings, include = FALSE}
 library(rmarkdown)
@@ -137,7 +141,7 @@ An often overlooked factor that could contribute to bilingual children’s learn
 Taking into account the contributions of language exposure and developmental level to bilingual children’s vocabulary acquisition, we put forward the Bilingual Vocabulary Model. This model proposes that the number of translation equivalents that bilingual children produce is a function of vocabulary learning in each language, in the context of the number of potentially learnable words given the children’s developmental level. We formalize learning a translation equivalent pair as the joint probability of learning each of the words in the pair. This provides a straight-forward empirical test of different theoretical accounts of translation equivalent learning, by asking whether or not the probability of knowing a word is independent of knowing its translation equivalent. The logic is similar to that of the familiar chi-squared test for independence, where the independence of two events from the same population is tested as the probability of their intersection computed by multiplying the probability of each individual event: P(A and B) = P(A) × P(B | A) where P(B | A) = P(B) if A and B are independent (see Box 1 for a detailed example). The full model is shown in Figure 1. In the next paragraphs, we define each of the model parameters in detail, and these are also summarized in Table 1. 
 
 \newpage
-```{r box1, results="asis", fig.cap = " "}
+```{r box1, results="asis", tab.cap = NULL}
 box1 <- data.frame(title = "To test the independence of two events from the same population, as an example, we might ask whether Psychology majors are more likely to be left-handed. To determine independence, we must know the probability of being a psychology major, the probability of being left handed, and the probability of being both a psychology major and left-handed. The numerator of these probabilities will be the number of students who are left-handed, psychology majors, and both (respectively) and the denominator will be the total population of students we are observing. Imagine a college of 1000 students. If 100/1000 (or 1/10) students are left-handed, and 200/1000 (or 1/5) students are psychology majors, then if these variables are independent we expect a proportion of 1/10 × 1/5 = 1/50 students to be left-handed psychology majors. To determine the number we expect to observe in the college, we multiple 1/50 × 1000 = 20 students. When we compare this expected number to the actual number of left-handed students, there are three possible outcomes. First, we may observe many more than 20 left-handed psychology students at the college (say 100 students), which suggests that being left-handed increases the probability of majoring in psychology. Or, second, we may observe many fewer than 20 left-handed psychology students at the college (say 5 students), this suggests that being left-handed decreases the probability of majoring in psychology (in this example by a factor of 1/4). Finally, if left-handedness and majoring in psychology are independent, we can predict the number of left-handed psychology students by multiplying the observed number of left-handed students (100) by the observed number of psychology students (200), and dividing by the total population of the college (1000), so for example 100×200/1000 = 20. Thus, comparing expected and observed numbers can inform us about the independence of the underlying phenomena.") %>%
   rename("Box 1. Example of test for independence." = title)
 
@@ -202,7 +206,7 @@ table1 <- data.frame(
 landscape(
   kable(table1,
         format = "latex", booktabs = TRUE,
-        caption = "Summary of the parameters in the Bilingual Vocabulary Model.") %>%
+        caption = "Table 1. Summary of the parameters in the Bilingual Vocabulary Model.") %>%
     kableExtra::kable_styling(font_size = 7) %>%
     pack_rows("Main Parameters", 1, 4) %>%
     pack_rows("Derived Parameters", 5, 10) %>%
@@ -255,7 +259,7 @@ landscape(
                       "Total number of data points generated"),
         align = "clllllll",
         format="latex", booktabs = TRUE,
-        caption = "Summary of the parameters used in each simulation.") %>%
+        caption = "Table 2. Summary of the parameters used in each simulation.") %>%
     column_spec(1:2, width = "45px") %>%
     column_spec(3:7, width = "75px") %>%
     column_spec(8, width = "45px") %>%
@@ -310,7 +314,7 @@ landscape(
   kable(table3,
       align = "llllll",
       format="latex", booktabs = TRUE,
-      caption = "Examples for Simulation 1 of three hypothetical children with different hypothetical word vocabularies (WORD) and vocabulary balance (BALANCE), where the number of learnable words (LEARNABLE) = 600 and BIAS = 1.") %>%
+      caption = "Table 3. Examples for Simulation 1 of three hypothetical children with different hypothetical word vocabularies (WORD) and vocabulary balance (BALANCE), where the number of learnable words (LEARNABLE) = 600 and BIAS = 1.") %>%
   pack_rows("Main Parameters", 1, 4) %>%
   pack_rows("Derived Parameters", 5, 10) %>%
   column_spec(c(1), width = "100px") %>%
@@ -649,7 +653,7 @@ Ethics approval was obtained by the Human Research Ethics Board of Concordia Uni
 ```{r participants, include = FALSE}
 # how many distinct participants and data point we have
 keepers_ws_TE %>% 
-  summarize(N_babies = n_distinct(baby_id),
+  summarise(N_babies = n_distinct(baby_id),
             N_admin = n_distinct(ID_testdate))
 
 # how many girls and boys we have
@@ -681,6 +685,7 @@ d_lang_dom <- keepers_ws_TE %>%
 
 Archival data from `r length(unique(keepers_ws_TE$baby_id))` bilingual children acquiring English and French (age range: `r round(min(keepers_ws_TE$age_continuous),2)` - `r round(max(keepers_ws_TE$age_continuous),2)` months; `r length(d_gender$gender[d_gender$gender == "F"])` girls and `r length(d_gender$gender[d_gender$gender == "M"])` boys) who participated in prior studies at the XYZ lab were included in the present study, drawn from the same set of participants as Gonzalez-Barrero et al. (2020). Some children took part in more than one in-lab study (n = `r length(d_multiple$baby_id)`); thus, they contributed data at more than one time point. This resulted in a larger number of datapoints relative to the number of unique participants. The total number of data points included in the analyses was `r length(keepers_ws_TE$ID_testdate)` (i.e., `r length(keepers_ws_TE$eng_cdi_filled[keepers_ws_TE$eng_cdi_filled == "Y"])` English and `r length(keepers_ws_TE$fre_cdi_filled[keepers_ws_TE$fre_cdi_filled == "Y"])` French CDI questionnaires). Participants were recruited through government birth lists, online ads, daycares, and infant-parent group activities (e.g., children’s library activities). Inclusion criteria were the following: full term-pregnancy ( i.e., > 36 weeks of gestation), normal birth weight (> 2500 grams), and absence of major medical conditions (i.e., meningitis). Only children who had complete data in both CDI forms (i.e., English and French) were retained for analysis. Bilingual children were defined as those exposed at least 25% of the time over the course of their lives globally to both English and French and with less than 10% of exposure to a third language. For children who participated more than once, their language exposure followed such criteria for all visits. Following the approach in Study 1, children’s dominant language was deemed to be the language in which the child produced a greater number of words; vocabulary balance was then determined based on the proportion of words produced in the non-dominant language relative to the total words produced across both languages using the same formula as in Study 1: NONDOM/(DOM+NONDOM). Within the `r length(keepers_ws_TE$ID_testdate)` data points, `r round(d_lang_dom$percent_EngDom, 2)`% of children were English-dominant and `r round(d_lang_dom$percent_FrDom, 2)`% were French-dominant. Data collection was conducted in Montréal, Québec, Canada. Montréal is a multicultural city where both English and French are widely used in society. Children’s demographic characteristics including age, maternal education, and language exposure, are presented in Table 4.
 
+&nbsp;
 ```{r table4, results="asis"}
 # Create dataframe of demographics
 d_participants <- keepers_ws_TE %>%
@@ -710,9 +715,10 @@ d_participants <- keepers_ws_TE %>%
 
 # generate the apa table
 papaja::apa_table(d_participants, format.args = list(digits = 1),
-                  caption = "Demographic characteristics of participants (data points = 229).",
+                  caption = "Table 4. Demographic characteristics of participants (data points = 229).",
                   col.names =c("","Mean","$SD$","Range"),
-                  align=c("l","c","c","c"))
+                  align=c("l","c","c","c"),
+                  placement = "h")
 ```
 
 ## 2.1.2 Measures
@@ -928,7 +934,7 @@ correlation_table <- corstars(correlation_data, "pearson", "lower") # generate c
 
 # print table
 papaja::apa_table(correlation_table,
-                  caption = "Pairwise correlations among variables (corrected for multiple comparisons using Benjamini and Yekutieli [2001]).",
+                  caption = "Table 5. Pairwise correlations among variables (corrected for multiple comparisons using Benjamini and Yekutieli [2001]).",
                   note = "*** p < .001, ** p < .01, * p < .05.",
                   align="l",
                   landscape = TRUE,
@@ -969,7 +975,7 @@ mean_TE_binBALANCE <- keepers_ws_TE %>%
 
 kable(mean_TE_binBALANCE,
       format="latex", booktabs=TRUE, align = "c",
-      caption = "Average number of translation equivalents (TE) produced by each balance group.") %>%
+      caption = "Table 6. Average number of translation equivalents (TE) produced by each balance group.") %>%
   column_spec(1, width = "150px") %>%
   column_spec(2:4, width = "50px") %>%
   column_spec(5, width = "75px") %>%
@@ -1119,7 +1125,7 @@ ws_percentile <- read.csv(here::here("data_keepers/ws_percentile.csv")) %>%
 
 kable(ws_percentile,
         format = "latex", booktabs = TRUE, align = "c",
-        caption = "The number of total English and French productive CDI vocabulary at the 90th percentile at different ages, and the average between the two which serves as the denominator in our computation model.") %>%
+        caption = "Table 7. The number of total English and French productive CDI vocabulary at the 90th percentile at different ages, and the average between the two which serves as the denominator in our computation model.") %>%
   kableExtra::kable_styling(font_size = 10) %>%
   column_spec(1, width = "75px") %>%
   column_spec(2:4, width = "125px")
