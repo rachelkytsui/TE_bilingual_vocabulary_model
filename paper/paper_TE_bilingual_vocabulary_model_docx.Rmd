@@ -22,7 +22,7 @@ author:
   - name          : "Rachel Ka-Ying Tsui"
     affiliation   : "1, 2"
     corresponding : yes    
-    address       : "Department of Psychology, 7141 Sherbrooke St. West, Montreal, QC, Canada, H2T1V2, or Laboratory for Language Development, RIKEN Center for Brain Science, 2-1 Hirosawa, Wako-shi, Saitama, Japan, 351-0198"
+    address       : "Department of Psychology, 7141 Sherbrooke St. West, Montreal, QC, Canada, H2T1V2.  Current address: Laboratory for Language Development, RIKEN Center for Brain Science, 2-1 Hirosawa, Wako-shi, Saitama, Japan, 351-0198"
     email         : "rachelkytsui@gmail.com"
   - name          : "Ana Maria Gonzalez-Barrero"
     affiliation   : "1" 
@@ -33,9 +33,7 @@ author:
 
 affiliation:
   - id            : "1"
-    institution   : "Department of Psychology, Concordia University"
-  - id            : "2"
-    institution   : "Laboratory for Language Development, RIKEN Center for Brain Science"
+    institution   : "Concordia University"
 
 abstract: |
   The acquisition of translation equivalents is often considered a special component of bilingual children’s vocabulary development, as bilinguals have to learn words that share the same meaning across their two languages. This study examined three contrasting accounts for bilingual children’s acquisition of translation equivalents relative to words that are first labels for a referent: the Avoidance Account whereby translation equivalents are harder to learn, the Preference Account whereby translation equivalents are easier to learn, and the Neutral Account whereby translation equivalents are similar to learn. To adjudicate between these accounts, Study 1 explored patterns of translation equivalent learning under a novel computational model — the Bilingual Vocabulary Model — which quantifies translation equivalent knowledge as a function of the probability of learning words in each language. Study 2 tested model-derived predictions against vocabulary data from 200 French–English bilingual children aged 18–33 months. Results showed a close match between the model predictions and bilingual children’s patterns of translation equivalent learning. At smaller vocabulary sizes, data matched the Preference Account, while at larger vocabulary sizes they matched the Neutral Account. Our findings show that patterns of translation equivalent learning emerge predictably from the word learning process, and reveal a qualitative shift in translation equivalent learning as bilingual children develop and learn more words. 
@@ -45,9 +43,9 @@ keywords          : "bilingualism, infants, translation equivalents, vocabulary 
 
 wordcount         : 
 
-floatsintext      : no
-figurelist        : yes
-tablelist         : yes
+floatsintext      : yes
+figurelist        : no
+tablelist         : no
 footnotelist      : no
 lineno            : yes
 mask              : no # "yes" to omit identifying information from the title page
@@ -56,7 +54,7 @@ bibliography      : ["paper_TE_bilingual_vocabulary_model_references.bib"]
 replace_ampersands: yes
 
 class             : "man"
-output            : papaja::apa6_word # change to apa6_docx for word document
+output            : papaja::apa6_docx # change to apa6_docx for word document
 citation_package  : biblatex
 nocite: '@*' # include all the references in the .bib file, because in-text citations were mostly typed manually to fit the apa7 style
 ---
@@ -68,6 +66,7 @@ library(rmarkdown)
 library(knitr)
 library(papaja)
 library(kableExtra)
+library(flextable)
 library(english)
 library(here)
 library(tidyverse)
@@ -132,10 +131,6 @@ Because translation equivalents are words from different languages that refer to
 
 Balance between the two vocabulary sizes is a function of the number of words bilingual children produce in each language, which tends to be tightly linked to their exposure to each language. In general, more language exposure leads to larger vocabulary size (e.g., Barnes & Garcia, 2013; Boyce et al., 2013; Hurtado et al., 2014; Marchman et al., 2010; Pearson et al., 1997; Place & Hoff, 2011). Bilingual children usually know more words in the language in which they have greater exposure (i.e; dominant language) relative to the language in which they have less exposure (i.e., non-dominant language; Pearson et al., 1997; Place & Hoff, 2011). This is because the more often a bilingual hears a language, the more opportunities there will be for learning new words in that language.
 
-One important consideration in thinking about bilingual children’s experience is whether they encounter and use their languages within the same or different contexts. This is known as the Complementarity Principle [@Grosjean_2016]. For example, for school-aged bilinguals, school-related words are more likely to be known in the language of schooling rather than in the home language (Bialystok et al., 2010). If certain words are encountered in particular contexts where only one language is used, bilinguals may have fewer opportunities to learn translation equivalents for these words. However, we argue that the Complementarity Principle is unlikely to strongly impact bilingual word acquisition in infancy. Most words in children’s early vocabularies could be considered “home words”, which include words for social and daily routines (“hello”, “more”, “diaper”), common nouns (“doggie”), and everyday verbs (“walk”). Such words are likely to be encountered across contexts where children spend the majority of their time, such as at home and at childcare. Thus, growing up in a bilingual context from birth, bilingual children presumably encounter “home words” in both languages. Accordingly, we assume that for the most part, bilingual children’s opportunities for learning words in each of their languages will be proportional to their overall exposure to the language, and largely not subject to the Complementarity Principle. We further consider implications of this assumption in the discussion section.
-
-Finally, we must note that vocabulary acquisition is not solely tied to quantity of input, but is also predicted by a host of other factors such as children’s ability to segment words from the continuous stream of speech [e.g., @Brent_Siskind_2001; @Swingley_Humphrey_2018], children’s efficiency of processing words they hear (e.g., Hurtado et al., 2014; Weisleder & Fernald, 2013), cognitive development and perceptual bias (e.g., Benedict, 1979; Goodman et al., 2008), and family socioeconomic status (Fernald et al., 2013). Nonetheless, all else being equal, words that are encountered more frequently are acquired sooner than those encountered less frequently (Brent & Siskind, 2001; Goodman et al., 2008; Swingley & Humphrey, 2018).
-
 ### Word learnability as a function of developmental level
 An often overlooked factor that could contribute to bilingual children’s learning of translation equivalents is related to the changes in the learnability of different words over time based on children’s developmental level. Evidence from monolingual children shows that some types of words are characteristically learned before others. For example, across many languages including English, children show a noun bias in their early lexicons (Braginsky et al., 2019; Goodman et al., 2008), although for other languages such as Mandarin it appears that verbs and nouns are more equally acquired [@Tardif_1996]. Certain classes of words are rarely known at the onset of lexical development, such as prepositions and words for time [@Fenson_etal_2007]. This is thought to be due to the cognitive and linguistic machinery that must be in place in order for children to represent these concepts, a necessary prerequisite for learning certain word types (Bergelson, 2020; Braginsky et al., 2019). If this is the case, then children might be more likely to learn translation equivalents than singlets, simply because translation equivalents are more likely to be learnable at their stage of development. That is, potential singlets might be “too hard” to be learned at a particular age. Thus, a seeming overabundance of translation equivalents might be a product of developmental constraints on word learning, rather than due to semantic facilitation.
 
@@ -147,10 +142,13 @@ Taking into account the contributions of language exposure and developmental lev
 box1 <- data.frame(title = "To test the independence of two events from the same population, as an example, we might ask whether Psychology majors are more likely to be left-handed. To determine independence, we must know the probability of being a psychology major, the probability of being left handed, and the probability of being both a psychology major and left-handed. The numerator of these probabilities will be the number of students who are left-handed, psychology majors, and both (respectively) and the denominator will be the total population of students we are observing. Imagine a college of 1000 students. If 100/1000 (or 1/10) students are left-handed, and 200/1000 (or 1/5) students are psychology majors, then if these variables are independent we expect a proportion of 1/10 × 1/5 = 1/50 students to be left-handed psychology majors. To determine the number we expect to observe in the college, we multiple 1/50 × 1000 = 20 students. When we compare this expected number to the actual number of left-handed students, there are three possible outcomes. First, we may observe many more than 20 left-handed psychology students at the college (say 100 students), which suggests that being left-handed increases the probability of majoring in psychology. Or, second, we may observe many fewer than 20 left-handed psychology students at the college (say 5 students), this suggests that being left-handed decreases the probability of majoring in psychology (in this example by a factor of 1/4). Finally, if left-handedness and majoring in psychology are independent, we can predict the number of left-handed psychology students by multiplying the observed number of left-handed students (100) by the observed number of psychology students (200), and dividing by the total population of the college (1000), so for example 100×200/1000 = 20. Thus, comparing expected and observed numbers can inform us about the independence of the underlying phenomena.") %>%
   rename("Box 1. Example of test for independence." = title)
 
-kable(box1,
-      format="latex", booktabs=TRUE, longtable = TRUE) %>%
-  column_spec(1, width = "450px") %>%
-  kable_styling(font_size = 9)
+#kable(box1,
+#      format="latex", booktabs=TRUE, longtable = TRUE) %>%
+#  column_spec(1, width = "450px") %>%
+#  kable_styling(font_size = 9)
+
+flextable(box1) %>%
+  width(width = 6.5)
 
 ```
 
@@ -205,16 +203,23 @@ table1 <- data.frame(
                                          "NONDOM_SINGLET = NONCOM - TE")
 ) 
 
-landscape(
-  kable(table1,
-        format = "latex", booktabs = TRUE,
-        caption = "Table 1. Summary of the parameters in the Bilingual Vocabulary Model.") %>%
-    kableExtra::kable_styling(font_size = 7) %>%
-    pack_rows("Main Parameters", 1, 4) %>%
-    pack_rows("Derived Parameters", 5, 10) %>%
-    column_spec(2:4, width = "175px") %>%
-    footnote(general = "All vocabulary measures are constrained to be integers.")
-)
+#landscape(
+#  kable(table1,
+#        format = "latex", booktabs = TRUE,
+#        caption = "Table 1. Summary of the parameters in the Bilingual Vocabulary Model.") %>%
+#    kableExtra::kable_styling(font_size = 7) %>%
+#    pack_rows("Main Parameters", 1, 4) %>%
+#    pack_rows("Derived Parameters", 5, 10) %>%
+#    column_spec(2:4, width = "175px") %>%
+#    footnote(general = "All vocabulary measures are constrained to be integers.")
+#)
+
+flextable(table1) %>%
+  fontsize(part = "all", size = 8) %>% 
+  set_header_labels(Relationship.to.other.parameters = "Relationship to other parameters") %>%
+  set_caption("Table 1. Summary of the parameters in the Bilingual Vocabulary Model.") %>%
+  width(width = 2)
+  
 ```
 
 ## Current research
@@ -329,7 +334,7 @@ landscape(
 We then broadened this simulation to the more general case and examined patterns of translation equivalent learning, where simulated children had the capacity to learn 600 words (LEARNABLE held constant at 600), and their vocabulary size in each language (DOM and NONDOM) varied. BIAS was once again constant at 1. Data from a total of 216 simulated children were generated (see Table 2 for a summary of the parameter values used in this simulation). Based on these values, we derived simulated children’s word vocabulary (WORD, calculated as DOM+NONDOM) and their vocabulary balance (BALANCE, calculated as NONDOM/(DOM+NONDOM)). In Figure 2, we plotted TE knowledge as a function of DOM, NONDOM, and WORD at different levels of BALANCE. Across all three Panels (1A, 1B, and 1C), simulated children with the most balanced vocabulary consistently produced more translation equivalents than other children. Moreover, Panels 1A and 1C show that, as the number of DOM (dominant language words) and WORD (word vocabulary) increased, TE also increased regardless of BALANCE. Interestingly, Panel 1B shows that NONDOM and TE were extremely tightly coupled. In sum, we observed three important patterns, which served as Prediction Set 1 from the Bilingual Vocabulary Model for Study 2: 
 
 * Prediction 1a: Children with more balanced vocabularies (BALANCE) will produce more translation equivalents (TE). 
-* Prediction 1b: Children who produce more dominant-language words (DOM) or more total words (WORD) will produce more translation equivalents (TE).
+* Prediction 1b: Children who produce more total words (WORD) or more dominant-language words (DOM) will produce more translation equivalents (TE).
 * Prediction 1c: Children who produce more non-dominant language words (NONDOM) will produce more translation equivalents (TE); but unlike for WORD and DOM this does not interact with BALANCE; instead, non-dominant vocabulary size will be an almost perfect predictor of translation equivalent knowledge (see panel 1B of Figure 2).
 
 ```{r simulation1, echo = FALSE}
@@ -902,7 +907,7 @@ corstars <-function(x, method=c("pearson", "spearman"), removeTriangle=c("upper"
     p <- correlation_matrix$P # Matrix of p-value 
     
     ## Define notions for significance levels; spacing is important.
-    mystars <- ifelse(p < .0001, "****", ifelse(p < .001, "*** ", ifelse(p < .01, "**  ", ifelse(p < .05, "*   ", "    "))))
+    mystars <- ifelse(p < .001, "***", ifelse(p < .01, "**", ifelse(p < .05, "*", " ")))
     
     ## trunctuate the correlation matrix to two decimal
     R <- format(round(cbind(rep(-1.11, ncol(x)), R), 2))[,-1]
@@ -928,7 +933,7 @@ corstars <-function(x, method=c("pearson", "spearman"), removeTriangle=c("upper"
     }
     
     ## remove last column and return the correlation matrix
-    Rnew <- cbind(Rnew[1:length(Rnew)-1])
+    Rnew <- cbind(Rnew[2:length(Rnew)])
     return(Rnew)
 } 
 
@@ -970,18 +975,18 @@ mean_TE_binBALANCE <- keepers_ws_TE %>%
   rename(" " = bin_BALANCE, "N" = n, "Mean" = mean_TE, "SD" = sd_TE)
 
 # print table
-#papaja::apa_table(mean_TE_binBALANCE,
-#                  caption = "Average number of translation equivalents (TE) produced by each balance group.",
-#                  col.names =c("","N","Mean","$SD$","range"),
-#                  align="c")
+papaja::apa_table(mean_TE_binBALANCE,
+                  caption = "Average number of translation equivalents (TE) produced by each balance group.",
+                  col.names =c("","N","Mean","$SD$","range"),
+                  align="c")
 
-kable(mean_TE_binBALANCE,
-      format="latex", booktabs=TRUE, align = "c",
-      caption = "Table 6. Average number of translation equivalents (TE) produced by each balance group.") %>%
-  column_spec(1, width = "150px") %>%
-  column_spec(2:4, width = "50px") %>%
-  column_spec(5, width = "75px") %>%
-  kable_styling(position = "center")
+#kable(mean_TE_binBALANCE,
+#      format="latex", booktabs=TRUE, align = "c",
+#      caption = "Table 6. Average number of translation equivalents (TE) produced by each balance group.") %>%
+#  column_spec(1, width = "150px") %>%
+#  column_spec(2:4, width = "50px") %>%
+#  column_spec(5, width = "75px") %>%
+#  kable_styling(position = "center")
 ```
 
 ## 2.2.3 Testing Prediction Set 2: The vocabulary composition of bilingual children at different developmental levels
@@ -1213,7 +1218,7 @@ keepers_ws_TE_simulation %>%
 
 ```
 
-Despite the good overall fit to the data, a close examination of Figure 6 suggested that the model might less closely fit the data of children with smaller vocabulary sizes. Figure 7 displays the model fit separately for children with a word vocabulary (WORD) less than 300 words and those with a word vocabulary (WORD) of 300 or greater. Based on visual inspection, the slope of translation equivalent learning appeared steeper for children with less than 300 total vocabulary, suggesting that translation equivalents are more easily learned (i.e., BIAS > 1); whereas the slope of translation equivalent learning appeared to align with the Neutral Account of the Bilingual Vocabulary Model (i.e., BIAS = 1) for children with more than 300 total vocabulary. To further explore this pattern, we ran the same linear regression twice, separately for children with less than 300 total vocabulary and for those with more than 300 total vocabulary. The model for those with larger total word vocabulary (WORD) returned a coefficient of BIAS = `r round(summary(percentile_model_more300w)$coefficient[1],2)`, $p `r papaja::printp(summary(percentile_model_more300w)$coefficient[4])`$, whereas the model for those with less than 300 total word vocabulary (WORD) returned a coefficient of BIAS = `r round(summary(percentile_model_less300w)$coefficient[1],2)`, $p `r papaja::printp(summary(percentile_model_less300w)$coefficient[4])`$. Both models fit well, although a somewhat better fit was obtained for children with larger vocabulary size ($R^2$ = `r round(summary(percentile_model_more300w)$r.squared,2)`) than children with smaller vocabulary size ($R^2$ = `r round(summary(percentile_model_less300w)$r.squared,2)`). Overall, this analysis suggests that  translation equivalent learning for children with larger vocabularies corresponds best to the Neutral Account, but translation equivalent learning for children with smaller vocabularies corresponds best to the Preference Account.
+Despite the good overall fit to the data, a close examination of Figure 6 suggested that the model might less closely fit the data of children with smaller vocabulary sizes. Figure 7 displays the model fit separately for children with a word vocabulary (WORD) less than 300 words and those with a word vocabulary (WORD) of 300 or greater. Based on visual inspection, the slope of translation equivalent learning appeared steeper for children with less than 300 total vocabulary, suggesting that translation equivalents are more easily learned (i.e., BIAS > 1); whereas the slope of translation equivalent learning appeared to align with the Neutral Account of the Bilingual Vocabulary Model (i.e., BIAS = 1) for children with more than 300 total vocabulary. To further explore this pattern, we ran the same linear regression twice, separately for children with less than 300 total vocabulary and for those with more than 300 total vocabulary. The model for those with larger total word vocabulary (WORD) returned a coefficient of BIAS = `r round(summary(percentile_model_more300w)$coefficient[1],2)`, $p `r papaja::printp(summary(percentile_model_more300w)$coefficient[4])`$, whereas the model for those with less than 300 total word vocabulary (WORD) returned a coefficient of BIAS = `r round(summary(percentile_model_less300w)$coefficient[1],2)`, $p `r papaja::printp(summary(percentile_model_less300w)$coefficient[4])`$. Both models fit well, although a somewhat better fit was obtained for children with larger vocabulary size ($R^2$ = `r round(summary(percentile_model_more300w)$r.squared,2)`) than children with smaller vocabulary size ($R^2$ = `r round(summary(percentile_model_less300w)$r.squared,2)`). Overall, this analysis suggests that translation equivalent learning for children with larger vocabularies corresponds best to the Neutral Account, but translation equivalent learning for children with smaller vocabularies corresponds best to the Preference Account.
 
 &nbsp;
 ```{r fig7, fig.cap="The number of observed translation equivalents as a function of number of expected translation equivalents under the Bilingual Vocabulary Model other (represented by the blue solid line), plotted separately for children with fewer than 300 word vocabulary (left panel) and for those with more than 300 word vocabulary (right panel). The dashed diagonal line represents the case where the parameter equals 1 (BIAS = 1) such that the predicted and observed number of TEs are equal.", echo=FALSE, dpi=600, fig.align='center', fig.height=4, out.width="120%"}
@@ -1275,11 +1280,11 @@ The developmental change of bilingual children’s ability to learn translation 
 Another possible explanation is that the nature of bilingual input changes as children become more advanced word learners. Some recent research has suggested that bilingual parents sometimes code-switch to use a word that they know to be in their child’s vocabulary (Kremin et al., 2021; Nicoladis & Secco, 2000). For example, a caregiver may choose to say to their English–French bilingual child “Can you grab the livre?” if they know their child understands the French word “livre” but not the English equivalent “book”. This may provide fewer opportunities for children to learn translation equivalents, since they would be less exposed to the unfamiliar translation equivalents. However, this observation would predict that young bilinguals would know fewer translation equivalents as a proportion of their vocabularies than older bilinguals, which was opposite to what we observed. Thus, changes in bilingual input also do not provide an adequate explanation for our results of a qualitative change in translation equivalent learning. Overall, more research will be needed to understand why translation equivalents appear to be over-represented in younger bilinguals’ vocabularies.
 
 ## Assumptions, limitations, and future directions
-Our Bilingual Vocabulary Model presented an integrated computational account of translation equivalent learning, focusing on the joint probability of learning the word for a concept in each language. To do so, our model parameters included the number of words produced in each language, as well as children’s developmental level. However, our model does not consider other qualitative factors including family socioeconomic status (e.g., Fernald et al., 2013; Hoff, 2003), parents’ interaction with their children (e.g., Blewitt et al., 2009; Yu & Smith, 2012), and the quality of parental language input over time (e.g., Raneri et al., 2020; Rowe, 2012). It would be interesting for future studies to take into consideration the qualitative factors in a bilingual word learning model, including different amounts of input and the quality of that input. Such a model may better characterize and predict bilingual vocabulary development as a function of experience. Moreover, it would be important to extend our Bilingual Vocabulary Model to longitudinal data or data of a different bilingual population to investigate if it is possible to replicate the qualitative shift where bilingual children’s ability to learn translation equivalents appears to change across development.
+Our Bilingual Vocabulary Model presented an integrated computational account of translation equivalent learning, focusing on the joint probability of learning the word for a concept in each language. To do so, our model parameters included the number of words produced in each language, as well as children’s developmental level. However, our model does not consider that vocabulary acquisition could also be predicted by other factors such as children’s ability to segment words from the continuous stream of speech (e.g., Brent & Siskind, 2001; Swingley & Humphrey, 2018), children’s efficiency of processing words they hear (e.g., Hurtado et al., 2013; Weisleder & Fernald, 2013), and cognitive development and perceptual bias (e.g., Benedict ,1979; Goodman et al., 2008), as well as other qualitative factors including family socioeconomic status (e.g., Fernald et al., 2013; Hoff, 2003), parents’ interaction with their children (e.g., Blewitt et al., 2009; Yu & Smith, 2012), and the quality of parental language input over time (e.g., Raneri et al., 2020; Rowe, 2012). It would be interesting for future studies to take into consideration the qualitative factors in a bilingual word learning model, including different amounts of input and the quality of that input. Such a model may better characterize and predict bilingual vocabulary development as a function of experience. Moreover, it would be important to extend our Bilingual Vocabulary Model to longitudinal data or data of a different bilingual population to investigate if it is possible to replicate the qualitative shift where bilingual children’s ability to learn translation equivalents appears to change across development.
 
 Another limitation of our model is that it takes a somewhat simplified view of translation equivalents, assuming that children encounter the same conceptual categories in each of their languages and are exposed to the corresponding words. However, the reality of bilingual experience might be more complex. First, some concepts expressed as a single word in one language may be lexicalized by two words in another language (e.g., English has a single word for “sister” but Mandarin has separate words for _“jiějie”_ [older sister] and _“mèimei”_ [younger sister]). As another example, some words may not have a translation equivalent in the other language (e.g., the Japanese word _“sushi”_ is borrowed into other languages). Still other languages categorize objects differently within conceptual categories (e.g., a shallow dish might be called a “bowl” in English but an _“assiette”_ [plate] in French). There is mixed evidence for whether bilingual adults maintain separate (Jared et al., 2012) versus integrated (Ameel et al., 2009) conceptual representations across their two languages, and little to no data from bilingual children. Second, our model did not take into account that bilingual children appear to learn similar-sounding translation equivalents (i.e., cognates like the English–French pair “banana” – _“banane”_) more easily than those that do not share similar phonological form (e.g., the English–French pair “dog” – _“chien”_) [@Bosch_Ramon-Casas_2014]. Likewise, some bilingual children learn language pairs that share more cognates than others (e.g., Spanish and Italian share more phonologically similar translation equivalents than English and French; Schepens et al., 2013). While more research will be needed on how these factors impact bilingual vocabulary learning, the close correspondence between our model and data from bilingual children suggest that even if our assumptions are a simplification, deviations from these assumptions might have a relatively small impact. Moreover, if they do prove to be important, such factors could be added to future iterations of the Bilingual Vocabulary Model.
 
-Another assumption of our model was that bilingual children hear labels from both languages for the same set of referents. However, following the Complementarity Principle [@Grosjean_2016], bilinguals may have different experiences in each of their languages. For example, a French–English bilingual child who always spends bathtime with an English-speaking parent might encounter bath words primarily in English (e.g., “soap”, “bath”, “bubbles”), therefore having less opportunity to acquire their translation equivalents in French. At the same time, cross-linguistic data has provided evidence of a high degree of commonality in the first words children produced (e.g., Braginsky et al., 2019; Tardif et al., 2008). For example, words for important people (“mommy”, “daddy”), social routines (“hi”, “bye”, “yes”, “no”), and simple nouns (“ball”, “dog”) are among the first words children across languages and cultures. It therefore seems reasonable to expect that bilingual children would be exposed to a similar set of referents and labels in each of their languages. Moreover, if indeed bilingual children tend to encounter different words in different linguistic contexts, we would have expected our data to be consistent with the Avoidance account (e.g., fewer than expected translation equivalents), which is not what we observed. Nonetheless, future studies of bilingual corpora could directly address whether early translation equivalent learning might be impacted by the Complementarity Principle.
+Another assumption of our model was that bilingual children hear labels from both languages for the same set of referents. However, following the Complementarity Principle [@Grosjean_2016], bilinguals may have different experiences in each of their languages. For example, a French–English bilingual child who always spends bathtime with an English-speaking parent might encounter bath words primarily in English (e.g., “soap”, “bath”, “bubbles”), therefore having less opportunity to acquire their translation equivalents in French. At the same time, cross-linguistic data has provided evidence of a high degree of commonality in the first words children produced (e.g., Braginsky et al., 2019; Tardif et al., 2008). For example, words for important people (“mommy”, “daddy”), social routines (“hi”, “bye”, “yes”, “no”), and common nouns (“ball”, “dog”) are among the first words children acquired across languages and cultures. It therefore seems reasonable to expect that bilingual children growing up in a bilingual household would be exposed to a similar set of referents and labels in each of their languages. Moreover, if indeed bilingual children tend to encounter different words in different linguistic contexts, we would have expected our data to be consistent with the Avoidance account (e.g., fewer than expected translation equivalents), which is not what we observed. Nonetheless, future studies of bilingual corpora could directly address whether early translation equivalent learning might be impacted by the Complementarity Principle.
 
 Finally, we must note the reciprocal relationship in the Bilingual Vocabulary Model between the bias parameter (BIAS) and the parameter that accounts for how many words are potentially learnable at a particular age (LEARNABLE). Under the Bilingual Vocabulary Model, the learnability parameter and the bias parameter jointly predict the number of translation equivalents that a child will learn based on the number of words that they know in each of their languages. That is, if the assumed learnability parameter changes by a factor of two (e.g., whereby only 122 words in each language are learnable for 18-month-olds, rather than 244), then estimates of the bias parameter will also change by a factor of two (i.e., rather than a parameter of 2.22 which supports the Preference account, we would estimate a parameter of 1.11 which is closer to the Neutral Account). Our model estimated the number of learnable words to be the number that children at the 90th percentile at a particular age produce. Small changes to this approach (e.g., taking the number of words children at the 95th percentile produce) would likely not drastically alter our results, nor change the qualitative shift that we observed in our data. Nonetheless, future research will be needed to more precisely quantify the number of words that are learnable by particular children at particular ages.
 

@@ -29,3 +29,4 @@ Matrix
 lme4
 lmerTest
 scales
+flextable
