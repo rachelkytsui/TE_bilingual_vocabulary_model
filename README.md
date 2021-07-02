@@ -21,6 +21,9 @@ This repository holds the data and analysis script for the paper "Are translatio
 * `keepers_ws_TE.csv`: The cleaned data generated from "02_clean_data.Rmd".
 * `keepers_ws_TE_final.csv`: The final data generated from "03_prepare_data.Rmd", which is used in the analysis.
 
+## data_dictionary
+* `data_dictionary.html`: Data dictionary with information about the data set used in the paper (i.e., keepers_ws_TE_final.csv).
+
 ## paper
 This folder contains the .Rmd file which runs the analysis and knits the result into a .pdf file.
 * `paper_TE_bilingual_vocabulary_model.Rmd`: The analysis script and content of the paper.
