@@ -1,0 +1,353 @@
+---
+title: "Data dictionary: Are translation equivalents special? Evidence from simulations and empirical data from bilingual infants"
+author: "Rachel K.Y. Tsui, Ana Maria Gonzalez-Barrero, Esther Schott, & Krista Byers-Heinlein"
+date: '`r format(Sys.time(), "%a %b %d %X %Y")`'
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    code_folding: 'hide'
+    self_contained: true
+  pdf_document:
+    toc: yes
+    toc_depth: 4
+    latex_engine: xelatex
+---
+
+```{r setup, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(
+  warning = TRUE, # show warnings during codebook generation
+  message = TRUE, # show messages during codebook generation
+  error = TRUE, # do not interrupt codebook generation in case of errors,
+                # usually better for debugging
+  echo = TRUE  # show R code
+)
+ggplot2::theme_set(ggplot2::theme_bw())
+pander::panderOptions("table.split.table", Inf)
+```
+
+```{r library, message=FALSE, warning=FALSE}
+# load libraries
+library(codebook)
+library(here)
+library(dplyr)
+library(tidyverse)
+library(future)
+library(labelled)
+```
+
+This is a data dictionary for the data set used in the paper "Are translation equivalents special? Evidence from simulations and empirical data from bilingual infants".
+
+```{r message=FALSE, warning=FALSE}
+#load dataset
+keepers_ws_TE <- rio::import(here::here("data_keepers/keepers_ws_TE_final.csv"))
+```
+
+# Variables {.tabset}
+
+## Overview
+```{r}
+codebook_items(keepers_ws_TE)
+```
+
+
+## baby_id & ID_testdate
+
+* __baby_id__: Unique participant ID
+* __ID_testdate__: Unique participant ID + date of test. Some participants made multiple visits; therefore, certain unique participant IDs have multiple rows of data.
+
+The dataset has N = `r length(unique(keepers_ws_TE$baby_id))` participants and `r length(keepers_ws_TE$ID_testdate)` datapoints. 
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>% 
+  summarise(N_baby_id = n_distinct(baby_id),
+            N_ID_testdate = n_distinct(ID_testdate))
+```
+
+## visit_num
+* __visit_num__: Data collected 1st, 2nd or 3rd visit to the lab. Most children come to lab only once, some come back at a later age
+* __multiple_visits__: Who came once or came multiple times. Values: Single visit = FALSE, multiple visits = TRUE
+
+While the majority of participants made only 1 visit, some participants made multiple visits.
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>% 
+  group_by(multiple_visits) %>%
+  distinct(baby_id, .keep.all=T) %>% 
+  count()
+```
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>% 
+  group_by(visit_num) %>% 
+  distinct(ID_testdate) %>%
+  mutate(total = n()) %>% 
+  count()
+```
+
+
+## gender
+* __gender__: categorical with 2 levels: F & M
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>%
+  distinct(baby_id, .keep_all = TRUE) %>% 
+  count(gender) %>%
+  mutate(percentage = round(n/sum(n)*100, 2)) 
+```
+
+
+## age
+* __age_days__: age in days
+* __age_continuous__: age in months (with decimal)
+* __age_months_binned__: age in months (binned; without decimal)
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>%
+  summarize(mean_age_continuous = mean(age_continuous, na.rm = T),
+            sd_age_continuous = sd(age_continuous, na.rm = T),
+            min_age_continuous = min(age_continuous, na.rm = T),
+            max_age_continuous = max(age_continuous, na.rm = T))
+```
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>% 
+  ggplot(aes(age_continuous)) +
+  geom_histogram()
+```
+
+## years_education
+* __years_education__: Maternal education in years
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>% 
+  summarize(mean_years_education = mean(years_education, na.rm = T),
+            sd_years_education = sd(years_education, na.rm = T),
+            min_years_education = min(years_education, na.rm = T),
+            max_years_education = max(years_education, na.rm = T))
+```
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>% 
+  ggplot(aes(years_education)) +
+  geom_histogram()
+```
+
+## lang_group
+All the data points included in the analysis are from bilinguals.
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>%
+  mutate(lang_group = as.factor(lang_group)) %>%
+  count(lang_group) %>%
+  mutate(percentage = round(n/sum(n)*100, 2)) 
+```
+
+
+## lang_exp
+* __lang_exp_eng__: % of the time when a participant is exposed to __English__ over the course of life globally
+* __lang_exp_fre__: % of the time when a participant is exposed to __French__ over the course of life globally
+* __lang_exp_other__: % of the time when a participant is exposed to __a third language__ over the course of life globally
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>%
+  pivot_longer(c(lang_exp_eng, lang_exp_fre, lang_exp_other), names_to = "language", values_to = "lang_exp") %>%
+  group_by(language) %>%
+  summarize(mean_lang_exp = mean(lang_exp, na.rm = T),
+            sd_lang_exp = sd(lang_exp, na.rm = T),
+            min_lang_exp = min(lang_exp, na.rm = T),
+            max_lang_exp = max(lang_exp, na.rm = T))
+```
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>%
+  pivot_longer(c(lang_exp_eng, lang_exp_fre, lang_exp_other), names_to = "language", values_to = "lang_exp") %>%
+  group_by(language) %>%
+  summarize(mean_lang_exp = mean(lang_exp, na.rm = T)) %>% 
+  mutate(language = recode(language, 
+                           lang_exp_eng = "English", 
+                           lang_exp_fre = "French",
+                           lang_exp_other = "Other language")) %>%
+  ggplot(aes(x = language, y = mean_lang_exp)) +
+  geom_bar(stat="identity") +
+  labs(x = "Language", 
+       y = "Mean language exposure (%)")
+```
+
+## lang_dom
+* __lang_dom__: Language dominance based on % language exposure (i.e., the language with a greater exposure is the dominant language)
+* __lang_dom_vocab__: Language dominance based on vocabulary size (i.e., the language with a greater vocabulary size is the dominant language)
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>%
+  pivot_longer(c(lang_dom, lang_dom_vocab), names_to = "language_dominance", values_to = "language") %>%
+  group_by(language_dominance, language) %>%
+  summarize(n = n())
+```
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>%
+  pivot_longer(c(lang_dom, lang_dom_vocab), names_to = "language_dominance", values_to = "language") %>%
+  group_by(language_dominance, language) %>%
+  summarize(n = n()) %>%
+  mutate(language_dominance = recode(language_dominance, 
+                           lang_dom = "Language dominance \n based on % language exposure", 
+                           lang_dom_vocab = "Language dominance \n based on vocabulary size")) %>%
+  ggplot(aes(x = language_dominance, y = n, fill = language)) +
+  geom_bar(stat="identity", position=position_dodge()) +
+  labs(x = "Types of language dominance", 
+       y = "Number of participants")
+```
+
+For most children, the language in which they produced the most words was also the language that they heard most often, although this was not the case for some children. 
+```{r message=FALSE, warning=FALSE}
+## check to see how many children have consistent/inconsistent dominant language between vocabulary-defined and input-defined dominance
+keepers_ws_TE %>%
+  mutate(consistent_lang_dom = if_else(lang_dom != lang_dom_vocab, 0, 1)) %>% # 1= consistent, 0 = inconsistent
+  summarise(n = n(),
+            n_consistent = sum(consistent_lang_dom),
+            percentage_consistent = n_consistent/n*100,
+            n_inconsistent = n - n_consistent,
+            percentage_inconsistent = n_inconsistent/n*100)
+```
+
+Thus, these two constructs were related, although not identical.
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>%
+  ggplot(aes(x = balance_vocab, y = lang_nondom_input)) +
+  stat_smooth(method = lm, se = F, color = "black") +
+  geom_point(shape = 1) + 
+  theme_light() + 
+  labs(x = "Balance based on vocabulary (BALANCE)", 
+       y = "Balance based on exposure") 
+```
+
+
+## cdi_filled
+* __cdi_filled_by__: Who filled out CDI? Due to limitations with the platform we used to enter CDI data, this information is provided for each visits (e.g, if mother filled English CDI and father filled French, the answer is Mother and Father, without specifying which CDI was filled by whom)">Who filled out CDI? Due to limitations with the platform we used to enter CDI data, this information is provided for each visits (e.g, if mother filled English CDI and father filled French, the answer is Mother and Father, without specifying which CDI was filled by whom)
+* __both_cdi_filled__: Are both CDIs filled? (Y for yes; N for N)
+* __required_cdi_filled__: Is the required CDI filled? Required for bilinguals: CDI in English AND French. (Y for yes; N for N)
+* __eng_cdi_filled__: Is the English CDI filled?
+* __fre_cdi_filled__: Is the French CDI filled?
+* __dom_cdi_filled__: Is the CDI in the dominant language (defined by exposure: lang_dom) filled?
+* __cdi_available__: Is the CDI available for both languages? (bothFilled = both English and French filled)
+
+### Who filled out the CDIs?
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>% 
+  # combine grandmother & other family member
+  mutate(cdi_filled_by = replace(cdi_filled_by, cdi_filled_by == "Grandmother", "Other family member")) %>% 
+  # count number of respondents
+  count(cdi_filled_by) %>%
+  mutate(percentage = round(n/sum(n)*100, 2)) 
+```
+
+### Are both English and French CDIs filled?
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>% 
+  pivot_longer(c(both_cdi_filled, required_cdi_filled, eng_cdi_filled, fre_cdi_filled, dom_cdi_filled, cdi_available),
+               names_to = "variable", values_to = "response") %>%
+  group_by(variable, response) %>%
+  summarize(n = n()) %>%
+  mutate(percentage = round(n/sum(n)*100, 2)) 
+```
+
+## vocabulary measures
+
+### Types of vocabulary
+* __total_words_eng__: Total number of words in English
+* __total_words_fre__: Total number of words in French
+* __word_vocab__: Total word vocabulary (= total_words_eng + total_words_fre)
+* __concept_vocab__: Total concept vocabulary
+* __number_of_te__: Total number of translation equivalents (TEs), i.e., words produced by one child in both English and French)"
+* __eng_unique_words__: Total number of words in English CDI minus number of TEs. Number of words produced only in English (not in French)
+* __fre_unique_words__: Total number of words in French CDI minus number of TEs. Number of words produced only in French (not in English)
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>% 
+  pivot_longer(c(total_words_eng, total_words_fre, word_vocab, concept_vocab, number_of_te, eng_unique_words, fre_unique_words),
+        names_to = "vocab_type", values_to = "vocab_score") %>%
+  group_by(vocab_type) %>%
+  summarize(mean = mean(vocab_score, na.rm = T),
+            sd = sd(vocab_score, na.rm = T),
+            min = min(vocab_score, na.rm = T),
+            max = max(vocab_score, na.rm = T))
+```
+
+### Derived variables
+Instead of coding total number of words produced in English/French, codes for total number of words produced in dominant/non-dominant language defined by vocabulary size (i.e., lang_dom_vocab: the language with a greater vocabulary size is the dominant language)
+
+* __total_words_dom__: Total number of words in the dominant language
+* __total_words_nondom__: Total number of words in the non-dominant language
+* __total_singlet_dom__: Total number of words in the dominant language minus number of TEs. Number of words produced only in the dominant language.
+* __total_singlet_nondom__: Total number of words in the non-dominant language minus number of TEs. Number of words produced only in the non-dominant language
+* __singlet_vocab__: Total singlet vocabulary (total_singlet_dom + total_singlet_nondom)
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>% 
+  pivot_longer(c(total_words_dom, total_words_nondom, total_singlet_dom, total_singlet_nondom, singlet_vocab),
+        names_to = "vocab_type", values_to = "vocab_score") %>%
+  group_by(vocab_type) %>%
+  summarize(mean = mean(vocab_score, na.rm = T),
+            sd = sd(vocab_score, na.rm = T),
+            min = min(vocab_score, na.rm = T),
+            max = max(vocab_score, na.rm = T))
+```
+
+
+## balance measures
+
+### Defined by vocabulary size
+* __balance_vocab__: **The main balance measure** we used in the current study is a *Vocabulary Balance*, which is determined based on the proportion of words produced in the non-dominant language relative to the total words produced across both languages. The formula for calculating the vocabulary balance score is total_words_dom/(total_words_dom+total_words_nondom).
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>% 
+  summarize(mean_balance_vocab = mean(balance_vocab, na.rm = T),
+            sd_balance_vocab = sd(balance_vocab, na.rm = T),
+            min_balance_vocab = min(balance_vocab, na.rm = T),
+            max_balance_vocab = max(balance_vocab, na.rm = T))
+```
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>% 
+  ggplot(aes(balance_vocab)) +
+  geom_histogram()
+```
+
+### Defined by exposure
+Balance can also be considered in terms of input in each language. To make balance_vocab and balance_input comparable, the language designated as DOM and NONDOM was based on vocabulary-defined dominance (lang_dom_vocab), rather than the language that children heard most and least often. 
+
+* __lang_dom_input__: % of the time when a participant is exposed to __the dominant language__ over the course of life globally
+* __lang_nondom_input__: % of the time when a participant is exposed to __the non-dominant language__ over the course of life globally
+* __balance_input__: The formula for calculating the input balance score is also NONDOM/(DOM+NONDOM).
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>% 
+  summarize(mean_balance_input = mean(balance_vocab, na.rm = T),
+            sd_balance_input = sd(balance_vocab, na.rm = T),
+            min_balance_input = min(balance_vocab, na.rm = T),
+            max_balance_input = max(balance_vocab, na.rm = T))
+```
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>% 
+  ggplot(aes(balance_input)) +
+  geom_histogram()
+```
+
+## Wordbank percentile measures
+* __age_months_percentile__: Instead of their actual age in months, this variable adjusts for the age range available in the Wordbank CDI-WS data. As the upper age limit of the CDI-WS is 30m, ages between 30m to 33m are all changed to 30m.
+* __EngWS_90percentile__: The number of English words children can produce at the 90th percentile across ages obtained from Wordbank.
+* __FrWS_90percentile__: The number of French words children can produce at the 90th percentile across ages obtained from Wordbank.
+
+```{r message=FALSE, warning=FALSE}
+keepers_ws_TE %>%
+  distinct(age_months_percentile, .keep_all = TRUE) %>%
+  pivot_longer(c(EngWS_90percentile, FrWS_90percentile), names_to = "language", values_to = "words_90percentile") %>%
+  mutate(language = recode(language, 
+                           EngWS_90percentile = "English",
+                           FrWS_90percentile = "French")) %>%
+  ggplot(aes(x = age_months_percentile, y = words_90percentile, fill = language)) +
+  geom_bar(stat="identity", position=position_dodge()) +
+  labs(x = "Age in months adjusted for the CDI-WS age range (18-30m)", 
+       y = "Number of words produced at the 90th percentile \n (obtained from Wordbank)")
+```
