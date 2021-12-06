@@ -40,7 +40,7 @@ library(scales)
 
 # load data
 ```{r}
-cdi_ws = readRDS(here::here("Data","output_analyzeSent.Rdata"))
+cdi_ws = readRDS(here::here("data_raw","output_analyzeSent.Rdata"))
 ```
 
 # Participant Exclusions
@@ -450,15 +450,16 @@ data_simulation1 <- data_simulation1 %>%
 simulation1 <- data_simulation1 %>%
   # convert to long data
   pivot_longer(c(WORD, DOM, NONDOM), names_to = "vocab_type", values_to = "number") %>%
-  mutate(vocab_type = factor(vocab_type, levels=c("DOM", "NONDOM", "WORD"))) %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("WORD", "DOM", "NONDOM"))) %>%
   mutate(vocab_type = recode(vocab_type, 
-                             DOM = "Panel 1A: Dominant vocabulary \n (DOM)", 
-                             NONDOM = "Panel 1B: Non-dominant vocabulary \n (NONDOM)",
-                             WORD = "Panel 1C: Total vocabulary \n (WORD)")) %>%
+                             DOM = "Panel 1B: Dominant vocabulary",
+                             NONDOM = "Panel 1C: Non-dominant vocabulary",
+                             WORD = "Panel 1A: Total vocabulary")) %>%
   ggplot(aes(x = number, y = TE, color = bin_BALANCE, linetype = bin_BALANCE)) +
   stat_smooth(method = lm, se = F) +
-  scale_color_manual(values=c("#bdbdbd", "#737373", "#525252", "#252525", "#000000")) + 
-  scale_linetype_manual(values=c("longdash", "dotdash", "dashed", "twodash", "solid")) +
+#  scale_color_brewer(palette="Accent")+
+  scale_color_manual(values=c("#762a83", "#abd9e9", "#a6d96a", "#fdae61", "#d53e4f")) + 
+  scale_linetype_manual(values=c("solid", "solid", "solid", "solid", "solid")) +
   theme_minimal() + 
   facet_grid(. ~ vocab_type) +
   theme(axis.text.x = element_text(angle = 90),
@@ -474,7 +475,7 @@ simulation1 <- data_simulation1 %>%
        y = "Total number of translation equivalents (TE)", 
        color = "Vocabulary balance (BALANCE)",
        linetype = "Vocabulary balance (BALANCE)",
-       title = "1) Simulated data") +
+       title = "Simulated data") +
   guides(color = guide_legend(reverse = T, nrow = 1),
          linetype = guide_legend(reverse = T, nrow = 1)) 
 
@@ -487,18 +488,18 @@ ggsave("Output/plot_Simulation1.png", simulation1,
 Observed_plot_inputs_TE <- keepers_ws_TE %>% 
   select(baby_id, ID_testdate, age_days, number_of_te, word_vocab, TotalNW_Dom, TotalNW_NonDom, balance_vocab) %>%
   pivot_longer(c(word_vocab, TotalNW_Dom, TotalNW_NonDom), names_to = "vocab_type", values_to = "number") %>%
-  mutate(vocab_type = factor(vocab_type, levels=c("TotalNW_Dom", "TotalNW_NonDom", "word_vocab"))) %>%
+  mutate(vocab_type = factor(vocab_type, levels=c("word_vocab", "TotalNW_Dom", "TotalNW_NonDom"))) %>%
   mutate(vocab_type = recode(vocab_type, 
-                             TotalNW_Dom = "Panel 2A: Dominant vocabulary \n (DOM)", 
-                             TotalNW_NonDom = "Panel 2B: Non-dominant vocabulary \n (NONDOM)",
-                             word_vocab = "Panel 2C: Total vocabulary \n (WORD)")) %>%
+                             TotalNW_Dom = "Panel 2B: Dominant vocabulary", 
+                             TotalNW_NonDom = "Panel 2C: Non-dominant vocabulary",
+                             word_vocab = "Panel 2A: Total vocabulary")) %>%
   mutate(bin_BALANCE = cut(balance_vocab, breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5), include.lowest=T,
-                     labels = c("0.1", "0.2", "0.3", "0.4", "0.5"))) 
+                     labels = c("0.1", "0.2", "0.3", "0.4", "0.5"))) %>%
   ggplot(aes(x = number, y = number_of_te, color = bin_BALANCE, linetype = bin_BALANCE)) +
   #geom_point() +
   stat_smooth(method = lm, se = F) +
-  scale_color_manual(values=c("#bdbdbd", "#737373", "#525252", "#252525", "#000000")) + 
-  scale_linetype_manual(values=c("longdash", "dotdash", "dashed", "twodash", "solid")) + 
+  scale_color_manual(values=c("#762a83", "#abd9e9", "#a6d96a", "#fdae61", "#d53e4f")) + 
+  scale_linetype_manual(values=c("solid", "solid", "solid", "solid", "solid")) +
   theme_minimal() + 
   facet_grid(. ~ vocab_type) +
   theme(axis.text.x = element_text(angle = 90),
@@ -514,7 +515,7 @@ Observed_plot_inputs_TE <- keepers_ws_TE %>%
        y = "Total number of translation equivalents (TE)", 
        color = "Vocabulary balance (BALANCE)",
        linetype = "Vocabulary balance (BALANCE)",
-       title = "2) Observed data") +
+       title = "Observed data") +
   guides(colour = guide_legend(reverse = T, nrow = 1),
          linetype = guide_legend(reverse = T, nrow = 1))
 
@@ -524,7 +525,7 @@ plot_Simulation1plusData <- ggarrange(simulation1,
                                       nrow = 2,
                                       common.legend = TRUE, legend = "bottom")
 
-ggsave("Output/plot_Simulation1plusData.png", plot_Simulation1plusData,
+ggsave("Output/BU_plot_Simulation1plusData.png", plot_Simulation1plusData,
        width = 10, height = 10)
 
 
@@ -613,7 +614,7 @@ simulation2 <- data_simulation2 %>%
   ggplot(aes(x = bin_BALANCE, y = n_words, fill = vocab_type)) + 
   geom_bar(position="stack", stat="identity") +
   facet_grid(. ~ LEARNABLE_label) +
-  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) +
+  scale_fill_manual(values = c("#bdbdbd", "#737373", "#252525")) +
   scale_x_discrete(labels = function(bin_BALANCE) str_wrap(bin_BALANCE, width = 10)) + 
   ylim(0, 600) +
   theme_minimal() +
@@ -622,6 +623,7 @@ simulation2 <- data_simulation2 %>%
         plot.title.position = "plot",
         text = element_text(size=14),
         panel.spacing.x = unit(2, "lines")) + 
+  guides(fill=guide_legend(nrow=3,byrow=TRUE)) + 
   labs(x = "\nVocabulary balance (BALANCE)", 
        y = "Number of concepts (CONCEPT)", 
        title = "Panel A: Simulated data")
@@ -656,7 +658,7 @@ plot_stacked_byLEARNABLE <- keepers_ws_TE %>%
   ggplot(aes(x = BalSubset, y = n_words, fill = Type)) +
   geom_bar(position="stack", stat="identity") +
   facet_grid(. ~ LEARNABLE_subset) +
-  scale_fill_manual(values = c("#1f78b4", "#a6cee3", "#33a02c")) + 
+  scale_fill_manual(values = c("#bdbdbd", "#737373", "#252525")) +
   scale_x_discrete(labels = function(BalSubset) str_wrap(BalSubset, width = 10)) + 
   ylim(0, 600) +
   theme_minimal() +
@@ -949,7 +951,7 @@ TEprediction_percentile_facet_lessW300 <- keepers_ws_TE_simulation %>%
   geom_smooth(method = "lm", se = F) +
   geom_point(shape = 23) +
   geom_abline(linetype = 2, alpha = 0.5) +
-  theme_minimal() +
+  theme_minimal(base_size = 18) +
   theme(plot.title = element_text(hjust = 0.5))
 
 TEprediction_percentile_facet_moreW300 <- keepers_ws_TE_simulation %>%
@@ -961,15 +963,15 @@ TEprediction_percentile_facet_moreW300 <- keepers_ws_TE_simulation %>%
   geom_smooth(method = "lm", se = F) +
   geom_point(shape = 23) +
   geom_abline(linetype = 2, alpha = 0.5) +
-  theme_minimal() +
+  theme_minimal(base_size = 18) +
   theme(plot.title = element_text(hjust = 0.5))
 
 TEprediction_percentile_facetByW300 <- 
   ggarrange(TEprediction_percentile_facet_lessW300 + rremove("x.title"), 
             TEprediction_percentile_facet_moreW300 + rremove("xy.title"), 
             ncol = 2, nrow = 1) %>%
-  annotate_figure(bottom = text_grob("Number of TEs predicted by the Bilingual Vocabulary Model"))
+  annotate_figure(bottom = text_grob("Number of TEs predicted by the Bilingual Vocabulary Model", size= 18))
 
-ggsave(here("Output/plot_Simulation3_data_2WORDgroups.png"), TEprediction_percentile_facetByW300,
+ggsave(here("Output/BU_plot_Simulation3_data_2WORDgroups.png"), TEprediction_percentile_facetByW300,
        height=5,width=10)
 ```

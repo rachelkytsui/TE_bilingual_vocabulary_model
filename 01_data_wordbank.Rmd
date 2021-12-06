@@ -9,7 +9,7 @@ output:
     number_sections: yes
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, cache = TRUE}
 knitr::opts_chunk$set(echo = TRUE)
 
 library(here)
@@ -20,7 +20,7 @@ library(tidyverse)
 This script implements and documents how we retrieve the percentile information from wordbankr. 
 
 In our study, we define developmental level of a child as the number of potentially learnable words. The number of learnable words is determined by the averaging of English and French productive CDI vocabulary at the 90th percentile at different ages. So we need to retrieve the percentile information from Wordbank (Frank et al., 2016).
-```{r load_wordbankr}
+```{r load_wordbankr, cache = TRUE}
 library(wordbankr)
 ```
 
@@ -28,38 +28,51 @@ library(wordbankr)
 Here, we extract the information about the number of words child can produce at the 90th percentile across ages.
 
 ## English CDI-Words and sentences: Vocabulary size at 90th percentile
-```{r eng_percentile_info}
+```{r eng_percentile_info, cache = TRUE}
 english_ws_percentile <-  
   fit_vocab_quantiles(get_administration_data("English (American)", "WS"), 
                       production,
                       quantile = "standard") %>%
-  # keep only the 90% percentile
-  filter(quantile == 0.90) %>%
-  rename(EngWS_90percentile = production)
+  pivot_wider(names_from = quantile, values_from = production) %>%
+  rename(EngWS_90percentile = "0.9",
+         EngWS_75percentile = "0.75",
+         EngWS_50percentile = "0.5",
+         EngWS_25percentile = "0.25",
+         EngWS_10percentile = "0.1")
+
 ```
 
 ## French CDI-Mots et énoncés: Vocabulary size at 90th percentile
-```{r fre_percentile_info}
+```{r fre_percentile_info, cache = TRUE}
 french_ws_percentile <-  
   fit_vocab_quantiles(get_administration_data("French (Quebecois)", "WS"), 
                       production,
                       quantile = "standard") %>%
-  # keep only the 90% percentile
-  filter(quantile == 0.90) %>%
-  rename(FrWS_90percentile = production)
+  pivot_wider(names_from = quantile, values_from = production) %>%
+  rename(FrWS_90percentile = "0.9",
+         FrWS_75percentile = "0.75",
+         FrWS_50percentile = "0.5",
+         FrWS_25percentile = "0.25",
+         FrWS_10percentile = "0.1")
+
 ```
 
 # Merge the two percentile dataframe
 Then we merge the two percentile dataframe by age.
-```{r merge_percentile}
+```{r merge_percentile, cache = TRUE}
 ws_percentile <- merge(english_ws_percentile, french_ws_percentile, 
                        by = "age") %>%
   # compute estimate total vocab by adding the two languages
-  mutate(Average_90percentile = (EngWS_90percentile + FrWS_90percentile)/2) %>%
+  mutate(Average_10percentile = (EngWS_10percentile + FrWS_10percentile)/2,
+         Average_25percentile = (EngWS_25percentile + FrWS_25percentile)/2,
+         Average_50percentile = (EngWS_50percentile + FrWS_50percentile)/2,
+         Average_75percentile = (EngWS_75percentile + FrWS_75percentile)/2,
+         Average_90percentile = (EngWS_90percentile + FrWS_90percentile)/2) %>%
   # keep only necessary columns
-  select(age, EngWS_90percentile, FrWS_90percentile, Average_90percentile) %>%
+  select(-c(language.x, form.x, language.y, form.y)) %>%
   # rename age to prepare for the next step (i.e., merging with keepers_ws_TE
   rename(age_months_percentile = age)
+
 ```
 
 # Save the percentile data for subsequent analysis

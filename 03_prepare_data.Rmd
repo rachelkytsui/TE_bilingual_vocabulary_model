@@ -21,13 +21,13 @@ This script implements and documents how we prepared the keepers_data for analys
 
 First, we have to read in the keepers_data who holds the bilingual data relevant for the current study.
 
-```{r load_data_raw}
+```{r load_data_raw, cache = TRUE}
 keepers_ws_TE <- read.csv(here::here("data_keepers/keepers_ws_TE.csv"))
 ```
 
 
 # Pivot data from long to wide
-```{r}
+```{r cache = TRUE}
 keepers_ws_TE_final <- keepers_ws_TE %>%
   # remove irrelevant variables
   select(-c(vocab_type_dom, vocab_cross_lang, n_administrations)) %>% 
@@ -42,7 +42,7 @@ The dominant language was deemed to be the language in which the child produced 
 * If the child produced a greater number of words in English than French, then English is the dominant language.
 * If the child produced a greater numnber of words in French than English, then French is the dominant language.
 
-```{r}
+```{r cache = TRUE}
 keepers_ws_TE_final <- keepers_ws_TE_final %>%
   # define lang_dom_vocab
   mutate(lang_dom_vocab = case_when(total_words_eng > total_words_fre ~ "English",
@@ -61,7 +61,7 @@ Here, we re-defined vocabulary measures with reference to the language of domina
 * total number of singlets in the non-dominant language
 * total number of singlets (i.e., across both languages)
 
-```{r}
+```{r cache = TRUE}
 keepers_ws_TE_final <- keepers_ws_TE_final %>%
   mutate(
     # define total number of words in the DOMINANT language
@@ -87,7 +87,7 @@ A balance score is calculated for each child.
 * **balance_vocab**: **The main balance measure** we used in the current study is a *Vocabulary Balance*, which is determined based on the proportion of words produced in the non-dominant language relative to the total words produced across both languages. The formula for calculating the vocabulary balance score is NONDOM/(DOM+NONDOM).
 * **balance_input**: Balance can also be considered in terms of input in each language. To make balance_vocab and balance_input comparable, the language designated as DOM and NONDOM was based on vocabulary-defined dominance (lang_dom_vocab), rather than the language that children heard most and least often. The formula for calculating the input balance score is also NONDOM/(DOM+NONDOM).
 
-```{r}
+```{r cache = TRUE}
 keepers_ws_TE_final <- keepers_ws_TE_final %>%
   # calculate Vocabulary Balance balance_vocab
   mutate(balance_vocab = total_words_nondom/(total_words_dom+total_words_nondom)) %>%
@@ -106,7 +106,7 @@ keepers_ws_TE_final <- keepers_ws_TE_final %>%
 # Append percentile data to the keepers_data
 Finally, we add the percentile data obtained from wordbankr to the keepers_data. This percentile data indicates the number of potentially learnable words for a child at the relevant age.
 
-```{r}
+```{r cache = TRUE}
 # read in the percentile data
 ws_percentile <- read.csv(here::here("data_keepers/ws_percentile.csv"))
 
@@ -121,6 +121,6 @@ keepers_ws_TE_final <- keepers_ws_TE_final %>%
 
 # Save the final keepers_data
 The final keepers_data is saved in the folder "data_keepers"
-```{r}
+```{r cache = TRUE}
 write.csv(keepers_ws_TE_final, "data_keepers/keepers_ws_TE_final.csv", row.names = F)
 ```

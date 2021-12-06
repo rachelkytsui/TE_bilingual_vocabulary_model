@@ -21,7 +21,7 @@ This script implements and documents the data cleaning process.
 
 The raw data from Gonzalez-Barrero et al. (2020) comprises archival expressive vocabulary data from English and French monolingual children, as well as English-French bilingual children. Our current study is interested in bilingual vocabulary development, so we are only keeping data from bilingual children.
 
-```{r load_data_raw}
+```{r load_data_raw, cache = TRUE}
 # raw archival data from Gonzalez-Barrero, Schott, & Byers-Heinlein’s (2020)
 cdi_ws = readRDS(here::here("data_raw","output_analyzeSent.Rdata"))
 ```
@@ -36,7 +36,7 @@ We only keep data from bilinguals, who have at least 25% exposure to both Englis
 * changed the language group across multiple visits (i.e., those are bilingual at one visit but monolingual at another, regardless of direction)
 * do not have both CDIs filled
 
-```{r}
+```{r cache = TRUE}
 # change which infants changed lang_group & create a "exclude.language_group_change" criterion for subsequent step
 exclude.lang_group_change <- cdi_ws %>%
   filter(lang_group !="other") %>%
@@ -78,35 +78,35 @@ keepers_ws_TE <- cdi_ws_TE %>%
 
 # Check the keepers_data
 ## How many distinct infants and total number of data points are there?
-```{r}
+```{r cache = TRUE}
 keepers_ws_TE %>% summarize(N_visits = n_distinct(ID_testdate),
                             N_babies = n_distinct(baby_id))
 ```
 
 ## Are there any NAs in the vocabulary measures? (should all return 0)
 ### Vocabulary score in total vocabulary in English/French, total word vocabulary, and total concept vocabulary
-```{r}
+```{r cache = TRUE}
 keepers_ws_TE %>% filter(is.na(vocab_score)) %>% 
   select(ID_testdate, vocab_type, vocab_score) %>%
   nrow()
 ```
 
 ### Unique words in English
-```{r}
+```{r cache = TRUE}
 keepers_ws_TE %>% filter(is.na(eng_unique_words)) %>% 
   select(ID_testdate) %>% 
   nrow()
 ```
 
 ### Unique words in French
-```{r}
+```{r cache = TRUE}
 keepers_ws_TE %>% filter(is.na(fre_unique_words)) %>% 
   select(ID_testdate) %>%
   nrow()
 ```
 
 ### Number of translation equivalents
-```{r}
+```{r cache = TRUE}
 keepers_ws_TE %>% filter(is.na(number_of_te)) %>% 
   select(ID_testdate) %>%
   nrow()
@@ -114,6 +114,6 @@ keepers_ws_TE %>% filter(is.na(number_of_te)) %>%
 
 # Save the keepers_data
 The keepers_data is saved in the folder "data_keepers"
-```{r}
+```{r cache = TRUE}
 write.csv(keepers_ws_TE, "data_keepers/keepers_ws_TE.csv", row.names = F)
 ```
