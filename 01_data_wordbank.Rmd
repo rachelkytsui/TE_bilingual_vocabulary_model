@@ -71,7 +71,9 @@ ws_percentile <- merge(english_ws_percentile, french_ws_percentile,
   # keep only necessary columns
   select(-c(language.x, form.x, language.y, form.y)) %>%
   # rename age to prepare for the next step (i.e., merging with keepers_ws_TE
-  rename(age_months_percentile = age)
+  rename(age_months_percentile = age) %>%
+  # round to the nearest integer
+  mutate_if(is.numeric, round, digits = 0)
 
 ```
 

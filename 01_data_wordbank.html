@@ -242,7 +242,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">TE_bilingual_vocabulary_model: Retrieve percentile information from wordbankr</h1>
 <h4 class="author">Rachel K.Y. Tsui, Ana Maria Gonzalez-Barrero, Esther Schott, &amp; Krista Byers-Heinlein</h4>
-<h4 class="date">Mon Dec 06 15:19:23 2021</h4>
+<h4 class="date">Fri Dec 10 16:11:23 2021</h4>
 
 </div>
 
@@ -299,7 +299,9 @@ div.tocify {
   # keep only necessary columns
   select(-c(language.x, form.x, language.y, form.y)) %&gt;%
   # rename age to prepare for the next step (i.e., merging with keepers_ws_TE
-  rename(age_months_percentile = age)</code></pre>
+  rename(age_months_percentile = age) %&gt;%
+  # round to the nearest integer
+  mutate_if(is.numeric, round, digits = 0)</code></pre>
 </div>
 <div id="save-the-percentile-data-for-subsequent-analysis" class="section level1" number="4">
 <h1 number="4"><span class="header-section-number">4</span> Save the percentile data for subsequent analysis</h1>
