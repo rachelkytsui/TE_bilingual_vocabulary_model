@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2021.11.9)  10 DEC 2021 16:33
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2021.11.9)  13 DEC 2021 14:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -784,7 +784,7 @@ Overfull \hbox (13.43143pt too wide) in paragraph at lines 363--364
  []
 
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Underfull \vbox (badness 1442) has occurred while \output is active []
 
 [22
 
@@ -803,12 +803,12 @@ File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf Graphic
 <use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf>
 Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
 /fig2-1.pdf  used on input line 391.
-(pdftex.def)             Requested size: 375.80452pt x 404.71254pt.
+(pdftex.def)             Requested size: 469.75386pt x 505.88875pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
 [25]
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Overfull \vbox (9.44362pt too high) has occurred while \output is active []
 
 [26 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf>]
 Underfull \vbox (badness 1838) has occurred while \output is active []
@@ -894,28 +894,25 @@ Underfull \vbox (badness 7649) has occurred while \output is active []
 ] [48] [49] [50] [51] [52]
 Underfull \vbox (badness 7649) has occurred while \output is active []
 
-[53]
-Underfull \vbox (badness 7649) has occurred while \output is active []
-
-[54] [55] [56] [57] [58]
+[53] [54] [55] [56] [57]
 Underfull \vbox (badness 3199) has occurred while \output is active []
 
-[59]
+[58]
 Underfull \vbox (badness 3199) has occurred while \output is active []
 
-[60] [61] [62] [63]
+[59] [60] [61] [62]
 Underfull \vbox (badness 1389) has occurred while \output is active []
 
-[64] AED endfloat: Processing end Figures and Tables [65] (./paper_TE_bilingual
+[63] AED endfloat: Processing end Figures and Tables [64] (./paper_TE_bilingual
 _vocabulary_model.aux)
 Package rerunfilecheck Info: File `paper_TE_bilingual_vocabulary_model.out' has
  not changed.
 (rerunfilecheck)             Checksum: 34AE01CD5DAF229B99E1588C893B72FD;10066.
  ) 
 Here is how much of TeX's memory you used:
- 15210 strings out of 480539
- 236879 string characters out of 5901556
- 573800 words of memory out of 5000000
+ 15209 strings out of 480539
+ 236872 string characters out of 5901556
+ 573839 words of memory out of 5000000
  32325 multiletter control sequences out of 15000+600000
  492302 words of font info for 99 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
@@ -939,11 +936,11 @@ i/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri12.pfb></Users/racheltsu
 i/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri7.pfb></Users/racheltsui
 /Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmss8.pfb></Users/racheltsui/
 Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy7.pfb>
-Output written on paper_TE_bilingual_vocabulary_model.pdf (65 pages, 519652 byt
+Output written on paper_TE_bilingual_vocabulary_model.pdf (64 pages, 524115 byt
 es).
 PDF statistics:
- 792 PDF objects out of 1000 (max. 8388607)
- 669 compressed objects within 7 object streams
- 219 named destinations out of 1000 (max. 500000)
+ 788 PDF objects out of 1000 (max. 8388607)
+ 666 compressed objects within 7 object streams
+ 218 named destinations out of 1000 (max. 500000)
  287 words of extra memory for PDF output out of 10000 (max. 10000000)
 
