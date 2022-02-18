@@ -1,32 +1,32 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2021.11.9)  22 DEC 2021 13:14
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2022.1.7)  18 FEB 2022 16:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **paper_TE_bilingual_vocabulary_model.tex
 (./paper_TE_bilingual_vocabulary_model.tex
-LaTeX2e <2021-06-01> patch level 1
-L3 programming layer <2021-10-18> (/Users/racheltsui/Library/TinyTeX/texmf-dist
+LaTeX2e <2021-11-15> patch level 1
+L3 programming layer <2021-11-22> (/Users/racheltsui/Library/TinyTeX/texmf-dist
 /tex/latex/apa6/apa6.cls
 Document Class: apa6 2020/01/13 v2.34 APA formatting (6th edition)
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/base/article.cls
-Document Class: article 2021/02/12 v1.4n Standard LaTeX document class
+Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/base/size12.clo
-File: size12.clo 2021/02/12 v1.4n Standard LaTeX file (size option)
+File: size12.clo 2021/10/04 v1.4n Standard LaTeX file (size option)
 )
-\c@part=\count182
-\c@section=\count183
-\c@subsection=\count184
-\c@subsubsection=\count185
-\c@paragraph=\count186
-\c@subparagraph=\count187
-\c@figure=\count188
-\c@table=\count189
+\c@part=\count183
+\c@section=\count184
+\c@subsection=\count185
+\c@subsubsection=\count186
+\c@paragraph=\count187
+\c@subparagraph=\count188
+\c@figure=\count189
+\c@table=\count190
 \abovecaptionskip=\skip47
 \belowcaptionskip=\skip48
 \bibindent=\dimen138
 ) (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/etoolbox/etoolbox.sty
 Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
-\etb@tempcnta=\count190
+\etb@tempcnta=\count191
 )
 Class apa6 Info: No bibliography package was specified; defaulting to (but not 
 loading) Biblatex on input line 213.
@@ -81,9 +81,9 @@ Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/generic/iftex/iftex.sty
 Package: iftex 2020/03/06 v1.0d TeX engine tests
 ))
-\Gm@cnth=\count191
-\Gm@cntv=\count192
-\c@Gm@tempcnt=\count193
+\Gm@cnth=\count192
+\Gm@cntv=\count193
+\c@Gm@tempcnt=\count194
 \Gm@bindingoffset=\dimen139
 \Gm@wd@mp=\dimen140
 \Gm@odd@mp=\dimen141
@@ -94,11 +94,11 @@ Package: iftex 2020/03/06 v1.0d TeX engine tests
 \Gm@layoutvoffset=\dimen146
 \Gm@dimlist=\toks17
 ) (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/graphics/graphicx.sty
-Package: graphicx 2020/12/05 v1.2c Enhanced LaTeX Graphics (DPC,SPQR)
+Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/graphics/graphics.sty
 Package: graphics 2021/03/04 v1.4d Standard LaTeX Graphics (DPC,SPQR)
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/graphics/trig.sty
-Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+Package: trig 2021/08/11 v1.11 sin cos tan (DPC)
 )
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/graphics-cfg/graphics.c
 fg
@@ -123,12 +123,12 @@ Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \cmidrulesep=\dimen156
 \cmidrulekern=\dimen157
 \defaultaddspace=\dimen158
-\@cmidla=\count194
-\@cmidlb=\count195
+\@cmidla=\count195
+\@cmidlb=\count196
 \@aboverulesep=\dimen159
 \@belowrulesep=\dimen160
-\@thisruleclass=\count196
-\@lastruleclass=\count197
+\@thisruleclass=\count197
+\@lastruleclass=\count198
 \@thisrulewidth=\dimen161
 )
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/threeparttable/threepar
@@ -159,11 +159,11 @@ Package: caption3 2020/10/21 v2.2e caption3 kernel (AR)
 \caption@hangindent=\dimen168
 Package caption Info: Standard document class detected.
 )
-\c@caption@flags=\count198
-\c@continuedfloat=\count199
+\c@caption@flags=\count199
+\c@continuedfloat=\count266
 Package caption Info: threeparttable package is loaded.
 )
-\c@APAenum=\count266
+\c@APAenum=\count267
 \@text@par@indent=\skip59
 \gr@box=\box51
 \gr@boxwidth=\skip60
@@ -176,7 +176,7 @@ Package: bm 2021/04/25 v1.2e Bold Symbol Support (DPC/FMi)
 Package bm Info: No bold for \OMX/lmex/m/n, using \pmb.
 LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 149.
 )
-\c@appendix=\count267
+\c@appendix=\count268
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
 Package: fancyhdr 2021/01/28 v4.0.1 Extensive control of page headers and foote
 rs
@@ -192,25 +192,25 @@ rs
 ) (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/endfloat/endfloat.sty
 Package: endfloat 2019/04/15 v2.7 LaTeX2e package puts figures and tables at en
 d (jdm)
-\c@posttable=\count268
+\c@posttable=\count269
 \efloat@postttt=\write3
-\@ef@tttopen=\count269
-\c@postfigure=\count270
+\@ef@tttopen=\count270
+\c@postfigure=\count271
 \efloat@postfff=\write4
-\@ef@fffopen=\count271
+\@ef@fffopen=\count272
 ) (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count272
+\c@float@type=\count273
 \float@exts=\toks18
 \float@box=\box52
 \@float@everytoks=\toks19
 \@floatcapt=\box53
 )) (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsmath.sty
-Package: amsmath 2021/04/20 v2.17j AMS math features
+Package: amsmath 2021/10/15 v2.17l AMS math features
 \@mathmargin=\skip71
 For additional information on amsmath, use the `?' option.
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amstext.sty
-Package: amstext 2000/06/29 v2.01 AMS text
+Package: amstext 2021/08/26 v2.01 AMS text
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0 generic functions
 \@emptytoks=\toks20
@@ -220,15 +220,15 @@ Package: amsbsy 1999/11/29 v1.2d Bold Symbols
 LaTeX Info: Redefining \boldsymbol on input line 28.
 \pmbraise@=\dimen170
 ) (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsopn.sty
-Package: amsopn 2016/03/08 v2.02 operator names
+Package: amsopn 2021/08/26 v2.02 operator names
 )
-\inf@bad=\count273
+\inf@bad=\count274
 LaTeX Info: Redefining \frac on input line 234.
-\uproot@=\count274
-\leftroot@=\count275
+\uproot@=\count275
+\leftroot@=\count276
 LaTeX Info: Redefining \overline on input line 399.
-\classnum@=\count276
-\DOTSCASE@=\count277
+\classnum@=\count277
+\DOTSCASE@=\count278
 LaTeX Info: Redefining \ldots on input line 496.
 LaTeX Info: Redefining \dots on input line 499.
 LaTeX Info: Redefining \cdots on input line 620.
@@ -237,15 +237,15 @@ LaTeX Info: Redefining \cdots on input line 620.
 \big@size=\dimen171
 LaTeX Font Info:    Redeclaring font encoding OML on input line 743.
 LaTeX Font Info:    Redeclaring font encoding OMS on input line 744.
-\macc@depth=\count278
-\c@MaxMatrixCols=\count279
+\macc@depth=\count279
+\c@MaxMatrixCols=\count280
 \dotsspace@=\muskip16
-\c@parentequation=\count280
-\dspbrk@lvl=\count281
+\c@parentequation=\count281
+\dspbrk@lvl=\count282
 \tag@help=\toks21
-\row@=\count282
-\column@=\count283
-\maxfields@=\count284
+\row@=\count283
+\column@=\count284
+\maxfields@=\count285
 \andhelp@=\toks22
 \eqnshift@=\dimen172
 \alignsep@=\dimen173
@@ -257,8 +257,8 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 744.
 \multlinegap=\skip72
 \multlinetaggap=\skip73
 \mathdisplay@stack=\toks24
-LaTeX Info: Redefining \[ on input line 2923.
-LaTeX Info: Redefining \] on input line 2924.
+LaTeX Info: Redefining \[ on input line 2938.
+LaTeX Info: Redefining \] on input line 2939.
 ) (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/generic/iftex/ifxetex.sty
 Package: ifxetex 2019/10/25 v0.7 ifxetex legacy package. Use iftex instead.
 ) (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/generic/iftex/ifluatex.sty
@@ -337,8 +337,8 @@ Package: auxhook 2019-12-17 v1.6 Hooks for auxiliary files (HO)
 Package: kvoptions 2020-10-07 v3.14 Key value format for package options (HO)
 )
 \@linkdim=\dimen178
-\Hy@linkcounter=\count285
-\Hy@pagecounter=\count286
+\Hy@linkcounter=\count286
+\Hy@pagecounter=\count287
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/hyperref/pd1enc.def
 File: pd1enc.def 2021-06-07 v7.00m Hyperref: PDFDocEncoding definition (HO)
 Now handling font encoding PD1 ...
@@ -354,7 +354,7 @@ Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/generic/etexcmds/etexcmds.sty
 Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
 )
-\Hy@SavedSpaceFactor=\count287
+\Hy@SavedSpaceFactor=\count288
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/hyperref/puenc.def
 File: puenc.def 2021-06-07 v7.00m Hyperref: PDF Unicode definition (HO)
 Now handling font encoding PU ...
@@ -368,7 +368,7 @@ Package hyperref Info: Plain pages OFF on input line 4207.
 Package hyperref Info: Backreferencing OFF on input line 4212.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4445.
-\c@Hy@tempcnt=\count288
+\c@Hy@tempcnt=\count289
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/url/url.sty
 \Urlmuskip=\muskip17
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
@@ -383,7 +383,7 @@ Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
-\Fld@menulength=\count289
+\Fld@menulength=\count290
 \Field@Width=\dimen180
 \Fld@charsize=\dimen181
 Package hyperref Info: Hyper figures OFF on input line 6076.
@@ -399,20 +399,20 @@ LaTeX Info: Redefining \pageref on input line 6150.
 Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
 package with kernel methods
 )
-\Hy@abspage=\count290
-\c@Item=\count291
-\c@Hfootnote=\count292
+\Hy@abspage=\count291
+\c@Item=\count292
+\c@Hfootnote=\count293
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hpdftex.def
 File: hpdftex.def 2021-06-07 v7.00m Hyperref driver for pdfTeX
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/base/atveryend-ltx.sty
-Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atvery packag
-e
+Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend pac
+kage
 with kernel methods
 )
-\Fld@listcount=\count293
-\c@bookmark@seq@number=\count294
+\Fld@listcount=\count294
+\c@bookmark@seq@number=\count295
 
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/rerunfilecheck/rerunfil
 echeck.sty
@@ -433,35 +433,35 @@ Package upgreek Info: Using Euler Roman for upright Greek on input line 31.
 LaTeX Font Info:    Overwriting symbol font `ugrf@m' in version `bold'
 (Font)                  U/eur/m/n --> U/eur/b/n on input line 38.
 ) (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/tools/longtable.sty
-Package: longtable 2021-05-07 v4.16 Multi-page Table package (DPC)
+Package: longtable 2021-09-01 v4.17 Multi-page Table package (DPC)
 \LTleft=\skip75
 \LTright=\skip76
 \LTpre=\skip77
 \LTpost=\skip78
-\LTchunksize=\count295
+\LTchunksize=\count296
 \LTcapwidth=\dimen182
 \LT@head=\box56
 \LT@firsthead=\box57
 \LT@foot=\box58
 \LT@lastfoot=\box59
 \LT@gbox=\box60
-\LT@cols=\count296
-\LT@rows=\count297
-\c@LT@tables=\count298
-\c@LT@chunks=\count299
+\LT@cols=\count297
+\LT@rows=\count298
+\c@LT@tables=\count299
+\c@LT@chunks=\count300
 \LT@p@ftn=\toks27
 ) (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/graphics/lscape.sty
 Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
 ) (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/multirow/multirow.sty
 Package: multirow 2021/03/15 v2.8 Span multiple rows of a table
 \multirow@colwidth=\skip79
-\multirow@cntb=\count300
+\multirow@cntb=\count301
 \multirow@dima=\skip80
 \bigstrutjot=\dimen183
 ) (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/tools/tabularx.sty
 Package: tabularx 2020/01/15 v2.11c `tabularx' package (DPC)
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/tools/array.sty
-Package: array 2021/04/20 v2.5e Tabular extension package (FMi)
+Package: array 2021/10/04 v2.5f Tabular extension package (FMi)
 \col@sep=\dimen184
 \ar@mcellbox=\box61
 \extrarowheight=\dimen185
@@ -475,7 +475,7 @@ Package: array 2021/04/20 v2.5e Tabular extension package (FMi)
 \TX@old@col=\dimen188
 \TX@target=\dimen189
 \TX@delta=\dimen190
-\TX@cols=\count301
+\TX@cols=\count302
 \TX@ftn=\toks29
 )
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/threeparttablex/threepa
@@ -493,16 +493,16 @@ Package: trimspaces 2009/09/17 v1.1 Trim spaces around a token list
 \longtablewidth=\skip84
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/lineno/lineno.sty
 Package: lineno 2005/11/02 line numbers on paragraphs v4.41
-\linenopenalty=\count302
+\linenopenalty=\count303
 \output=\toks30
-\linenoprevgraf=\count303
+\linenoprevgraf=\count304
 \linenumbersep=\dimen191
 \linenumberwidth=\dimen192
-\c@linenumber=\count304
-\c@pagewiselinenumber=\count305
-\c@LN@truepage=\count306
-\c@internallinenumber=\count307
-\c@internallinenumbers=\count308
+\c@linenumber=\count305
+\c@pagewiselinenumber=\count306
+\c@LN@truepage=\count307
+\c@internallinenumber=\count308
+\c@internallinenumbers=\count309
 \quotelinenumbersep=\dimen193
 \bframerule=\dimen194
 \bframesep=\dimen195
@@ -510,12 +510,12 @@ Package: lineno 2005/11/02 line numbers on paragraphs v4.41
 LaTeX Info: Redefining \\ on input line 3056.
 ) (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/csquotes/csquotes.sty
 Package: csquotes 2021-02-22 v5.2l context-sensitive quotations (JAW)
-\csq@reset=\count309
-\csq@gtype=\count310
-\csq@glevel=\count311
-\csq@qlevel=\count312
-\csq@maxlvl=\count313
-\csq@tshold=\count314
+\csq@reset=\count310
+\csq@gtype=\count311
+\csq@glevel=\count312
+\csq@qlevel=\count313
+\csq@maxlvl=\count314
+\csq@tshold=\count315
 \csq@ltx@everypar=\toks31
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/csquotes/csquotes.def
 File: csquotes.def 2021-02-22 v5.2l csquotes generic definitions (JAW)
@@ -528,13 +528,13 @@ File: csquotes.cfg
    defining Unicode char U+2265 (decimal 8805)
    defining Unicode char U+2264 (decimal 8804)
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/generic/babel/babel.sty
-Package: babel 2021/11/08 3.66 The Babel package
-\babel@savecnt=\count315
+Package: babel 2021/12/30 3.69 The Babel package
+\babel@savecnt=\count316
 \U@D=\dimen196
 \l@unhyphenated=\language3
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/generic/babel/txtbabel.def)
 \bbl@readstream=\read2
-\bbl@dirlevel=\count316
+\bbl@dirlevel=\count317
 
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/generic/babel-english/english
 .ldf
@@ -549,24 +549,20 @@ Package babel Info: Hyphen rules for 'australian' set to \l@english
 (babel)             (\language0). Reported on input line 105.
 Package babel Info: Hyphen rules for 'newzealand' set to \l@english
 (babel)             (\language0). Reported on input line 108.
-)
-(/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/generic/babel-english/english
-.ldf
-Language: english 2017/06/06 v3.3r English support from the babel system
 ))
 \cslhangindent=\skip85
 \csllabelwidth=\skip86
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/tools/calc.sty
 Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
-\calc@Acount=\count317
-\calc@Bcount=\count318
+\calc@Acount=\count318
+\calc@Bcount=\count319
 \calc@Adimen=\dimen197
 \calc@Bdimen=\dimen198
 \calc@Askip=\skip87
 \calc@Bskip=\skip88
 LaTeX Info: Redefining \setlength on input line 80.
 LaTeX Info: Redefining \addtolength on input line 81.
-\calc@Ccount=\count319
+\calc@Ccount=\count320
 \calc@Cskip=\skip89
 )
 Package csquotes Info: Checking for multilingual support...
@@ -576,8 +572,8 @@ Package csquotes Info: Redefining alias 'default' -> 'english'.
 
 (/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-pdf
 tex.def
-File: l3backend-pdftex.def 2021-10-18 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count320
+File: l3backend-pdftex.def 2021-12-14 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count321
 \l__pdf_internal_box=\box64
 ) (./paper_TE_bilingual_vocabulary_model.aux)
 \openout1 = `paper_TE_bilingual_vocabulary_model.aux'.
@@ -668,7 +664,7 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 lestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count321
+\c@section@level=\count322
 )
 LaTeX Info: Redefining \ref on input line 178.
 LaTeX Info: Redefining \pageref on input line 178.
@@ -748,166 +744,172 @@ File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [10] [11]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[12]
-Underfull \vbox (badness 7649) has occurred while \output is active []
-
-[13] [14]
+[12] [13]
 Overfull \hbox (7.93095pt too wide) in paragraph at lines 251--276
  [] 
  []
 
-[15]
+[14]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[16
+[15
 
 
-] [17] [18] [19
-
-]
+] [16]
 Underfull \vbox (badness 1838) has occurred while \output is active []
 
-[20
+[17] [18] [19
 
-] [21] [22]
-<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig1-1.pdf, id=271, 469
+] [20
+
+]
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 3
+43.
+(/Users/racheltsui/Library/TinyTeX/texmf-dist/tex/latex/lm/t1lmtt.fd
+File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig1-1.pdf, id=265, 469
 .755pt x 505.89pt>
 File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig1-1.pdf Graphic
  file (type pdf)
 <use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig1-1.pdf>
 Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
-/fig1-1.pdf  used on input line 373.
+/fig1-1.pdf  used on input line 369.
 (pdftex.def)             Requested size: 483.18645pt x 520.35461pt.
 
-Overfull \hbox (13.43143pt too wide) in paragraph at lines 373--374
+Overfull \hbox (13.43143pt too wide) in paragraph at lines 369--370
  [][] 
  []
 
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Underfull \vbox (badness 6047) has occurred while \output is active []
 
-[23
-
-
-]
+[21]
 Overfull \vbox (23.90948pt too high) has occurred while \output is active []
 
-[24 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig1-1.pdf>]
+[22 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig1-1.pdf>]
 Underfull \vbox (badness 1838) has occurred while \output is active []
 
-[25]
-<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf, id=293, 469
+[23]
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf, id=287, 469
 .755pt x 505.89pt>
 File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf Graphic
  file (type pdf)
 <use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf>
 Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
-/fig2-1.pdf  used on input line 401.
+/fig2-1.pdf  used on input line 405.
 (pdftex.def)             Requested size: 469.75386pt x 505.88875pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[26]
+[24]
 Overfull \vbox (9.44362pt too high) has occurred while \output is active []
 
-[27 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf>]
+[25 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig2-1.pdf>]
 Underfull \vbox (badness 1838) has occurred while \output is active []
 
-[28]
-<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf, id=315, 469
+[26]
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf, id=309, 469
 .755pt x 252.945pt>
 File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf Graphic
  file (type pdf)
 <use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf>
 Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
-/fig3-1.pdf  used on input line 423.
+/fig3-1.pdf  used on input line 427.
 (pdftex.def)             Requested size: 469.75386pt x 252.94438pt.
-[29 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf>]
+[27 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig3-1.pdf>]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[30] [31] [32] [33] [34] [35]
-<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf, id=367, 469
+[28] [29] [30] [31]
+Underfull \vbox (badness 1199) has occurred while \output is active []
+
+[32] [33]
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf, id=362, 469
 .755pt x 325.215pt>
 File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf Graphic
  file (type pdf)
 <use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf>
 Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
-/fig4-1.pdf  used on input line 518.
+/fig4-1.pdf  used on input line 524.
 (pdftex.def)             Requested size: 352.31538pt x 243.91064pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[36 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf>] [37]
-[38] [39
+[34 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig4-1.pdf>] [35]
+[36] [37
 
-] [40
+] [38
 
-] [41]
-Overfull \hbox (29.93413pt too wide) in paragraph at lines 600--626
+] [39]
+Overfull \hbox (29.93413pt too wide) in paragraph at lines 606--632
  [] 
  []
 
-[42] [43]
-<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig5-1.pdf, id=425, 469
+[40] [41]
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig5-1.pdf, id=418, 469
 .755pt x 505.89pt>
 File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig5-1.pdf Graphic
  file (type pdf)
 <use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig5-1.pdf>
 Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
-/fig5-1.pdf  used on input line 640.
+/fig5-1.pdf  used on input line 646.
 (pdftex.def)             Requested size: 281.85518pt x 303.53633pt.
-[44]
-<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig6-1.pdf, id=430, 469
+[42]
+<paper_TE_bilingual_vocabulary_model_files/figure-latex/fig6-1.pdf, id=423, 469
 .755pt x 289.08pt>
 File: paper_TE_bilingual_vocabulary_model_files/figure-latex/fig6-1.pdf Graphic
  file (type pdf)
 <use paper_TE_bilingual_vocabulary_model_files/figure-latex/fig6-1.pdf>
 Package pdftex.def Info: paper_TE_bilingual_vocabulary_model_files/figure-latex
-/fig6-1.pdf  used on input line 653.
+/fig6-1.pdf  used on input line 659.
 (pdftex.def)             Requested size: 469.77536pt x 289.09251pt.
 
 Underfull \vbox (badness 2035) has occurred while \output is active []
 
-[45 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig5-1.pdf>]
+[43 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig5-1.pdf>]
 Underfull \vbox (badness 1521) has occurred while \output is active []
 
-[46 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig6-1.pdf>] [47]
+[44 <./paper_TE_bilingual_vocabulary_model_files/figure-latex/fig6-1.pdf>] [45]
+[46]
 
-LaTeX Warning: Float too large for page by 69.17676pt on input line 690.
+LaTeX Warning: Float too large for page by 69.17676pt on input line 700.
 
-[48]
+[47] [48
+
+
+] [49]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[50]
+Underfull \vbox (badness 1838) has occurred while \output is active []
+
+[51]
 Underfull \vbox (badness 7649) has occurred while \output is active []
 
-[49
-
-
-] [50] [51] [52] [53]
+[52] [53]
 Underfull \vbox (badness 7649) has occurred while \output is active []
 
-[54]
-Underfull \vbox (badness 7649) has occurred while \output is active []
+[54] [55] [56] [57] [58] [59] [60
 
-[55] [56] [57] [58] [59] [60] [61]
-Underfull \vbox (badness 3199) has occurred while \output is active []
 
-[62] [63] [64] [65] [66] [67] AED endfloat: Processing end Figures and Tables [
-68] (./paper_TE_bilingual_vocabulary_model.aux)
+] [61] [62] [63] [64] [65] [66] [67] [68] AED endfloat: Processing end Figures 
+and Tables [69] (./paper_TE_bilingual_vocabulary_model.aux)
 Package rerunfilecheck Info: File `paper_TE_bilingual_vocabulary_model.out' has
  not changed.
-(rerunfilecheck)             Checksum: FFAC6D918AC49846296F74E31629C630;10343.
+(rerunfilecheck)             Checksum: 106485F980B2F0C9BF1B1CFB37BA9415;10603.
  ) 
 Here is how much of TeX's memory you used:
- 15237 strings out of 480539
- 237284 string characters out of 5901556
- 573981 words of memory out of 5000000
- 32331 multiletter control sequences out of 15000+600000
- 499547 words of font info for 101 fonts, out of 8000000 for 9000
+ 15982 strings out of 480313
+ 263797 string characters out of 5896200
+ 576560 words of memory out of 5000000
+ 33296 multiletter control sequences out of 15000+600000
+ 499865 words of font info for 102 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 72i,13n,80p,3159b,553s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/Users/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/
-Users/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/
-Users/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/User
-s/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/Users/r
+ 70i,13n,77p,3042b,553s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/Users/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{
+/Users/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/Use
+rs/racheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/Users/r
+acheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/Users/r
 acheltsui/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}</Users/r
 acheltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></Users/r
 acheltsui/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx7.pfb></Users/ra
@@ -923,12 +925,13 @@ i/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri12.pfb></Users/racheltsu
 i/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri7.pfb></Users/racheltsui
 /Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri8.pfb></Users/racheltsui/
 Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmss8.pfb></Users/racheltsui/L
-ibrary/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy7.pfb>
-Output written on paper_TE_bilingual_vocabulary_model.pdf (68 pages, 551999 byt
+ibrary/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy7.pfb></Users/racheltsui/Li
+brary/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt12.pfb>
+Output written on paper_TE_bilingual_vocabulary_model.pdf (69 pages, 579834 byt
 es).
 PDF statistics:
- 844 PDF objects out of 1000 (max. 8388607)
- 716 compressed objects within 8 object streams
- 238 named destinations out of 1000 (max. 500000)
- 303 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 864 PDF objects out of 1000 (max. 8388607)
+ 733 compressed objects within 8 object streams
+ 244 named destinations out of 1000 (max. 500000)
+ 311 words of extra memory for PDF output out of 10000 (max. 10000000)
 
