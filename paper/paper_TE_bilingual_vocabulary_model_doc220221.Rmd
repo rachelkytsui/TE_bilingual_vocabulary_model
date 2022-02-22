@@ -55,7 +55,7 @@ bibliography      : ["paper_TE_bilingual_vocabulary_model_references.bib"]
 replace_ampersands: yes
 
 class             : "man"
-output            : papaja::apa6_pdf # change to apa6_docx for word document
+output            : papaja::apa6_word # change to apa6_docx for word document
 citation_package  : biblatex
 nocite: '@*' # include all the references in the .bib file, because in-text citations were mostly typed manually to fit the apa7 style
 ---
